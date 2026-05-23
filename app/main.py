@@ -1,36 +1,16 @@
-import argparse
-import json
-
 from app.services.text_analyzer import analyze_text
 
-DEFAULT_SAMPLE_TEXT = (
-    "This project will become an AI learning and job assistant."
-)
-
-
-def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Analyze text and print word, character, and line statistics.",
-    )
-    parser.add_argument(
-        "--text",
-        "-t",
-        default=DEFAULT_SAMPLE_TEXT,
-        help="Text to analyze (default: built-in sample sentence)",
-    )
-    parser.add_argument(
-        "--json",
-        action="store_true",
-        help="Print raw analysis as JSON",
-    )
-    return parser.parse_args(argv)
+# Change this string to try different text, or use the exercise below.
+SAMPLE_TEXT = "This project will become an AI learning and job assistant."
 
 
 def run(text: str) -> dict:
+    """Run analysis on text. Returns the same dict as analyze_text."""
     return analyze_text(text)
 
 
 def format_analysis(text: str, analysis: dict) -> str:
+    """Turn analysis dict into text you can print."""
     lines = [
         f"Text: {text}",
         f"Words: {analysis['word_count']}",
@@ -42,15 +22,17 @@ def format_analysis(text: str, analysis: dict) -> str:
     return "\n".join(lines)
 
 
-def main(argv: list[str] | None = None) -> None:
-    args = parse_args(argv)
-    analysis = run(args.text)
-
-    if args.json:
-        print(json.dumps(analysis, indent=2))
-    else:
-        print(format_analysis(args.text, analysis))
+def main(text: str | None = None) -> None:
+    text_to_analyze = SAMPLE_TEXT if text is None else text
+    analysis = run(text_to_analyze)
+    print(format_analysis(text_to_analyze, analysis))
 
 
 if __name__ == "__main__":
     main()
+
+    # --- Your turn (pick one when ready; delete or comment out after trying) ---
+    # 1) Ask the user:  text_to_analyze = input("Enter text to analyze: ")
+    # 2) First CLI arg:  import sys
+    #                    text_to_analyze = sys.argv[1]   # run: python -m app.main "hello"
+    # 3) Later chapter:  argparse (--help, --text flags) — learn when you want flags

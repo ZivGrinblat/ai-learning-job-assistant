@@ -1,6 +1,4 @@
-import json
-
-from app.main import format_analysis, parse_args, run
+from app.main import format_analysis, main, run
 
 
 def test_run_returns_result_from_analyze_text():
@@ -37,22 +35,11 @@ def test_format_analysis_includes_all_stats():
     assert "Empty: False" in output
 
 
-def test_parse_args_uses_text_from_command_line():
+def test_main_prints_formatted_analysis(capsys):
     # Act
-    args = parse_args(["--text", "custom input"])
-
-    # Assert
-    assert args.text == "custom input"
-    assert args.json is False
-
-
-def test_main_json_flag_prints_analysis(capsys):
-    # Arrange
-    from app.main import main
-
-    # Act
-    main(["--text", "hi", "--json"])
+    main("Hello world")
     captured = capsys.readouterr()
 
     # Assert
-    assert json.loads(captured.out) == run("hi")
+    assert "Words: 2" in captured.out
+    assert "Empty: False" in captured.out
