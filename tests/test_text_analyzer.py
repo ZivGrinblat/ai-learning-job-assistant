@@ -1,4 +1,9 @@
-from app.services.text_analyzer import count_words, count_characters, count_lines
+from app.services.text_analyzer import (
+    count_words, 
+    count_characters, 
+    count_lines,
+    analyze_text,
+)
 
 
 def test_count_words_counts_two_words():
@@ -356,3 +361,232 @@ def test_count_lines_treats_single_line_without_newline_as_one_line():
 
     # Assert
     assert result == 1
+
+
+# --- analyze_text ---
+
+EXPECTED_ANALYZE_TEXT_KEYS = {
+    "word_count",
+    "character_count",
+    "character_count_without_spaces",
+    "line_count",
+    "is_empty",
+}
+
+
+def test_analyze_text_returns_all_expected_keys():
+    # Act
+    result = analyze_text("hello")
+
+    # Assert
+    assert set(result.keys()) == EXPECTED_ANALYZE_TEXT_KEYS
+
+
+def test_analyze_text_reports_stats_for_simple_sentence():
+    # Arrange
+    text = "Hello world"
+
+    # Act
+    result = analyze_text(text)
+
+    # Assert
+    assert result == {
+        "word_count": 2,
+        "character_count": 11,
+        "character_count_without_spaces": 10,
+        "line_count": 1,
+        "is_empty": False,
+    }
+
+
+def test_analyze_text_returns_zeros_and_empty_flag_for_empty_string():
+    # Arrange
+    text = ""
+
+    # Act
+    result = analyze_text(text)
+
+    # Assert
+    assert result == {
+        "word_count": 0,
+        "character_count": 0,
+        "character_count_without_spaces": 0,
+        "line_count": 0,
+        "is_empty": True,
+    }
+
+
+def test_analyze_text_returns_zeros_and_empty_flag_for_whitespace_only():
+    # Arrange
+    text = "  \t\n  "
+
+    # Act
+    result = analyze_text(text)
+
+    # Assert
+    assert result == {
+        "word_count": 0,
+        "character_count": 0,
+        "character_count_without_spaces": 0,
+        "line_count": 0,
+        "is_empty": True,
+    }
+
+
+def test_analyze_text_marks_non_empty_for_single_word():
+    # Arrange
+    text = "hello"
+
+    # Act
+    result = analyze_text(text)
+
+    # Assert
+    assert result["word_count"] == 1
+    assert result["is_empty"] is False
+
+
+def test_analyze_text_character_count_exceeds_count_without_spaces_when_spaces_present():
+    # Arrange
+    text = "a b"
+
+    # Act
+    result = analyze_text(text)
+
+    # Assert
+    assert result["character_count"] == 3
+    assert result["character_count_without_spaces"] == 2
+    assert result["character_count"] > result["character_count_without_spaces"]
+
+
+def test_analyze_text_character_counts_match_when_no_whitespace():
+    # Arrange
+    text = "hello"
+
+    # Act
+    result = analyze_text(text)
+
+    # Assert
+    assert result["character_count"] == 5
+    assert result["character_count_without_spaces"] == 5
+
+
+def test_analyze_text_reports_multiple_lines_for_multiline_text():
+    # Arrange
+    text = "line one\nline two\nline three"
+
+    # Act
+    result = analyze_text(text)
+
+    # Assert
+    assert result["word_count"] == 6
+    assert result["line_count"] == 3
+    assert result["is_empty"] is False
+
+
+def test_analyze_text_reports_zero_lines_for_newlines_only_input():
+    # Arrange
+    text = "\n\n"
+
+    # Act
+    result = analyze_text(text)
+
+    # Assert
+    assert result["line_count"] == 0
+    assert result["word_count"] == 0
+    assert result["is_empty"] is True
+
+
+def test_analyze_text_handles_unicode_content():
+    # Arrange
+    text = "שלום עולם"
+
+    # Act
+    result = analyze_text(text)
+
+    # Assert
+    assert result["word_count"] == 2
+    assert result["character_count"] == 9
+    assert result["character_count_without_spaces"] == 8
+    assert result["is_empty"] is False
+
+
+def test_analyze_text_handles_windows_line_endings():
+    # Arrange
+    text = "first\r\nsecond\r\n"
+
+    # Act
+    result = analyze_text(text)
+
+    # Assert
+    assert result["word_count"] == 2
+    assert result["line_count"] == 2
+    assert result["is_empty"] is False
+
+
+def test_analyze_text_reports_correct_counts_for_mixed_whitespace():
+    # Arrange
+    text = "  one \t  two\n three  "
+
+    # Act
+    result = analyze_text(text)
+
+    # Assert
+    assert result["word_count"] == 3
+    assert result["line_count"] == 2
+    assert result["is_empty"] is False
+
+
+def test_analyze_text_includes_emoji_in_character_count():
+    # Arrange
+    text = "hi 👋"
+
+    # Act
+    result = analyze_text(text)
+
+    # Assert
+    assert result["word_count"] == 2
+    assert result["character_count"] == 4
+    assert result["character_count_without_spaces"] == 3
+
+
+def test_analyze_text_counts_hyphenated_tokens_as_one_word_each():
+    # Arrange
+    text = "well-known release"
+
+    # Act
+    result = analyze_text(text)
+
+    # Assert
+    assert result["word_count"] == 2
+    assert result["line_count"] == 1
+
+
+def test_analyze_text_line_count_with_internal_and_trailing_newlines():
+    # Arrange
+    text = "hello\n\n\n"
+
+    # Act
+    result = analyze_text(text)
+
+    # Assert
+    assert result["word_count"] == 1
+    assert result["line_count"] == 3
+    assert result["character_count"] == len(text)
+    assert result["is_empty"] is False
+
+
+def test_analyze_text_reports_consistent_counts_for_paragraph():
+    # Arrange
+    text = "Python is powerful"
+
+    # Act
+    result = analyze_text(text)
+
+    # Assert
+    assert result == {
+        "word_count": count_words(text),
+        "character_count": count_characters(text),
+        "character_count_without_spaces": count_characters(text, include_spaces=False),
+        "line_count": count_lines(text),
+        "is_empty": False,
+    }

@@ -25,3 +25,15 @@ def count_lines(text: str) -> int:
         return 0
 
     return len(text.splitlines())
+
+
+def analyze_text(text: str) -> dict:
+    is_empty = is_empty_or_whitespace(text)
+
+    return {
+        "word_count": count_words(text),
+        "character_count": count_characters(text),
+        "character_count_without_spaces": count_characters(text, include_spaces=False),
+        "line_count": count_lines(text),
+        "is_empty": is_empty,
+    }
