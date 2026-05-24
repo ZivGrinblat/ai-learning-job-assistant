@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Learning & Job Assistant</title>
+    <style>
+        :root {
+            --bg: #f4f6f9;
+            --card: #ffffff;
+            --text: #1a1f2e;
+            --muted: #5c6578;
+            --border: #dde3ee;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --error-bg: #fef2f2;
+            --error-text: #991b1b;
+            --success: #166534;
+            --success-bg: #ecfdf3;
+            --offline: #9a3412;
+            --offline-bg: #fff7ed;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 32px 16px 48px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .header-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+            font-size: 1.75rem;
+        }
+
+        header p {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        .api-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--card);
+        }
+
+        .api-status .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--muted);
+        }
+
+        .api-status.online {
+            background: var(--success-bg);
+            border-color: #bbf7d0;
+            color: var(--success);
+        }
+
+        .api-status.online .dot {
+            background: var(--success);
+        }
+
+        .api-status.offline {
+            background: var(--offline-bg);
+            border-color: #fed7aa;
+            color: var(--offline);
+        }
+
+        .api-status.offline .dot {
+            background: var(--offline);
+        }
+
+        .api-status.checking .dot {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            50% { opacity: 0.35; }
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .hint {
+            font-size: 0.875rem;
+            color: var(--muted);
+            margin-top: 6px;
+        }
+
+        .hint kbd {
+            background: #e8edf5;
+            border-radius: 4px;
+            padding: 1px 5px;
+            font-size: 0.8rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 14px;
+            font-size: 1rem;
+            font-family: inherit;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            resize: vertical;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+            align-items: center;
+        }
+
+        button {
+            padding: 10px 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s, opacity 0.15s;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: #e8edf5;
+            color: var(--text);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #dce3ef;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover:not(:disabled) {
+            background: #eef3fb;
+        }
+
+        .status {
+            min-height: 1.25rem;
+            margin-top: 16px;
+            font-size: 0.9rem;
+        }
+
+        .status.loading,
+        .status.success {
+            color: var(--muted);
+        }
+
+        .status.success {
+            color: var(--success);
+        }
+
+        .error {
+            margin-top: 16px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            background: var(--error-bg);
+            color: var(--error-text);
+            border: 1px solid #fecaca;
+            display: none;
+        }
+
+        .error.visible {
+            display: block;
+        }
+
+        .result {
+            margin-top: 24px;
+            display: none;
+        }
+
+        .result.visible {
+            display: block;
+        }
+
+        .result-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .result-header h2 {
+            margin: 0;
+            font-size: 1.15rem;
+        }
+
+        .result-meta {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .result-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+        }
+
+        .stat {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-value.boolean-yes {
+            color: var(--success);
+        }
+
+        .raw-json {
+            margin-top: 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .raw-json summary {
+            cursor: pointer;
+            padding: 10px 14px;
+            background: var(--bg);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .raw-json pre {
+            margin: 0;
+            padding: 14px;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        footer {
+            margin-top: 28px;
+            font-size: 0.85rem;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        footer code {
+            background: #e8edf5;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-row">
+            <header>
+                <h1>AI Learning & Job Assistant</h1>
+                <p>Paste any text below. The FastAPI backend will count words, characters, and lines.</p>
+            </header>
+            <div id="api-status" class="api-status checking" title="Backend connection">
+                <span class="dot"></span>
+                <span id="api-status-text">Checking API…</span>
+            </div>
+        </div>
+
+        <main class="card">
+            <label for="text-input">Your text</label>
+            <textarea
+                id="text-input"
+                placeholder="Type or paste text here..."
+                aria-describedby="input-hint"
+            ></textarea>
+            <p id="input-hint" class="hint">
+                <span id="live-length">0</span> characters ·
+                ~<span id="live-words">0</span> words (preview) ·
+                <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to analyze
+            </p>
+
+            <div class="actions">
+                <button type="button" id="analyze-button" class="btn-primary">Analyze text</button>
+                <button type="button" id="sample-button" class="btn-secondary">Load sample</button>
+                <button type="button" id="clear-button" class="btn-secondary">Clear</button>
+                <button type="button" id="refresh-api-button" class="btn-ghost">Check API</button>
+            </div>
+
+            <p id="status" class="status" aria-live="polite"></p>
+            <div id="error" class="error" role="alert"></div>
+
+            <section id="result" class="result" aria-live="polite">
+                <div class="result-header">
+                    <h2>Analysis result</h2>
+                    <span id="result-time" class="result-meta"></span>
+                </div>
+
+                <div class="result-actions">
+                    <button type="button" id="copy-summary-button" class="btn-ghost">Copy summary</button>
+                    <button type="button" id="copy-json-button" class="btn-ghost">Copy JSON</button>
+                    <button type="button" id="download-json-button" class="btn-ghost">Download JSON</button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-label">Words</div>
+                        <div class="stat-value" id="word-count">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Characters</div>
+                        <div class="stat-value" id="character-count">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">No spaces</div>
+                        <div class="stat-value" id="character-count-without-spaces">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Lines</div>
+                        <div class="stat-value" id="line-count">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Empty?</div>
+                        <div class="stat-value" id="is-empty">—</div>
+                    </div>
+                </div>
+
+                <details class="raw-json">
+                    <summary>View raw JSON response</summary>
+                    <pre id="raw-json-output">{}</pre>
+                </details>
+            </section>
+        </main>
+
+        <footer>
+            Draft saved in your browser · Backend:
+            <code>uvicorn app.main:app --reload</code>
+        </footer>
+    </div>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:8000";
+        const API_ANALYZE_URL = `${API_BASE}/analyze-text`;
+        const API_HEALTH_URL = `${API_BASE}/health`;
+        const DRAFT_STORAGE_KEY = "ai-assistant-text-draft";
+        const SAMPLE_TEXT =
+            "This project will become an AI learning and job assistant.\n" +
+            "For now, it analyzes text: words, characters, and lines.";
+
+        const analyzeButton = document.getElementById("analyze-button");
+        const sampleButton = document.getElementById("sample-button");
+        const clearButton = document.getElementById("clear-button");
+        const refreshApiButton = document.getElementById("refresh-api-button");
+        const copySummaryButton = document.getElementById("copy-summary-button");
+        const copyJsonButton = document.getElementById("copy-json-button");
+        const downloadJsonButton = document.getElementById("download-json-button");
+
+        const textInput = document.getElementById("text-input");
+        const resultBox = document.getElementById("result");
+        const errorBox = document.getElementById("error");
+        const statusBox = document.getElementById("status");
+        const liveLength = document.getElementById("live-length");
+        const liveWords = document.getElementById("live-words");
+        const resultTime = document.getElementById("result-time");
+        const rawJsonOutput = document.getElementById("raw-json-output");
+        const apiStatus = document.getElementById("api-status");
+        const apiStatusText = document.getElementById("api-status-text");
+
+        let lastAnalysisResult = null;
+        let draftSaveTimer = null;
+
+        function showError(message) {
+            errorBox.textContent = message;
+            errorBox.classList.add("visible");
+        }
+
+        function hideError() {
+            errorBox.textContent = "";
+            errorBox.classList.remove("visible");
+        }
+
+        function setStatus(message, type = "") {
+            statusBox.textContent = message;
+            statusBox.className = "status";
+            if (type) {
+                statusBox.classList.add(type);
+            }
+        }
+
+        function setLoading(isLoading) {
+            const buttons = [
+                analyzeButton,
+                sampleButton,
+                clearButton,
+                copySummaryButton,
+                copyJsonButton,
+                downloadJsonButton,
+            ];
+            buttons.forEach((button) => {
+                button.disabled = isLoading;
+            });
+            if (isLoading) {
+                setStatus("Analyzing…", "loading");
+            } else if (!statusBox.classList.contains("success")) {
+                setStatus("");
+            }
+        }
+
+        function formatBoolean(value) {
+            return value ? "Yes" : "No";
+        }
+
+        function countWordsPreview(text) {
+            const trimmed = text.trim();
+            if (!trimmed) {
+                return 0;
+            }
+            return trimmed.split(/\s+/).length;
+        }
+
+        function updateLiveStats() {
+            const text = textInput.value;
+            liveLength.textContent = String(text.length);
+            liveWords.textContent = String(countWordsPreview(text));
+        }
+
+        function saveDraft() {
+            localStorage.setItem(DRAFT_STORAGE_KEY, textInput.value);
+        }
+
+        function scheduleDraftSave() {
+            clearTimeout(draftSaveTimer);
+            draftSaveTimer = setTimeout(saveDraft, 400);
+        }
+
+        function restoreDraft() {
+            const saved = localStorage.getItem(DRAFT_STORAGE_KEY);
+            if (saved) {
+                textInput.value = saved;
+                updateLiveStats();
+            }
+        }
+
+        function buildSummaryText(data) {
+            return [
+                "Text analysis summary",
+                `Words: ${data.word_count}`,
+                `Characters: ${data.character_count}`,
+                `Characters (no spaces): ${data.character_count_without_spaces}`,
+                `Lines: ${data.line_count}`,
+                `Empty: ${formatBoolean(data.is_empty)}`,
+            ].join("\n");
+        }
+
+        function displayResults(data) {
+            lastAnalysisResult = data;
+
+            document.getElementById("word-count").textContent = data.word_count;
+            document.getElementById("character-count").textContent = data.character_count;
+            document.getElementById("character-count-without-spaces").textContent =
+                data.character_count_without_spaces;
+            document.getElementById("line-count").textContent = data.line_count;
+
+            const isEmptyEl = document.getElementById("is-empty");
+            isEmptyEl.textContent = formatBoolean(data.is_empty);
+            isEmptyEl.classList.toggle("boolean-yes", data.is_empty);
+
+            rawJsonOutput.textContent = JSON.stringify(data, null, 2);
+            resultTime.textContent = `Analyzed at ${new Date().toLocaleString()}`;
+            resultBox.classList.add("visible");
+        }
+
+        async function checkApiHealth() {
+            apiStatus.className = "api-status checking";
+            apiStatusText.textContent = "Checking API…";
+
+            try {
+                const response = await fetch(API_HEALTH_URL);
+                if (!response.ok) {
+                    throw new Error(`Health check failed (${response.status})`);
+                }
+                const data = await response.json();
+                if (data.status === "ok") {
+                    apiStatus.className = "api-status online";
+                    apiStatusText.textContent = "API online";
+                } else {
+                    throw new Error("Unexpected health response");
+                }
+            } catch (error) {
+                apiStatus.className = "api-status offline";
+                apiStatusText.textContent = "API offline";
+            }
+        }
+
+        async function analyzeText() {
+            const text = textInput.value;
+
+            hideError();
+            resultBox.classList.remove("visible");
+
+            if (!text.trim()) {
+                showError("Please enter some text before analyzing.");
+                textInput.focus();
+                return;
+            }
+
+            setLoading(true);
+
+            try {
+                const response = await fetch(API_ANALYZE_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text }),
+                });
+
+                if (!response.ok) {
+                    if (response.status === 422) {
+                        showError('Invalid request. The API expects JSON with a "text" field.');
+                    } else {
+                        showError(`Request failed with status ${response.status}.`);
+                    }
+                    return;
+                }
+
+                const data = await response.json();
+                displayResults(data);
+                setStatus("Analysis complete.", "success");
+            } catch (error) {
+                showError(`Could not reach the API. Is uvicorn running? (${error.message})`);
+                await checkApiHealth();
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function clearForm() {
+            textInput.value = "";
+            localStorage.removeItem(DRAFT_STORAGE_KEY);
+            lastAnalysisResult = null;
+            updateLiveStats();
+            hideError();
+            resultBox.classList.remove("visible");
+            setStatus("");
+            textInput.focus();
+        }
+
+        function loadSampleText() {
+            textInput.value = SAMPLE_TEXT;
+            updateLiveStats();
+            saveDraft();
+            hideError();
+            textInput.focus();
+        }
+
+        async function copyToClipboard(text) {
+            await navigator.clipboard.writeText(text);
+            setStatus("Copied to clipboard.", "success");
+        }
+
+        async function copySummary() {
+            if (!lastAnalysisResult) {
+                showError("Run an analysis first.");
+                return;
+            }
+            try {
+                await copyToClipboard(buildSummaryText(lastAnalysisResult));
+            } catch (error) {
+                showError(`Copy failed: ${error.message}`);
+            }
+        }
+
+        async function copyJson() {
+            if (!lastAnalysisResult) {
+                showError("Run an analysis first.");
+                return;
+            }
+            try {
+                await copyToClipboard(JSON.stringify(lastAnalysisResult, null, 2));
+            } catch (error) {
+                showError(`Copy failed: ${error.message}`);
+            }
+        }
+
+        function downloadJson() {
+            if (!lastAnalysisResult) {
+                showError("Run an analysis first.");
+                return;
+            }
+
+            const blob = new Blob([JSON.stringify(lastAnalysisResult, null, 2)], {
+                type: "application/json",
+            });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "text-analysis.json";
+            link.click();
+            URL.revokeObjectURL(url);
+            setStatus("JSON file downloaded.", "success");
+        }
+
+        analyzeButton.addEventListener("click", analyzeText);
+        sampleButton.addEventListener("click", loadSampleText);
+        clearButton.addEventListener("click", clearForm);
+        refreshApiButton.addEventListener("click", checkApiHealth);
+        copySummaryButton.addEventListener("click", copySummary);
+        copyJsonButton.addEventListener("click", copyJson);
+        downloadJsonButton.addEventListener("click", downloadJson);
+
+        textInput.addEventListener("input", () => {
+            updateLiveStats();
+            scheduleDraftSave();
+        });
+
+        textInput.addEventListener("keydown", (event) => {
+            if (event.ctrlKey && event.key === "Enter") {
+                event.preventDefault();
+                analyzeText();
+            }
+        });
+
+        restoreDraft();
+        updateLiveStats();
+        checkApiHealth();
+    </script>
+</body>
+</html>
