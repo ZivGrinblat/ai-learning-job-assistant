@@ -1,12 +1,6 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
 
-from app.services.text_analyzer import analyze_text
-
-
-class TextAnalysisRequest(BaseModel):
-    text: str
-
+from app.api.routes import router
 
 app = FastAPI(
     title="AI Learning & Job Assistant",
@@ -14,12 +8,4 @@ app = FastAPI(
     version="0.1.0",
 )
 
-
-@app.get("/health")
-def health_check() -> dict:
-    return {"status": "ok"}
-
-
-@app.post("/analyze-text")
-def analyze_text_endpoint(request: TextAnalysisRequest) -> dict:
-    return analyze_text(request.text)
+app.include_router(router)
