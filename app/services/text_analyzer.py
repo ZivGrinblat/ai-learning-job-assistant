@@ -29,11 +29,23 @@ def count_lines(text: str) -> int:
 
 def analyze_text(text: str) -> dict:
     is_empty = is_empty_or_whitespace(text)
+    cleaned_text = clean_text(text)
 
     return {
-        "word_count": count_words(text),
-        "character_count": count_characters(text),
-        "character_count_without_spaces": count_characters(text, include_spaces=False),
-        "line_count": count_lines(text),
+        "word_count": count_words(cleaned_text),
+        "character_count": count_characters(cleaned_text),
+        "character_count_without_spaces": count_characters(cleaned_text, include_spaces=False),
+        "line_count": count_lines(cleaned_text),
         "is_empty": is_empty,
     }
+    
+def clean_text(text: str) -> str:
+    
+    if is_empty_or_whitespace(text):
+        return ""
+    
+    splitted_text = text.split()
+    return " ".join(splitted_text)
+
+    
+    

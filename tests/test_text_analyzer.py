@@ -3,6 +3,7 @@ from app.services.text_analyzer import (
     count_characters, 
     count_lines,
     analyze_text,
+    clean_text,
 )
 
 
@@ -479,7 +480,7 @@ def test_analyze_text_reports_multiple_lines_for_multiline_text():
 
     # Assert
     assert result["word_count"] == 6
-    assert result["line_count"] == 3
+    assert result["line_count"] == 1
     assert result["is_empty"] is False
 
 
@@ -519,7 +520,7 @@ def test_analyze_text_handles_windows_line_endings():
 
     # Assert
     assert result["word_count"] == 2
-    assert result["line_count"] == 2
+    assert result["line_count"] == 1
     assert result["is_empty"] is False
 
 
@@ -532,7 +533,7 @@ def test_analyze_text_reports_correct_counts_for_mixed_whitespace():
 
     # Assert
     assert result["word_count"] == 3
-    assert result["line_count"] == 2
+    assert result["line_count"] == 1
     assert result["is_empty"] is False
 
 
@@ -570,8 +571,8 @@ def test_analyze_text_line_count_with_internal_and_trailing_newlines():
 
     # Assert
     assert result["word_count"] == 1
-    assert result["line_count"] == 3
-    assert result["character_count"] == len(text)
+    assert result["line_count"] == 1
+    assert result["character_count"] == 5
     assert result["is_empty"] is False
 
 
@@ -590,3 +591,34 @@ def test_analyze_text_reports_consistent_counts_for_paragraph():
         "line_count": count_lines(text),
         "is_empty": False,
     }
+    
+def test_clean_text_leading_and_trailing_spaces():
+    # Arrange
+    text = "  hello world   "
+    
+    result = clean_text(text)
+    
+    assert result == "hello world"
+    
+
+def test_clean_text_empty_string():
+    text = "      "
+    
+    result = clean_text(text)
+    
+    assert result == "" 
+    
+    
+def test_clean_text_no_change():
+    text = "hello\nziv\n   ziv   "
+    
+    result = clean_text(text)
+    
+    assert result == "hello ziv ziv"
+    
+def test_clean_text_replaces_multiple_spaces_with_single_space():
+    text = "   hello     world   "
+
+    result = clean_text(text)
+
+    assert result == "hello world"

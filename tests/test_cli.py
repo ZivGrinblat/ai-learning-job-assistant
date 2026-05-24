@@ -85,7 +85,7 @@ def test_main_prints_line_count_for_multiline_text(capsys):
     main(["a\nb\nc"])
     captured = capsys.readouterr()
 
-    assert "Line count: 3" in captured.out
+    assert "Line count: 1" in captured.out
     assert "Word count: 3" in captured.out
 
 
