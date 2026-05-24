@@ -1,6 +1,6 @@
 import pytest
 
-from app.main import build_parser, main
+from app.cli import build_parser, main
 from app.services.text_analyzer import analyze_text
 
 
