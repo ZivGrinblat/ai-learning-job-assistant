@@ -10,3 +10,10 @@ class TextAnalysisResponse(BaseModel):
     character_count_without_spaces: int
     line_count: int
     is_empty: bool
+    
+
+class TextCleaningRequest(BaseModel):
+    text: str
+
+class TextCleaningResponse(BaseModel):
+    cleaned_text: str
