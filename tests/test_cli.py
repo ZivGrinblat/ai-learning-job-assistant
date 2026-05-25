@@ -81,7 +81,7 @@ def test_main_prints_zero_stats_for_whitespace_only(capsys):
     assert "Is empty: True" in captured.out
 
 
-def test_main_prints_line_count_for_multiline_text(capsys):
+def test_main_prints_line_count_for_one_line(capsys):
     main(["a\nb\nc"])
     captured = capsys.readouterr()
 

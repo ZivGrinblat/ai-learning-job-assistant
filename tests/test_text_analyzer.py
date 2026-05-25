@@ -471,7 +471,7 @@ def test_analyze_text_character_counts_match_when_no_whitespace():
     assert result["character_count_without_spaces"] == 5
 
 
-def test_analyze_text_reports_multiple_lines_for_multiline_text():
+def test_analyze_text_reports_single_line_for_multiline_text():
     # Arrange
     text = "line one\nline two\nline three"
 
@@ -511,7 +511,7 @@ def test_analyze_text_handles_unicode_content():
     assert result["is_empty"] is False
 
 
-def test_analyze_text_handles_windows_line_endings():
+def test_analyze_text_gets_several_lines_returns_one_line():
     # Arrange
     text = "first\r\nsecond\r\n"
 
@@ -562,7 +562,7 @@ def test_analyze_text_counts_hyphenated_tokens_as_one_word_each():
     assert result["line_count"] == 1
 
 
-def test_analyze_text_line_count_with_internal_and_trailing_newlines():
+def test_analyze_text_strips_trailing_newlines_and_counts_one_line():
     # Arrange
     text = "hello\n\n\n"
 
@@ -576,19 +576,20 @@ def test_analyze_text_line_count_with_internal_and_trailing_newlines():
     assert result["is_empty"] is False
 
 
-def test_analyze_text_reports_consistent_counts_for_paragraph():
+def test_analyze_text_matches_counts_on_cleaned_text():
     # Arrange
-    text = "Python is powerful"
+    text = "Python is powerful\n\r\n\n\n\n    "
 
     # Act
     result = analyze_text(text)
 
     # Assert
+    cleaned_text = clean_text(text)
     assert result == {
-        "word_count": count_words(text),
-        "character_count": count_characters(text),
-        "character_count_without_spaces": count_characters(text, include_spaces=False),
-        "line_count": count_lines(text),
+        "word_count": count_words(cleaned_text),
+        "character_count": count_characters(cleaned_text),
+        "character_count_without_spaces": count_characters(cleaned_text, include_spaces=False),
+        "line_count": count_lines(cleaned_text),
         "is_empty": False,
     }
     
@@ -601,7 +602,7 @@ def test_clean_text_leading_and_trailing_spaces():
     assert result == "hello world"
     
 
-def test_clean_text_empty_string():
+def test_clean_text_gets_only_spaces_returns_empty_string():
     text = "      "
     
     result = clean_text(text)
@@ -609,7 +610,7 @@ def test_clean_text_empty_string():
     assert result == "" 
     
     
-def test_clean_text_no_change():
+def test_clean_text_multiple_lines_returns_one_line():
     text = "hello\nziv\n   ziv   "
     
     result = clean_text(text)
@@ -622,3 +623,5 @@ def test_clean_text_replaces_multiple_spaces_with_single_space():
     result = clean_text(text)
 
     assert result == "hello world"
+    
+    
