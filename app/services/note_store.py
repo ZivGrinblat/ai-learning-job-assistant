@@ -1,6 +1,8 @@
 import sqlite3
 import os
 
+DB_PATH = "data/notes.db"
+
 CREATE_TABLE = """CREATE TABLE IF NOT EXISTS notes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     book TEXT NOT NULL,
@@ -11,12 +13,12 @@ CREATE_TABLE = """CREATE TABLE IF NOT EXISTS notes (
 
 def init_db():
     os.makedirs("data", exist_ok=True)
-    connection = sqlite3.connect("data/notes.db")
+    connection = sqlite3.connect(DB_PATH)
     connection.execute(CREATE_TABLE)
     connection.close()
     
 def save_note(book: str, chapter: int, note: str):
-    connection = sqlite3.connect("data/notes.db")
+    connection = sqlite3.connect(DB_PATH)
     cursor = connection.execute("INSERT INTO notes (book, chapter, note) VALUES (?, ?, ?)",
                        (book, chapter, note))
     new_id = cursor.lastrowid
@@ -26,7 +28,7 @@ def save_note(book: str, chapter: int, note: str):
     return new_id
     
 def delete_note(note_id: int):
-    connection = sqlite3.connect("data/notes.db")
+    connection = sqlite3.connect(DB_PATH)
     cursor = connection.execute("DELETE FROM notes WHERE id = ?", (note_id,))
     deleted = cursor.rowcount > 0
     connection.commit()
@@ -35,7 +37,7 @@ def delete_note(note_id: int):
 
 
 def get_all_notes():
-    connection = sqlite3.connect("data/notes.db")
+    connection = sqlite3.connect(DB_PATH)
     rows = connection.execute("SELECT * FROM notes").fetchall()
     connection.close()
     list_of_rows = []
