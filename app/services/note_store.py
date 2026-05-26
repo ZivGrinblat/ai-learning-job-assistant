@@ -17,8 +17,35 @@ def init_db():
     
 def save_note(book: str, chapter: int, note: str):
     connection = sqlite3.connect("data/notes.db")
-    connection.execute("INSERT INTO notes (book, chapter, note) VALUES (?, ?, ?)",
+    cursor = connection.execute("INSERT INTO notes (book, chapter, note) VALUES (?, ?, ?)",
                        (book, chapter, note))
+    new_id = cursor.lastrowid
+
     connection.commit()
     connection.close()
+    return new_id
     
+def delete_note(note_id: int):
+    connection = sqlite3.connect("data/notes.db")
+    cursor = connection.execute("DELETE FROM notes WHERE id = ?", (note_id,))
+    deleted = cursor.rowcount > 0
+    connection.commit()
+    connection.close()
+    return deleted
+
+
+def get_all_notes():
+    connection = sqlite3.connect("data/notes.db")
+    rows = connection.execute("SELECT * FROM notes").fetchall()
+    connection.close()
+    list_of_rows = []
+    for row in rows:
+        new_note = {
+         "id": row[0], 
+         "book": row[1], 
+         "chapter": row[2], 
+         "note": row[3], 
+         "created_at": row[4]
+        }
+        list_of_rows.append(new_note)
+    return list_of_rows

@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Request
 
-from app.schemas.notes import NoteRequest, NoteResponse
+from app.schemas.notes import NoteItem, NoteRequest, NoteResponse
 from app.schemas.text_analysis import TextAnalysisRequest, TextAnalysisResponse, TextCleaningRequest, TextCleaningResponse
 from app.services.audit_logger import write_api_log
 from app.services.text_analyzer import analyze_text, clean_text
-from app.services.note_store import save_note
+from app.services.note_store import get_all_notes, save_note
 router = APIRouter()
 
 
@@ -51,8 +51,13 @@ def clean_text_endpoint(payload: TextCleaningRequest,
 def notes_endpoint(payload: NoteRequest, 
                    http_request: Request) -> NoteResponse:
     result = save_note(payload.book_name, payload.chapter_number, payload.note_text)
-    response = NoteResponse(message="Note saved", id=1)
+    response = NoteResponse(message="Note saved", id=result)
     
     
     return response
+
+@router.get("/notes", response_model=list[NoteItem])
+def get_notes_endpoint():
+    return get_all_notes()
+
 
