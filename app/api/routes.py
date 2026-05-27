@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException, Request
 
-from app.schemas.notes import NoteItem, NoteRequest, NoteResponse
+from app.schemas.notes import BookSummary, NoteItem, NoteRequest, NoteResponse
 from app.schemas.text_analysis import TextAnalysisRequest, TextAnalysisResponse, TextCleaningRequest, TextCleaningResponse
 from app.services.audit_logger import write_api_log
 from app.services.text_analyzer import analyze_text, clean_text
-from app.services.note_store import delete_note, get_all_notes, save_note
+from app.services.note_store import get_books, count_notes, get_notes_by_book_name, delete_note, get_all_notes, save_note
 router = APIRouter()
 
 
@@ -57,8 +57,10 @@ def notes_endpoint(payload: NoteRequest,
     return response
 
 @router.get("/notes", response_model=list[NoteItem])
-def get_notes_endpoint():
-    return get_all_notes()
+def get_notes_endpoint(book: str | None = None):
+    if book is None:
+        return get_all_notes()
+    return get_notes_by_book_name(book)
 
 
 @router.delete("/notes/{note_id}")
@@ -67,3 +69,13 @@ def delete_note_endpoint(note_id: int):
     if not deleted:
         raise HTTPException(status_code=404, detail = "Note not found")
     return {"message": "Note deleted"}
+
+@router.get("/notes/count", response_model=dict)
+def get_count_notes():
+    notes_counter = count_notes()
+    return {"count": notes_counter}
+
+
+@router.get("/books", response_model=list[BookSummary])
+def get_books_endpoint():
+    return get_books()

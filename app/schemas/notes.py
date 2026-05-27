@@ -17,3 +17,11 @@ class NoteItem(BaseModel):
     chapter: int
     note: str
     created_at: str
+    
+    
+class NoteCountResponse(BaseModel):
+    count: int
+    
+class BookSummary(BaseModel):
+    book: str
+    note_count: int

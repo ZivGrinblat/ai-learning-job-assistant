@@ -388,6 +388,40 @@
             transform: translateY(0);
         }
 
+        .library-section {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem 0;
+        }
+
+        .book-library {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .book-chip {
+            font-family: inherit;
+            font-size: 0.78rem;
+            padding: 0.45rem 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            background: #161b22;
+            color: #c9d1d9;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .book-chip:hover {
+            border-color: #388bfd;
+            background: #1c2128;
+        }
+
+        .book-chip .count {
+            color: #79c0ff;
+            margin-left: 0.25rem;
+        }
+
         @media (max-width: 768px) {
             .main {
                 grid-template-columns: 1fr;
@@ -415,6 +449,17 @@
         </div>
     </div>
 
+    <section class="library-section">
+        <div class="card">
+            <div class="card-header">
+                <h2>Library</h2>
+            </div>
+            <div class="card-body">
+                <div class="book-library" id="bookLibrary">Loading books...</div>
+            </div>
+        </div>
+    </section>
+
     <div class="main">
         <div class="card">
             <div class="card-header">
@@ -424,7 +469,7 @@
                 <div class="form-row">
                     <div class="form-group grow">
                         <label for="bookName">Book</label>
-                        <input type="text" id="bookName" placeholder="The Muslim Jesus" maxlength="30">
+                        <input type="text" id="bookName" placeholder="The Muslim Jesus" maxlength="30" dir="auto">
                     </div>
                     <div class="form-group shrink">
                         <label for="chapter">Ch.</label>
@@ -433,7 +478,7 @@
                 </div>
                 <div class="form-group">
                     <label for="noteText">Your thought</label>
-                    <textarea id="noteText" placeholder="What stood out? What connection did you notice?" maxlength="150"></textarea>
+                    <textarea id="noteText" placeholder="What stood out? What connection did you notice?" maxlength="150" dir="auto"></textarea>
                     <div class="field-footer">
                         <span></span>
                         <span class="char-count" id="charCount">0/150</span>
@@ -449,6 +494,19 @@
                 <h2>Your Notes</h2>
                 <span class="badge" id="noteCount">0</span>
             </div>
+        
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="bookFilter">Filter by book</label>
+                    <input 
+                        type="text" 
+                        id="bookFilter" 
+                        placeholder="Type a book name" 
+                        dir="auto"
+                    >
+                </div>
+            </div>
+        
             <div class="notes-scroll" id="notesList">
                 <div class="empty-state">
                     <div class="empty-icon">B</div>
@@ -463,11 +521,14 @@
     <script>
         const API_BASE = "http://127.0.0.1:8000";
 
+
         async function checkHealth() {
             const dot = document.getElementById("statusDot");
             const text = document.getElementById("statusText");
+
             try {
                 const res = await fetch(`${API_BASE}/health`);
+
                 if (res.ok) {
                     dot.classList.add("online");
                     text.textContent = "Connected";
@@ -478,12 +539,21 @@
             }
         }
 
+        async function loadNoteCount() {
+            const res = await fetch(`${API_BASE}/notes/count`);
+            const data = await res.json();
+            document.getElementById("noteCount").textContent = data.count;
+        }
+        
+
         function showToast(message, isError = false) {
             const toast = document.getElementById("toast");
             toast.textContent = message;
             toast.className = "toast show" + (isError ? " error" : "");
+
             setTimeout(() => toast.classList.remove("show"), 2500);
         }
+
 
         async function saveNote() {
             const bookName = document.getElementById("bookName").value.trim();
@@ -513,9 +583,9 @@
                 if (res.ok) {
                     const data = await res.json();
                     showToast(`Saved — note #${data.id}`);
-                    document.getElementById("noteText").value = "";
-                    document.getElementById("chapter").value = "";
-                    updateCharCount();
+                    clearForm();
+                    loadBooks();
+                    loadNoteCount();
                     loadNotes();
                 } else {
                     const err = await res.json();
@@ -532,8 +602,11 @@
         async function deleteNote(id) {
             try {
                 const res = await fetch(`${API_BASE}/notes/${id}`, { method: "DELETE" });
+
                 if (res.ok) {
                     showToast("Note deleted");
+                    loadBooks();
+                    loadNoteCount();
                     loadNotes();
                 } else {
                     showToast("Delete failed", true);
@@ -543,30 +616,65 @@
             }
         }
 
+        async function loadBooks() {
+            const container = document.getElementById("bookLibrary");
+
+            try {
+                const res = await fetch(`${API_BASE}/books`);
+                const books = await res.json();
+
+                if (books.length === 0) {
+                    container.textContent = "No books yet — save a note to start your library.";
+                    return;
+                }
+
+                container.innerHTML = "";
+                for (const item of books) {
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = "book-chip";
+                    btn.dir = "auto";
+                    btn.innerHTML = `${escapeHtml(item.book)}<span class="count">${item.note_count}</span>`;
+                    btn.addEventListener("click", () => {
+                        document.getElementById("bookFilter").value = item.book;
+                        loadNotes();
+                    });
+                    container.appendChild(btn);
+                }
+            } catch {
+                container.textContent = "Could not load library.";
+            }
+        }
+
         async function loadNotes() {
             const container = document.getElementById("notesList");
             const badge = document.getElementById("noteCount");
-
+            const bookFilter = document.getElementById("bookFilter").value.trim();
+        
+            let url = `${API_BASE}/notes`;
+        
+            if (bookFilter) {
+                url += `?book=${encodeURIComponent(bookFilter)}`;
+            }
+        
             try {
-                const res = await fetch(`${API_BASE}/notes`);
+                const res = await fetch(url);
                 const notes = await res.json();
-
-                badge.textContent = notes.length;
-
+                
                 if (notes.length === 0) {
                     container.innerHTML = `
                         <div class="empty-state">
                             <div class="empty-icon">B</div>
-                            No notes yet.<br>Start reading and save your first thought.
+                            No notes found.
                         </div>`;
                     return;
                 }
-
+        
                 container.innerHTML = notes.map(note => `
                     <div class="note-item">
-                        <div class="note-book">${escapeHtml(note.book)}</div>
+                        <div class="note-book" dir="auto">${escapeHtml(note.book)}</div>
                         <div class="note-chapter">Chapter ${note.chapter}</div>
-                        <div class="note-text">${escapeHtml(note.note)}</div>
+                        <div class="note-text" dir="auto">${escapeHtml(note.note)}</div>
                         <div class="note-footer">
                             <span class="note-date">${formatDate(note.created_at)}</span>
                             <button class="btn-delete" onclick="deleteNote(${note.id})">delete</button>
@@ -579,6 +687,13 @@
             }
         }
 
+        function clearForm() {
+            document.getElementById("bookName").value = "";
+            document.getElementById("chapter").value = "";
+            document.getElementById("noteText").value = "";
+            updateCharCount();
+        }
+
         function escapeHtml(text) {
             const div = document.createElement("div");
             div.textContent = text;
@@ -587,26 +702,40 @@
 
         function formatDate(dateStr) {
             const d = new Date(dateStr + "Z");
-            return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
-                 + " " + d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+
+            return d.toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+            }) + " " + d.toLocaleTimeString("en-GB", {
+                hour: "2-digit",
+                minute: "2-digit",
+            });
         }
 
         function updateCharCount() {
             const textarea = document.getElementById("noteText");
             const counter = document.getElementById("charCount");
             const len = textarea.value.length;
+
             counter.textContent = `${len}/150`;
             counter.className = "char-count" + (len > 140 ? " over" : len > 120 ? " warn" : "");
         }
 
         document.getElementById("noteText").addEventListener("input", updateCharCount);
+        document.getElementById("bookFilter").addEventListener("input", loadNotes);
 
         document.addEventListener("keydown", (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === "Enter") saveNote();
+            if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+                saveNote();
+            }
         });
 
         checkHealth();
+        loadBooks();
+        loadNoteCount();
         loadNotes();
+
     </script>
 </body>
 </html>

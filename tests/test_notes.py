@@ -1,4 +1,6 @@
 from app.services.note_store import (
+    count_notes,
+    get_books,
     init_db,
     delete_note,
     save_note,
@@ -62,3 +64,44 @@ def test_save_note_returns_positive_id(tmp_path, monkeypatch):
     note_id = save_note("The Muslim Jesus", 3, "First test note")
 
     assert note_id > 0
+
+def test_count_notes_returns_correct_number(tmp_path, monkeypatch):
+    db_path = tmp_path / "test.db"
+    monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
+    
+    
+    init_db()
+    
+    save_note("Book A", 1, "note 1")
+    save_note("Book B", 2, "note 2")
+    
+    count = count_notes()
+    
+    assert count == 2
+    
+def test_count_notes_returns_zero_when_empty(tmp_path, monkeypatch):
+    db_path = tmp_path / "test.db"
+    monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
+    
+    
+    init_db()   
+    count = count_notes()
+    
+    assert count == 0
+
+
+def test_get_books_returns_unique_books_with_counts(tmp_path, monkeypatch):
+    db_path = tmp_path / "test.db"
+    monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
+
+    init_db()
+    save_note("Book A", 1, "note 1")
+    save_note("Book A", 2, "note 2")
+    save_note("Book B", 1, "note 3")
+
+    books = get_books()
+
+    assert len(books) == 2
+    by_name = {b["book"]: b["note_count"] for b in books}
+    assert by_name["Book A"] == 2
+    assert by_name["Book B"] == 1

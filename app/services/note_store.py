@@ -38,6 +38,7 @@ def delete_note(note_id: int):
 
 def get_all_notes():
     connection = sqlite3.connect(DB_PATH)
+    
     rows = connection.execute("SELECT * FROM notes").fetchall()
     connection.close()
     list_of_rows = []
@@ -51,3 +52,78 @@ def get_all_notes():
         }
         list_of_rows.append(new_note)
     return list_of_rows
+
+def get_notes_by_book_name(book_name: str):
+    try:
+        with sqlite3.connect(DB_PATH) as connection:
+            rows = connection.execute(
+                "SELECT * FROM notes WHERE book = ?",
+                                     (book_name,)
+                                     ).fetchall()
+    except sqlite3.Error as error:
+        print(f"Database error: {error}")
+        return []
+    
+    notes = []
+
+    for row in rows:
+        notes.append({
+            "id": row[0],
+            "book": row[1],
+            "chapter": row[2],
+            "note": row[3],
+            "created_at": row[4],
+        })
+
+    return notes
+
+
+def get_note_by_id(note_id: int):
+    try:
+        with sqlite3.connect(DB_PATH) as connection:
+            row = connection.execute(
+                "SELECT * FROM notes WHERE id = ?",
+                (note_id,)
+            ).fetchone()
+
+    except sqlite3.Error as error:
+        print(f"Database error: {error}")
+        return None
+
+    if row is None:
+        return None
+
+    new_note = {
+        "id": row[0],
+        "book": row[1],
+        "chapter": row[2],
+        "note": row[3],
+        "created_at": row[4],
+    }
+
+    return new_note
+
+def count_notes() -> int | None:
+    try:
+        with sqlite3.connect(DB_PATH) as connection:
+            number_of_notes = connection.execute("SELECT COUNT(*) FROM notes").fetchone()
+            
+    except sqlite3.Error as error:
+        print(f"Database error: {error}")
+        return None
+    
+    return number_of_notes[0]
+
+
+def get_books():
+    connection = sqlite3.connect(DB_PATH)
+    rows = connection.execute(
+        "SELECT book, COUNT(*) FROM notes GROUP BY book"
+    ).fetchall()
+    connection.close()
+
+    list_of_books = []
+    for row in rows:
+        list_of_books.append({"book": row[0], "note_count": row[1]})
+
+    return list_of_books
