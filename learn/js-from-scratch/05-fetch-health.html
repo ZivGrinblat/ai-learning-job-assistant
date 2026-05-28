@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>05 — fetch /health</title>
+    <style>
+        body { font-family: system-ui; max-width: 520px; margin: 2rem auto; }
+        button { padding: 0.5rem 1rem; cursor: pointer; }
+        pre { background: #f4f4f4; padding: 1rem; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Step 05: fetch & await</h1>
+    <p>Start API first: <code>uvicorn app.main:app --reload</code></p>
+    <button type="button" id="pingBtn">Ping /health</button>
+    <pre id="output">Click the button.</pre>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:8000";
+
+        /*
+        GOAL: On click, GET /health and print the JSON in #output.
+
+        Inside async function pingApi:
+          1. const output = document.getElementById("output");
+          2. const res = await fetch(`${API_BASE}/health`);
+          3. const data = await res.json();
+          4. output.textContent = JSON.stringify(data);
+
+        Why async? fetch returns a Promise; await pauses until the network answers.
+
+        Done when:
+          - DevTools → Network: GET /health → 200
+          - #output shows {"status":"ok"} (or similar)
+        */
+
+        async function pingApi() {
+            // TODO: steps 1–4 above (no try/catch yet — that's step 06)
+        }
+
+        // TODO: document.getElementById("pingBtn").addEventListener(...)
+
+    </script>
+</body>
+</html>

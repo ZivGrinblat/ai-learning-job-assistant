@@ -71,17 +71,26 @@ app/
     text_analyzer.py           # Text logic — no HTTP, no schemas, just functions
     audit_logger.py            # Writes API request logs to file
     note_store.py              # Talks to the SQLite database
+    booksearch.py              # Open Library — similar books lookup
 tests/
   test_text_analyzer.py        # Tests for text analysis functions
   test_cli.py                  # Tests for CLI
   test_api.py                  # Tests for API endpoints
   test_audit_logger.py         # Tests for audit logging
+  test_notes.py                # Tests for note_store service
 frontend/
-  index.html                   # Browser UI
+  index.html                   # App shell (HTML)
+  css/styles.css               # Styles
+  js/app.js                    # JavaScript — fetch, render, events
+  mockups/                     # UI mockups (preview only)
+learn/
+  js-from-scratch/             # Standalone JS exercises
 data/
   notes.db                     # SQLite database (gitignored — not in repo)
 logs/
   api_requests.log             # Audit log (gitignored)
+README.md                      # Start here — quick start + layout
+LEARNING_DIARY.md              # Your mistakes log
 ```
 
 **Key rule:** Services don't know about HTTP. Schemas don't know about the database. Routes connect them. This separation is what makes the code testable and changeable.

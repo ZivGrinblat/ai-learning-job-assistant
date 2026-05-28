@@ -25,3 +25,9 @@ class NoteCountResponse(BaseModel):
 class BookSummary(BaseModel):
     book: str
     note_count: int
+
+   
+class SimilarBook(BaseModel):
+    title: str
+    author: str
+

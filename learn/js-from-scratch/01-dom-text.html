@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>01 — DOM text</title>
+    <style>
+        body { font-family: system-ui; max-width: 480px; margin: 2rem auto; }
+    </style>
+</head>
+<body>
+    <h1>Step 01: Change text on the page</h1>
+    <p id="message">Waiting for your script…</p>
+
+    <script>
+
+        const element = document.getElementById("message");
+        element.textContent = "Hello from JS";
+
+
+    </script>
+</body>
+</html>

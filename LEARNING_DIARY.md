@@ -15,6 +15,8 @@ A running log of real bugs and confusions. Not shame — patterns to recognize f
 | 3 | Thought `checkHealth()` must finish before `loadNotes()` | Without `await`, both start immediately (fire-and-forget). | Order only matters if you **await** each call. |
 | 4 | Thought `res.json()` waits on `res.ok` | Second `await` needs the **response object** from the first `await`, not the status check. | `fetch` → `res` → `res.json()`. |
 | 5 | `# FILTER FLOW` comments in `<script>` | `#` is Python. In JS use `//`. | Broke the whole script block. |
+| 6 | Thought `trim()` handles spaces/chars inside the string for URLs | `trim()` only removes **leading/trailing** whitespace. `"The Lord of the Rings"` stays unchanged in the middle. | Use `trim()` for clean input; use `encodeURIComponent` only when building URLs. |
+| 7 | Thought `encodeURIComponent` “cleans” strings passed between functions | JS functions pass plain strings — no URL encoding needed internally. | Encode **only** when the value goes into a URL (query string). |
 
 **Example (async chain):**
 ```javascript
@@ -28,6 +30,19 @@ addEventListener("input", loadNotes);   // ✓ pass function
 addEventListener("input", loadNotes()); // ✗ calls now, passes undefined
 ```
 
+**Example (`trim` vs `encodeURIComponent`):**
+```javascript
+const trimmed = bookTitle.trim();           // "  Sapiens  " → "Sapiens"
+
+loadSimilarBooks(trimmed);                  // ✓ plain string between functions
+
+fetch(`${API_BASE}/books/similar?book=${encodeURIComponent(trimmed)}`);
+// ✓ encode only here — URL can't carry raw spaces/special chars safely
+// "The Lord of the Rings" → "The%20Lord%20of%20the%20Rings"
+```
+
+**Rule:** `encodeURIComponent` is for URLs, not for cleaning strings.
+
 ---
 
 ### Frontend / UX logic
@@ -36,6 +51,7 @@ addEventListener("input", loadNotes()); // ✗ calls now, passes undefined
 |---|---------|----------------|------------|
 | 6 | Built filter URL in `loadNotes` but no listener on `#bookFilter` | Code existed; nothing triggered it on typing. | `bookFilter.addEventListener("input", loadNotes)`. |
 | 7 | `loadNoteCount()` and `loadNotes()` both set `#noteCount` | Two functions, one badge — last write wins. | Decide: **total in DB** (count endpoint) vs **shown after filter** (`notes.length`). Don’t mix. |
+| 8 | `selectBook` vs `loadSimilarBooks` — same job? | `selectBook` orchestrates: set filter → notes → similar. `loadSimilarBooks` only fetches/renders Open Library results for one title. | One coordinator, one specialist. Don’t merge unless you have a reason. |
 
 ---
 

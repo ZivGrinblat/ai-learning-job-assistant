@@ -1,10 +1,24 @@
 from fastapi import APIRouter, HTTPException, Request
 
-from app.schemas.notes import BookSummary, NoteItem, NoteRequest, NoteResponse
-from app.schemas.text_analysis import TextAnalysisRequest, TextAnalysisResponse, TextCleaningRequest, TextCleaningResponse
+from app.schemas.notes import BookSummary, NoteItem, NoteRequest, NoteResponse, SimilarBook
+from app.schemas.text_analysis import (
+    TextAnalysisRequest,
+    TextAnalysisResponse,
+    TextCleaningRequest,
+    TextCleaningResponse,
+)
 from app.services.audit_logger import write_api_log
+from app.services.booksearch import find_similar_books
+from app.services.note_store import (
+    count_notes,
+    delete_note,
+    get_all_notes,
+    get_books,
+    get_notes_by_book_name,
+    save_note,
+)
 from app.services.text_analyzer import analyze_text, clean_text
-from app.services.note_store import get_books, count_notes, get_notes_by_book_name, delete_note, get_all_notes, save_note
+
 router = APIRouter()
 
 
@@ -79,3 +93,8 @@ def get_count_notes():
 @router.get("/books", response_model=list[BookSummary])
 def get_books_endpoint():
     return get_books()
+
+
+@router.get("/books/similar", response_model=list[SimilarBook])
+def get_similar_books_endpoint(book: str):
+    return find_similar_books(book)

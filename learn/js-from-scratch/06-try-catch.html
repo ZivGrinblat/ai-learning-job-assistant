@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>06 — try / catch & res.ok</title>
+    <style>
+        body { font-family: system-ui; max-width: 520px; margin: 2rem auto; }
+        button { padding: 0.5rem 1rem; cursor: pointer; }
+        pre { background: #f4f4f4; padding: 1rem; border-radius: 8px; }
+        .ok { color: #0d6b0d; }
+        .fail { color: #b00020; }
+    </style>
+</head>
+<body>
+    <h1>Step 06: Errors & bad status</h1>
+    <p>API: <code>uvicorn app.main:app --reload</code> — then try with API <strong>stopped</strong> too.</p>
+    <button type="button" id="pingBtn">Ping /health</button>
+    <pre id="output">Click the button.</pre>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:8000";
+
+        /*
+        GOAL: Same as step 05, but:
+          - try { ... } catch (err) { show "Error: " + err.message; output.className = "fail"; }
+          - if res.ok → success styling + JSON; else → "HTTP " + res.status, className fail
+
+        res.ok is true for status 200–299 (your /health is 200).
+
+        Done when:
+          - API running → green-ish (.ok), JSON on screen
+          - API stopped → red (.fail), error message (not a blank page)
+        */
+
+        async function pingApi() {
+            const output = document.getElementById("output");
+            // TODO: try/catch, fetch, check res.ok, update textContent + className
+        }
+
+        // TODO: addEventListener on #pingBtn
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>02 — Click</title>
+    <style>
+        body { font-family: system-ui; max-width: 480px; margin: 2rem auto; }
+        button { padding: 0.5rem 1rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Step 02: Button click</h1>
+    <button type="button" id="btn">Click me</button>
+    <p id="message">Not clicked yet.</p>
+
+    <script>
+        function handleClick() {
+            const message = document.getElementById("message");
+            message.textContent = "Clicked!";
+        
+            }
+        const btn = document.getElementById("btn");
+        btn.addEventListener("click", handleClick);
+        /*
+        GOAL: Each click updates #message to "Clicked!" (same text every time is fine).
+
+        Pattern:
+          1. function handleClick() { ... update #message ... }
+          2. document.getElementById("btn").addEventListener("click", handleClick);
+
+        Trap: addEventListener("click", handleClick)   ← correct (run later)
+              addEventListener("click", handleClick()) ← wrong (runs immediately on load)
+
+        Done when: text stays "Not clicked yet" on load; after each click it says "Clicked!"
+        */
+
+        // TODO: write handleClick
+
+        // TODO: wire the button (use handleClick, not handleClick())
+
+    </script>
+</body>
+</html>
