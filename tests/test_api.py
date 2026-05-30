@@ -203,6 +203,36 @@ def test_get_notes_filters_by_book(tmp_path, monkeypatch):
     assert data[0]["note"] == "bla bla bla"
 
 
+def test_count_for_one_book(tmp_path, monkeypatch):
+    db_path = tmp_path / "test.db"
+    monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
+    
+    init_db()
+    
+    client.post("/notes", json={"book_name": "Book A", 
+                                "chapter_number": 1, 
+                                "note_text": "bla bla bla"
+                                }) 
+     
+    client.post("/notes", json={"book_name": "Book A", 
+                                "chapter_number": 2, 
+                                "note_text": "bla bla bla"
+                                })
+    
+    client.post("/notes", json={"book_name": "Book B", 
+                                "chapter_number": 2, 
+                                "note_text": "bla bla bla"
+                                })
+    
+    response = client.get("/notes/book-count?book=Book A")
+    
+    data = response.json()
+    
+    assert response.status_code == 200
+    assert data["count"] == 2
+    assert data["book"] == "Book A"
+
+
 def test_get_books_returns_library_summary(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
     monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
@@ -230,3 +260,30 @@ def test_get_books_returns_library_summary(tmp_path, monkeypatch):
     by_name = {item["book"]: item["note_count"] for item in data}
     assert by_name["Book A"] == 2
     assert by_name["Book B"] == 1
+    
+    
+def test_post_gc_content():
+    
+    response = client.post("/bio/gc-content", json={"dna_string": "ATGC"})
+    
+    data = response.json()
+    
+    assert response.status_code == 200
+    assert data['length'] == 4
+    assert data['gc_count'] == 2
+    assert data['gc_percent'] == 50.0
+    
+def test_post_gc_reverse_complement():
+    
+    response = client.post("/bio/reverse-complement", json={"dna_string": "ATGC"})
+    
+    data = response.json()
+    
+    assert response.status_code == 200
+    assert data["reverse_complement"] == "gcat"
+    assert data['dna_string'] == "atgc"
+    
+    
+    
+    
+    

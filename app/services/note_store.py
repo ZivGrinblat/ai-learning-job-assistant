@@ -1,6 +1,10 @@
 import sqlite3
 import os
 
+from pydantic_core.core_schema import none_schema
+
+from app.schemas import notes
+
 DB_PATH = "data/notes.db"
 
 CREATE_TABLE = """CREATE TABLE IF NOT EXISTS notes (
@@ -113,6 +117,16 @@ def count_notes() -> int | None:
         return None
     
     return number_of_notes[0]
+
+
+def count_notes_for_one_book(book_name: str) -> int | None:
+    try:
+        with sqlite3.connect(DB_PATH) as connection:
+            notes_count = connection.execute("SELECT COUNT(*) FROM notes WHERE book = ?", (book_name, )).fetchone()
+    except sqlite3.Error as error:
+        print(f"Database error: {error}")
+        return None
+    return notes_count[0]
 
 
 def get_books():

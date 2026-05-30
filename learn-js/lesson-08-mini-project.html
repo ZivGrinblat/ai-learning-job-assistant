@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lesson 08 — Mini project</title>
+    <style>
+        body { font-family: system-ui; max-width: 560px; margin: 2rem auto; padding: 0 1rem; }
+        button { padding: 0.5rem 1rem; cursor: pointer; }
+        .library { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+        .chip {
+            padding: 0.4rem 0.7rem; border: 1px solid #333; border-radius: 8px;
+            background: #f5f5f5; cursor: pointer; border: none; font-size: 0.85rem;
+        }
+        pre { background: #f4f4f4; padding: 1rem; border-radius: 8px; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+    <h1>Lesson 08: Mini library (combine lessons)</h1>
+    <p>API running. Build this <strong>yourself</strong> — skeleton only.</p>
+    <button type="button" id="reloadBtn">Load library</button>
+    <div class="library" id="library">—</div>
+    <pre id="status">Not loaded yet.</pre>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:8000";
+
+        /*
+        BUILD (no copy from index.html):
+
+        reloadBtn click →
+          1. fetch GET /books
+          2. parse JSON
+          3. clear #library
+          4. for each book, create a <button class="chip">
+             text: "BOOK (count)"
+          5. on chip click → set #status to "Selected: BOOK"
+          6. on error → #status shows error message
+
+        PASS CRITERIA:
+          - Chips match your real DB
+          - Clicking chip updates status
+          - Console has no errors
+        */
+
+        // TODO: async function loadLibrary() { ... }
+
+        // TODO: wire reloadBtn
+    </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lesson 03 — DOM read</title>
+    <style>
+        body { font-family: system-ui; max-width: 520px; margin: 2rem auto; padding: 0 1rem; }
+        input { width: 100%; padding: 0.5rem; font-size: 1rem; }
+        pre { background: #f4f4f4; padding: 1rem; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Lesson 03: Read from the DOM</h1>
+    <label for="bookInput">Book name</label>
+    <input type="text" id="bookInput" placeholder="The Muslim Jesus" dir="auto">
+    <p><small>Type above — no button yet.</small></p>
+    <pre id="output">Waiting for input...</pre>
+
+    <script>
+        /*
+        GOAL: Whenever the user types in #bookInput, show:
+          "You typed: ..."  (trimmed, no extra spaces)
+
+        USE:
+          document.getElementById("bookInput")
+          .value
+          .trim()
+          "input" event (fires on every keystroke)
+
+        NO fetch in this lesson — DOM only.
+        */
+
+        const input = document.getElementById("bookInput");
+        const output = document.getElementById("output");
+
+        // TODO: addEventListener("input", () => { ... })
+    </script>
+</body>
+</html>

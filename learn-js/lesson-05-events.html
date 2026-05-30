@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lesson 05 — Events</title>
+    <style>
+        body { font-family: system-ui; max-width: 520px; margin: 2rem auto; padding: 0 1rem; }
+        button { padding: 0.5rem 1rem; cursor: pointer; margin: 0.25rem; }
+        pre { background: #f4f4f4; padding: 1rem; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Lesson 05: Events & callbacks</h1>
+    <button type="button" id="saveBtn">Save (fake)</button>
+    <button type="button" id="badBtn">Broken example</button>
+    <pre id="log"></pre>
+
+    <script>
+        const log = document.getElementById("log");
+
+        function appendLog(line) {
+            log.textContent += line + "\n";
+        }
+
+        function fakeSave() {
+            appendLog("fakeSave ran");
+        }
+
+        /*
+        GOAL 1: #saveBtn should call fakeSave when clicked.
+          Correct:  addEventListener("click", fakeSave)
+          WRONG:    addEventListener("click", fakeSave())  ← why?
+
+        GOAL 2: On #badBtn, attach the WRONG way on purpose,
+          click it, observe the log. Then fix it.
+
+        Write one sentence in the log explaining why () matters.
+        */
+
+        // TODO: wire saveBtn correctly
+
+        // TODO: wire badBtn wrong first, then fix
+    </script>
+</body>
+</html>

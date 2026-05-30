@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lesson 07 — URLs & query params</title>
+    <style>
+        body { font-family: system-ui; max-width: 560px; margin: 2rem auto; padding: 0 1rem; }
+        input { width: 100%; padding: 0.5rem; margin: 0.5rem 0 1rem; }
+        pre { background: #f4f4f4; padding: 1rem; border-radius: 8px; word-break: break-all; }
+        a { display: block; margin-top: 0.5rem; }
+    </style>
+</head>
+<body>
+    <h1>Lesson 07: Build URLs (filter & shop links)</h1>
+    <label for="bookInput">Book title</label>
+    <input type="text" id="bookInput" value="The Muslim Jesus" dir="auto">
+
+    <h3>Your API filter URL</h3>
+    <pre id="apiUrl">—</pre>
+
+    <h3>Shop search (Phase 2)</h3>
+    <a id="amazon" href="#" target="_blank" rel="noopener">Amazon</a>
+    <a id="blackwells" href="#" target="_blank" rel="noopener">Blackwells</a>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:8000";
+
+        /*
+        GOAL: On every "input" on #bookInput, update:
+
+        1. apiUrl text:
+           - empty → `${API_BASE}/notes`
+           - with text → `${API_BASE}/notes?book=...` use encodeURIComponent
+
+        2. amazon.href → https://www.amazon.com/s?k=...
+        3. blackwells.href → https://blackwells.co.uk/search/results?searchTerm=...
+
+        TRY: type a book with spaces and Hebrew — encoded URL should look safe.
+
+        NO fetch required — string building only.
+        */
+
+        const bookInput = document.getElementById("bookInput");
+
+        function updateLinks() {
+            // TODO: read trimmed value
+            // TODO: build three URLs
+            // TODO: assign to apiUrl, amazon, blackwells
+        }
+
+        // TODO: input listener + call updateLinks once on load
+    </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
+from email.policy import HTTP
 from fastapi import APIRouter, HTTPException, Request
 
-from app.schemas.notes import BookSummary, NoteItem, NoteRequest, NoteResponse, SimilarBook
+from app.schemas.notes import BookSummary, CountForOneBook, NoteItem, NoteRequest, NoteResponse, SimilarBook
 from app.schemas.text_analysis import (
     TextAnalysisRequest,
     TextAnalysisResponse,
@@ -16,8 +17,12 @@ from app.services.note_store import (
     get_books,
     get_notes_by_book_name,
     save_note,
+    count_notes_for_one_book,
 )
 from app.services.text_analyzer import analyze_text, clean_text
+
+from app.services.bioinformatics import calculate_gc_content, return_reverse_complement_dna_string
+from app.schemas.bio import DnaResponse, DnaRequest, ComplementDnaResponse
 
 router = APIRouter()
 
@@ -76,6 +81,10 @@ def get_notes_endpoint(book: str | None = None):
         return get_all_notes()
     return get_notes_by_book_name(book)
 
+@router.get("/notes/book-count", response_model=CountForOneBook)
+def get_count_for_one_book(book: str):
+    note_counter = count_notes_for_one_book(book)
+    return {"book": book, "count": note_counter}
 
 @router.delete("/notes/{note_id}")
 def delete_note_endpoint(note_id: int):
@@ -98,3 +107,18 @@ def get_books_endpoint():
 @router.get("/books/similar", response_model=list[SimilarBook])
 def get_similar_books_endpoint(book: str):
     return find_similar_books(book)
+
+@router.post("/bio/gc-content", response_model=DnaResponse)
+def bio_endpoint(payload: DnaRequest) -> DnaResponse:
+    try:
+        return calculate_gc_content(payload.dna_string)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+
+@router.post("/bio/reverse-complement", response_model=ComplementDnaResponse)
+def bio_reverse_dna_endpoint(payload: DnaRequest) -> ComplementDnaResponse:
+    try:
+        return return_reverse_complement_dna_string(payload.dna_string)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+     

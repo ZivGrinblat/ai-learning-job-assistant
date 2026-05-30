@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lesson 01 — fetch & await</title>
+    <style>
+        body { font-family: system-ui; max-width: 520px; margin: 2rem auto; padding: 0 1rem; }
+        button { padding: 0.5rem 1rem; cursor: pointer; }
+        pre { background: #f4f4f4; padding: 1rem; border-radius: 8px; }
+        .fail { color: #b00020; }
+        .ok { color: #0d6b0d; }
+    </style>
+</head>
+<body>
+    <h1>Lesson 01: fetch & await</h1>
+    <p>API must be running: <code>uvicorn app.main:app --reload</code></p>
+    <button type="button" id="pingBtn">Ping /health</button>
+    <pre id="output">Click the button.</pre>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:8000";
+
+        /*
+        GOAL: Call GET /health and show the JSON on screen.
+
+        STEPS (you write the code inside pingApi):
+        1. await fetch(`${API_BASE}/health`)
+        2. await res.json()
+        3. Put result in #output as text (JSON.stringify is fine)
+
+        CHECK: Network tab shows 200, page shows {"status":"ok"}
+        */
+
+        async function pingApi() {
+            const output = document.getElementById("output");
+
+            // TODO: try/catch optional but recommended
+            // TODO: const res = await fetch(...)
+            // TODO: const data = await res.json()
+            // TODO: output.textContent = ...
+            // TODO: on success add class "ok" to output, on catch show error with class "fail"
+
+            output.textContent = "Replace this line with your code.";
+        }
+
+        document.getElementById("pingBtn").addEventListener("click", pingApi);
+    </script>
+</body>
+</html>

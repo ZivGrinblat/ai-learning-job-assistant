@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lesson 02 — JSON & objects</title>
+    <style>
+        body { font-family: system-ui; max-width: 520px; margin: 2rem auto; padding: 0 1rem; }
+        button { padding: 0.5rem 1rem; cursor: pointer; margin-right: 0.5rem; }
+        pre { background: #f4f4f4; padding: 1rem; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Lesson 02: JSON & object fields</h1>
+    <p>Same API running. We practice the shape your app uses.</p>
+    <button type="button" id="countBtn">GET /notes/count</button>
+    <button type="button" id="booksBtn">GET /books</button>
+    <pre id="output">Click a button.</pre>
+
+    <script>
+        const API_BASE = "http://127.0.0.1:8000";
+
+        /*
+        GOAL A (countBtn): fetch /notes/count, read data.count, display:
+          "Total notes: 7"
+
+        GOAL B (booksBtn): fetch /books, you get an ARRAY.
+          Show: "First book: NAME (N notes)"
+          Use books[0].book and books[0].note_count
+
+        HINT: Array.isArray(data) helps debug when you expect a list.
+        */
+
+        async function loadCount() {
+            const output = document.getElementById("output");
+            // TODO: fetch /notes/count, use data.count
+        }
+
+        async function loadBooks() {
+            const output = document.getElementById("output");
+            // TODO: fetch /books, use books[0].book and books[0].note_count
+            // TODO: if array empty, show "No books yet"
+        }
+
+        document.getElementById("countBtn").addEventListener("click", loadCount);
+        document.getElementById("booksBtn").addEventListener("click", loadBooks);
+    </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lesson 04 — DOM write</title>
+    <style>
+        body { font-family: system-ui; max-width: 520px; margin: 2rem auto; padding: 0 1rem; }
+        button { padding: 0.5rem 1rem; cursor: pointer; }
+        .box { border: 1px solid #ccc; border-radius: 8px; padding: 1rem; min-height: 3rem; }
+        .chip { display: inline-block; background: #e8f0fe; padding: 0.25rem 0.5rem; border-radius: 4px; margin: 0.25rem; }
+    </style>
+</head>
+<body>
+    <h1>Lesson 04: Write to the DOM</h1>
+    <button type="button" id="btnA">Show text</button>
+    <button type="button" id="btnB">Show HTML chips</button>
+    <div class="box" id="target">Empty box</div>
+
+    <script>
+        const target = document.getElementById("target");
+
+        const fakeBooks = [
+            { book: "Sapiens", note_count: 2 },
+            { book: "The Muslim Jesus", note_count: 5 },
+        ];
+
+        /*
+        GOAL A (btnA): set target.textContent to "Hello from JS"
+
+        GOAL B (btnB): build HTML string from fakeBooks:
+          <span class="chip">Sapiens (2)</span> ...
+          assign to target.innerHTML
+
+        RULE: textContent = plain text (safe).
+              innerHTML = parses HTML (only use with data YOU control here).
+        */
+
+        // TODO: btnA click handler
+
+        // TODO: btnB click handler — use template literals:
+        // `${item.book} (${item.note_count})`
+    </script>
+</body>
+</html>

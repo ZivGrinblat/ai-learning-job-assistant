@@ -22,11 +22,13 @@ class NoteItem(BaseModel):
 class NoteCountResponse(BaseModel):
     count: int
     
+class CountForOneBook(BaseModel):
+    count: int = Field(gt=0)
+    book: str = Field(min_length=1, max_length=30)
 class BookSummary(BaseModel):
     book: str
     note_count: int
 
-   
 class SimilarBook(BaseModel):
     title: str
     author: str
