@@ -1,21 +1,14 @@
 {
   "name": "Ziv Grinblat",
-  "tagline": "Security engineer expanding into agentic AI, research tooling, and biology-adjacent engineering — through shipped projects.",
-  "role": "Security Engineer at eToro",
+  "tagline": "Security engineer at eToro with a growing practice in backend development, LLM-integrated applications, and tooling for life-sciences data.",
+  "role": "Security Engineer, eToro",
   "email": "",
   "resumeUrl": "/assets/resume.pdf",
-  "nowLearning": "Agent orchestration patterns, bioinformatics APIs, and production-grade FastAPI services.",
   "github": "https://github.com/ZivGrinblat",
   "linkedin": "https://www.linkedin.com/in/ziv-grinblat-69429a257/",
-  "whatsapp": "https://wa.me/972548053779",
   "lookingFor": {
-    "title": "What I'm looking for",
-    "targets": [
-      "Agentic Engineer",
-      "Researcher",
-      "Biology & Healthcare"
-    ],
-    "body": "I am looking for roles where engineering meets research — building agentic systems, research workflows, or tools in biology and healthcare. I bring a security background, hands-on fullstack delivery, and growing experience with LLM-powered features and bioinformatics. I want teams that ship carefully, think clearly about data, and care about real-world impact in science and health."
+    "title": "Focus",
+    "body": "Engineering roles at the intersection of software and research—internal platforms, data services, or applied AI in biology and healthcare. Background in security within regulated environments; current independent work centers on API design, structured data, and production deployment."
   },
   "experience": [
     {
@@ -23,48 +16,44 @@
       "company": "eToro",
       "period": "Present",
       "highlights": [
-        "Security engineering in a large fintech environment",
-        "Collaboration with product and engineering on risk and delivery",
-        "Building toward backend and agentic tooling in personal projects"
+        "Security engineering across a global fintech platform under regulatory requirements",
+        "Partnership with product and engineering teams on risk assessment and secure delivery",
+        "Ongoing development of backend services and research-oriented tooling outside of core role"
       ]
     }
   ],
   "githubHighlights": [
     {
       "name": "ai-learning-job-assistant",
-      "description": "FastAPI portfolio app — notes, LLM connections, DNA tools, deployed on Render.",
+      "description": "Portfolio platform with REST API, persistent storage, LLM integration, and bioinformatics endpoints.",
       "url": "https://github.com/ZivGrinblat/ai-learning-job-assistant"
     }
   ],
   "skills": {
-    "label": "Current focus",
-    "hint": "Current stack and areas of active development.",
     "items": [
-      "Python & FastAPI",
+      "Python",
+      "FastAPI",
       "REST APIs",
-      "SQLite & data modeling",
-      "JavaScript & fetch",
-      "Docker & deployment",
-      "LLM & agentic systems",
-      "Bioinformatics basics",
+      "SQLite",
+      "JavaScript",
+      "Docker",
+      "LLM integration",
+      "Bioinformatics",
       "Security engineering",
-      "Git & CI habits",
-      "Testing with pytest",
-      "HTML/CSS UI"
+      "pytest",
+      "Git"
     ]
   },
   "projects": [
     {
       "title": "Book Notes",
-      "description": "FastAPI + SQLite app for short reading notes, with AI-powered connections between ideas.",
-      "href": "/notes.html",
-      "badge": "Fullstack"
+      "description": "Structured reading notes with search and AI-assisted cross-referencing.",
+      "href": "/notes.html"
     },
     {
       "title": "Genome Analyzer",
-      "description": "DNA tools — GC content, complement, nucleotide counts — wired to the same API.",
-      "href": "/dna.html",
-      "badge": "Bio + API"
+      "description": "Sequence analysis—GC content, complement, nucleotide composition.",
+      "href": "/dna.html"
     }
   ]
 }
