@@ -4,6 +4,10 @@ services:
     runtime: docker
     plan: free
     healthCheckPath: /health
+    disk:
+      name: notes-data
+      mountPath: /app/data
+      sizeGB: 1
     envVars:
       - key: PYTHONUNBUFFERED
         value: "1"
