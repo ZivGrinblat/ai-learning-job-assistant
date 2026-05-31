@@ -1,4 +1,3 @@
-from email.policy import HTTP
 from fastapi import APIRouter, HTTPException, Request
 
 from app.schemas.notes import BookSummary, CountForOneBook, NoteItem, NoteRequest, NoteResponse, SimilarBook
@@ -21,8 +20,8 @@ from app.services.note_store import (
 )
 from app.services.text_analyzer import analyze_text, clean_text
 
-from app.services.bioinformatics import calculate_gc_content, return_reverse_complement_dna_string
-from app.schemas.bio import DnaResponse, DnaRequest, ComplementDnaResponse
+from app.services.bioinformatics import calculate_gc_content, return_reverse_complement_dna_string, return_neucleotids_counts
+from app.schemas.bio import DnaResponse, DnaRequest, ComplementDnaResponse, NeucleotidsCounts
 
 router = APIRouter()
 
@@ -121,4 +120,11 @@ def bio_reverse_dna_endpoint(payload: DnaRequest) -> ComplementDnaResponse:
         return return_reverse_complement_dna_string(payload.dna_string)
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
-     
+
+@router.post("/bio/nucleotide-counts", response_model= NeucleotidsCounts)
+def bio_neucleotide_counts_endpoint(payload: DnaRequest) -> NeucleotidsCounts:
+    try:
+        return return_neucleotids_counts(payload.dna_string)
+    except ValueError as error:
+        raise HTTPException(status_code = 422, detail=str(error)) from error
+    

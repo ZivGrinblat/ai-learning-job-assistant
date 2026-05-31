@@ -12,4 +12,10 @@ class DnaResponse(BaseModel):
 class ComplementDnaResponse(BaseModel):
     dna_string: str
     reverse_complement: str
-    
+
+class NeucleotidsCounts(BaseModel):
+    dna_string: str
+    a: int
+    t: int
+    c: int
+    g: int

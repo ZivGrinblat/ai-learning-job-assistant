@@ -283,6 +283,16 @@ def test_post_gc_reverse_complement():
     assert data["reverse_complement"] == "gcat"
     assert data['dna_string'] == "atgc"
     
+def test_return_neucleotids_counts():
+    response = client.post("/bio/nucleotide-counts", json={"dna_string": "ATGC"})
+    
+    data = response.json()
+    
+    assert response.status_code == 200
+    assert data["dna_string"] == "atgc"
+    assert data["a"] == 1 and data["c"] == 1 and data["g"] == 1 and data["t"] == 1
+    
+    
     
     
     

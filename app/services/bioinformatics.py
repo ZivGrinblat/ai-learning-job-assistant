@@ -48,7 +48,30 @@ def return_reverse_complement_dna_string(dna_string: str):
     return {"dna_string": lower_case_dna_string, 
             "reverse_complement": reversed_complement_dna_string}
     
+def return_neucleotids_counts(dna_string: str):
+    validate_dna_string(dna_string)
     
+    lower_case_dna_string = dna_string.lower()
+    
+    a_count = 0
+    c_count = 0
+    g_count = 0
+    t_count = 0
+    
+    for letter in lower_case_dna_string:
+        if letter == 'a':
+            a_count += 1
+        elif letter == 'c':
+            c_count += 1
+        elif letter == 'g':
+            g_count += 1
+        else:
+            t_count += 1
+    return {"dna_string": lower_case_dna_string, 
+            "a": a_count, 
+            "c": c_count,
+            "t": t_count,
+            "g": g_count}  
 
     
     

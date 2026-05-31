@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNA Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dna.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-inner">
+            <div class="logo">
+                <div class="logo-icon dna-logo">D</div>
+                <h1>DNA Lab</h1>
+            </div>
+            <div class="status-badge">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </div>
+    </div>
+
+    <main class="dna-page">
+        <div class="card">
+            <div class="card-header">
+                <h2>Analyze sequence</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="dnaInput">DNA sequence</label>
+                    <textarea
+                        id="dnaInput"
+                        class="dna-input"
+                        placeholder="Enter A, T, G, C only — e.g. ATGC"
+                        maxlength="1000"
+                        spellcheck="false"
+                    ></textarea>
+                </div>
+                <button class="btn-primary" id="dnaAnalyzeBtn" onclick="analyzeDna()">Analyze</button>
+
+                <div class="dna-results" id="dnaResults" hidden>
+                    <div class="dna-result-block">
+                        <p class="result-label">Reverse complement</p>
+                        <p class="dna-sequence" id="reverseComplement"></p>
+                    </div>
+                    <div class="dna-result-block">
+                        <p class="result-label">Nucleotide counts</p>
+                        <ul class="nucleotide-count-list" id="nucleotideCounts"></ul>
+                    </div>
+                </div>
+
+                <p class="dna-error" id="dnaError" hidden></p>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="js/dna.js"></script>
+</body>
+</html>

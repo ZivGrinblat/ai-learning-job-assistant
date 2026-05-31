@@ -1,0 +1,100 @@
+.dna-logo {
+    background: linear-gradient(135deg, #3fb950, #58a6ff);
+}
+
+.dna-page {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.dna-input {
+    font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    min-height: 4.5rem;
+    resize: vertical;
+}
+
+.dna-results {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #21262d;
+}
+
+.dna-results[hidden],
+.dna-error[hidden] {
+    display: none;
+}
+
+.dna-result-block + .dna-result-block {
+    margin-top: 1.25rem;
+}
+
+.result-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #484f58;
+    margin-bottom: 0.5rem;
+}
+
+.dna-sequence {
+    font-family: ui-monospace, "Cascadia Code", "SF Mono", Menlo, monospace;
+    font-size: 0.9rem;
+    color: #79c0ff;
+    word-break: break-all;
+    line-height: 1.6;
+    letter-spacing: 0.04em;
+}
+
+.nucleotide-count-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+}
+
+.nucleotide-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #30363d;
+    background: #161b22;
+}
+
+.nucleotide-letter {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.nucleotide-count {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #f0f6fc;
+}
+
+.nucleotide-a .nucleotide-letter { color: #3fb950; }
+.nucleotide-t .nucleotide-letter { color: #f85149; }
+.nucleotide-g .nucleotide-letter { color: #d29922; }
+.nucleotide-c .nucleotide-letter { color: #58a6ff; }
+
+.dna-error {
+    margin-top: 1rem;
+    font-size: 0.82rem;
+    color: #f85149;
+}
+
+@media (max-width: 768px) {
+    .dna-page {
+        padding: 1rem;
+    }
+
+    .nucleotide-count-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

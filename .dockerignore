@@ -1,0 +1,16 @@
+.venv/
+venv/
+.git/
+.pytest_cache/
+__pycache__/
+*.pyc
+.env
+logs/
+data/
+.cursor/
+learn-js/
+learn/
+Python_Learning/
+c++/
+to_be_deleted/
+Untitled

@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: ai-learning-job-assistant
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
