@@ -3,6 +3,8 @@ const API_BASE =
         ? "http://127.0.0.1:8000"
         : window.location.origin;
 
+const DNA_EXAMPLE = "ATGCGTACGTTAGCTAGCTAGCTAGCTAGC";
+
 async function checkHealth() {
     const dot = document.getElementById("statusDot");
     const text = document.getElementById("statusText");
@@ -28,6 +30,20 @@ function showToast(message, isError = false) {
     setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
+function updateDnaCharCount() {
+    const textarea = document.getElementById("dnaInput");
+    const counter = document.getElementById("dnaCharCount");
+    const len = textarea.value.length;
+
+    counter.textContent = `${len}/1000`;
+    counter.className = "char-count" + (len > 950 ? " over" : len > 850 ? " warn" : "");
+}
+
+function loadExampleSequence() {
+    document.getElementById("dnaInput").value = DNA_EXAMPLE;
+    updateDnaCharCount();
+}
+
 async function analyzeDna() {
     const dnaString = document.getElementById("dnaInput").value.trim();
     const results = document.getElementById("dnaResults");
@@ -49,7 +65,7 @@ async function analyzeDna() {
     const headers = { "Content-Type": "application/json" };
 
     try {
-        const [complementRes, countsRes] = await Promise.all([
+        const [complementRes, countsRes, gcRes] = await Promise.all([
             fetch(`${API_BASE}/bio/reverse-complement`, {
                 method: "POST",
                 headers,
@@ -60,10 +76,19 @@ async function analyzeDna() {
                 headers,
                 body: requestBody,
             }),
+            fetch(`${API_BASE}/bio/gc-content`, {
+                method: "POST",
+                headers,
+                body: requestBody,
+            }),
         ]);
 
-        if (!complementRes.ok || !countsRes.ok) {
-            const failedRes = complementRes.ok ? countsRes : complementRes;
+        if (!complementRes.ok || !countsRes.ok || !gcRes.ok) {
+            const failedRes = complementRes.ok
+                ? countsRes.ok
+                    ? gcRes
+                    : countsRes
+                : complementRes;
             const err = await failedRes.json();
             const detail = err.detail;
             errorEl.textContent =
@@ -76,9 +101,16 @@ async function analyzeDna() {
 
         const complementData = await complementRes.json();
         const countsData = await countsRes.json();
+        const gcData = await gcRes.json();
 
         document.getElementById("reverseComplement").textContent =
             complementData.reverse_complement;
+
+        document.getElementById("dnaLength").textContent = gcData.length;
+        document.getElementById("gcPercent").textContent =
+            `${gcData.gc_percent.toFixed(1)}%`;
+        document.getElementById("gcBarFill").style.width =
+            `${Math.min(gcData.gc_percent, 100)}%`;
 
         document.getElementById("nucleotideCounts").innerHTML = [
             { letter: "A", count: countsData.a },
@@ -100,8 +132,12 @@ async function analyzeDna() {
         showToast("Could not reach API", true);
     } finally {
         btn.disabled = false;
-        btn.textContent = "Analyze";
+        btn.textContent = "Analyze sequence";
     }
 }
 
+document.getElementById("dnaInput").addEventListener("input", updateDnaCharCount);
+document.getElementById("dnaExampleBtn").addEventListener("click", loadExampleSequence);
+
 checkHealth();
+updateDnaCharCount();

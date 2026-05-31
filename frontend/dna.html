@@ -10,39 +10,44 @@
     <link rel="stylesheet" href="css/dna.css">
 </head>
 <body>
-    <div class="header">
-        <div class="header-inner">
-            <div class="logo">
-                <div class="logo-icon dna-logo">G</div>
-                <div>
-                    <h1>Genome Analyzer</h1>
-                    <p class="logo-sub">Learning Assistant</p>
+    <div class="top-shell">
+        <div class="header">
+            <div class="header-inner">
+                <div class="logo">
+                    <div class="logo-icon dna-logo">G</div>
+                    <div>
+                        <h1>Genome Analyzer</h1>
+                        <p class="logo-sub">Learning Assistant</p>
+                    </div>
+                </div>
+                <div class="status-badge">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Connecting...</span>
                 </div>
             </div>
-            <div class="status-badge">
-                <span class="status-dot" id="statusDot"></span>
-                <span id="statusText">Connecting...</span>
-            </div>
         </div>
-    </div>
 
-    <nav class="page-tabs" aria-label="Main">
-        <div class="page-tabs-inner">
-            <a href="/" class="page-tab">
-                <span class="page-tab-icon notes-icon">B</span>
-                Book Notes
-            </a>
-            <a href="/dna.html" class="page-tab active">
-                <span class="page-tab-icon genome-icon">G</span>
-                Genome Analyzer
-            </a>
-        </div>
-    </nav>
+        <nav class="page-tabs" aria-label="Main">
+            <div class="page-tabs-inner">
+                <a href="/" class="page-tab">
+                    <span class="page-tab-icon notes-icon">B</span>
+                    Book Notes
+                </a>
+                <a href="/dna.html" class="page-tab active">
+                    <span class="page-tab-icon genome-icon">G</span>
+                    Genome Analyzer
+                </a>
+            </div>
+        </nav>
+    </div>
 
     <main class="dna-page">
         <div class="card">
             <div class="card-header">
-                <h2>Analyze sequence</h2>
+                <div>
+                    <h2>Analyze sequence</h2>
+                    <p class="card-desc">Valid bases: A, T, G, C — up to 1,000 characters</p>
+                </div>
             </div>
             <div class="card-body">
                 <div class="form-group">
@@ -54,10 +59,27 @@
                         maxlength="1000"
                         spellcheck="false"
                     ></textarea>
+                    <div class="field-footer">
+                        <button type="button" class="btn-text" id="dnaExampleBtn">Load example</button>
+                        <span class="char-count" id="dnaCharCount">0/1000</span>
+                    </div>
                 </div>
-                <button class="btn-primary" id="dnaAnalyzeBtn" onclick="analyzeDna()">Analyze</button>
+                <button class="btn-primary btn-genome" id="dnaAnalyzeBtn" onclick="analyzeDna()">Analyze sequence</button>
 
                 <div class="dna-results" id="dnaResults" hidden>
+                    <div class="dna-stats-row">
+                        <div class="dna-stat">
+                            <p class="result-label">Length</p>
+                            <p class="dna-stat-value" id="dnaLength">—</p>
+                        </div>
+                        <div class="dna-stat">
+                            <p class="result-label">GC content</p>
+                            <p class="dna-stat-value" id="gcPercent">—</p>
+                        </div>
+                    </div>
+                    <div class="gc-bar" aria-hidden="true">
+                        <div class="gc-bar-fill" id="gcBarFill"></div>
+                    </div>
                     <div class="dna-result-block">
                         <p class="result-label">Reverse complement</p>
                         <p class="dna-sequence" id="reverseComplement"></p>

@@ -9,39 +9,44 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="header">
-        <div class="header-inner">
-            <div class="logo">
-                <div class="logo-icon">B</div>
-                <div>
-                    <h1>Book Notes</h1>
-                    <p class="logo-sub">Learning Assistant</p>
+    <div class="top-shell">
+        <div class="header">
+            <div class="header-inner">
+                <div class="logo">
+                    <div class="logo-icon">B</div>
+                    <div>
+                        <h1>Book Notes</h1>
+                        <p class="logo-sub">Learning Assistant</p>
+                    </div>
+                </div>
+                <div class="status-badge">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Connecting...</span>
                 </div>
             </div>
-            <div class="status-badge">
-                <span class="status-dot" id="statusDot"></span>
-                <span id="statusText">Connecting...</span>
-            </div>
         </div>
-    </div>
 
-    <nav class="page-tabs" aria-label="Main">
-        <div class="page-tabs-inner">
-            <a href="/" class="page-tab active">
-                <span class="page-tab-icon notes-icon">B</span>
-                Book Notes
-            </a>
-            <a href="/dna.html" class="page-tab">
-                <span class="page-tab-icon genome-icon">G</span>
-                Genome Analyzer
-            </a>
-        </div>
-    </nav>
+        <nav class="page-tabs" aria-label="Main">
+            <div class="page-tabs-inner">
+                <a href="/" class="page-tab active">
+                    <span class="page-tab-icon notes-icon">B</span>
+                    Book Notes
+                </a>
+                <a href="/dna.html" class="page-tab">
+                    <span class="page-tab-icon genome-icon">G</span>
+                    Genome Analyzer
+                </a>
+            </div>
+        </nav>
+    </div>
 
     <section class="library-section">
         <div class="card">
             <div class="card-header">
-                <h2>Library</h2>
+                <div>
+                    <h2>Library</h2>
+                    <p class="card-desc">Click a book to filter notes and find similar titles</p>
+                </div>
             </div>
             <div class="card-body">
                 <div class="book-library" id="bookLibrary">Loading books...</div>

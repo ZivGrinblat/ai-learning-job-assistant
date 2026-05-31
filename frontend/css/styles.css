@@ -6,19 +6,27 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #080b14;
+            background-color: #080b14;
+            background-image:
+                radial-gradient(ellipse 70% 45% at 15% -5%, rgba(59, 130, 246, 0.14), transparent),
+                radial-gradient(ellipse 55% 35% at 95% 0%, rgba(139, 92, 246, 0.1), transparent),
+                radial-gradient(ellipse 50% 30% at 50% 100%, rgba(63, 185, 80, 0.06), transparent);
             color: #c9d1d9;
             min-height: 100vh;
         }
 
-        .header {
-            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
-            border-bottom: 1px solid #21262d;
-            padding: 1.5rem 2rem;
+        .top-shell {
             position: sticky;
             top: 0;
-            z-index: 10;
-            backdrop-filter: blur(12px);
+            z-index: 20;
+            background: rgba(8, 11, 20, 0.88);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid #21262d;
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(13, 17, 23, 0.95) 0%, rgba(22, 27, 34, 0.95) 100%);
+            padding: 1.25rem 2rem 0.75rem;
         }
 
         .header-inner {
@@ -45,8 +53,6 @@
         }
 
         .page-tabs {
-            background: #0d1117;
-            border-bottom: 1px solid #21262d;
             padding: 0 2rem 1rem;
         }
 
@@ -161,10 +167,11 @@
         }
 
         .card {
-            background: #0d1117;
+            background: rgba(13, 17, 23, 0.92);
             border: 1px solid #21262d;
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
         }
 
         .card-header {
@@ -173,6 +180,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: rgba(22, 27, 34, 0.45);
         }
 
         .card-header h2 {
@@ -182,13 +190,23 @@
             letter-spacing: -0.01em;
         }
 
+        .card-desc {
+            font-size: 0.72rem;
+            color: #6e7681;
+            margin-top: 0.2rem;
+            font-weight: 400;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
         .badge {
             font-size: 0.7rem;
-            background: #1f2937;
-            color: #8b949e;
-            padding: 0.2rem 0.5rem;
+            background: rgba(56, 139, 253, 0.15);
+            color: #79c0ff;
+            padding: 0.25rem 0.55rem;
             border-radius: 10px;
-            font-weight: 500;
+            font-weight: 600;
+            border: 1px solid rgba(56, 139, 253, 0.25);
         }
 
         .card-body {
@@ -304,6 +322,22 @@
             box-shadow: none;
         }
 
+        .btn-text {
+            background: none;
+            border: none;
+            color: #58a6ff;
+            font-size: 0.72rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0;
+            font-family: inherit;
+        }
+
+        .btn-text:hover {
+            color: #79c0ff;
+            text-decoration: underline;
+        }
+
         .shortcut-hint {
             text-align: center;
             font-size: 0.7rem;
@@ -322,8 +356,8 @@
 
         .notes-panel {
             position: sticky;
-            top: 80px;
-            max-height: calc(100vh - 100px);
+            top: 9.5rem;
+            max-height: calc(100vh - 10.5rem);
             display: flex;
             flex-direction: column;
         }
@@ -346,15 +380,19 @@
         .note-item {
             background: #161b22;
             border: 1px solid #21262d;
+            border-left: 3px solid #8b5cf6;
             border-radius: 10px;
             padding: 0.85rem 1rem;
             margin-bottom: 0.6rem;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, transform 0.15s, box-shadow 0.15s;
             position: relative;
         }
 
         .note-item:hover {
             border-color: #30363d;
+            border-left-color: #a78bfa;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
         }
 
         .note-item:last-child {
@@ -395,20 +433,24 @@
         }
 
         .btn-delete {
-            background: none;
-            border: none;
-            color: #484f58;
+            background: rgba(248, 81, 73, 0.08);
+            border: 1px solid rgba(248, 81, 73, 0.2);
+            color: #f85149;
             cursor: pointer;
-            font-size: 0.7rem;
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 0.25rem 0.55rem;
+            border-radius: 6px;
             transition: all 0.2s;
             font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
         }
 
         .btn-delete:hover {
-            color: #da3633;
-            background: rgba(218, 54, 51, 0.1);
+            color: #fff;
+            background: #da3633;
+            border-color: #da3633;
         }
 
         .empty-state {
@@ -454,7 +496,7 @@
         .library-section {
             max-width: 860px;
             margin: 0 auto;
-            padding: 1.5rem 2rem 0;
+            padding: 1.75rem 2rem 0;
         }
 
         .book-library {
@@ -466,23 +508,36 @@
         .book-chip {
             font-family: inherit;
             font-size: 0.78rem;
-            padding: 0.45rem 0.75rem;
-            border-radius: 8px;
+            padding: 0.5rem 0.85rem;
+            border-radius: 999px;
             border: 1px solid #30363d;
             background: #161b22;
             color: #c9d1d9;
             cursor: pointer;
-            transition: border-color 0.15s, background 0.15s;
+            transition: border-color 0.15s, background 0.15s, box-shadow 0.15s, transform 0.15s;
         }
 
         .book-chip:hover {
             border-color: #388bfd;
             background: #1c2128;
+            transform: translateY(-1px);
+        }
+
+        .book-chip.selected {
+            border-color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.12);
+            box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.25);
+            color: #f0f6fc;
         }
 
         .book-chip .count {
             color: #79c0ff;
-            margin-left: 0.25rem;
+            margin-left: 0.35rem;
+            font-weight: 600;
+        }
+
+        .book-chip.selected .count {
+            color: #c4b5fd;
         }
 
         .library-extras {
@@ -553,15 +608,19 @@
 
         @media (max-width: 768px) {
             .header {
-                padding: 1rem;
+                padding: 1rem 1rem 0.5rem;
             }
 
             .page-tabs {
-                padding: 0 1rem 1rem;
+                padding: 0 1rem 0.85rem;
             }
 
             .page-tabs-inner {
                 grid-template-columns: 1fr;
+            }
+
+            .library-section {
+                padding: 1rem 1rem 0;
             }
 
             .main {

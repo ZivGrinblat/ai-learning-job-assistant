@@ -73,8 +73,18 @@ async function checkHealth() {
 
         function selectBook(bookTitle) {
             document.getElementById("bookFilter").value = bookTitle;
+            document.getElementById("bookName").value = bookTitle;
             loadNotes();
             loadSimilarBooks(bookTitle);
+            highlightSelectedChip(bookTitle);
+        }
+
+        function highlightSelectedChip(bookTitle) {
+            const selected = bookTitle.trim();
+
+            document.querySelectorAll(".book-chip").forEach((btn) => {
+                btn.classList.toggle("selected", btn.dataset.book === selected);
+            });
         }
 
         function showToast(message, isError = false) {
@@ -164,6 +174,7 @@ async function checkHealth() {
                     const btn = document.createElement("button");
                     btn.type = "button";
                     btn.className = "book-chip";
+                    btn.dataset.book = item.book;
                     btn.dir = "auto";
                     btn.innerHTML = `${escapeHtml(item.book)}<span class="count">${item.note_count}</span>`;
                     btn.addEventListener("click", () => {
@@ -171,6 +182,8 @@ async function checkHealth() {
                     });
                     container.appendChild(btn);
                 }
+
+                highlightSelectedChip(document.getElementById("bookFilter").value.trim());
             } catch {
                 container.textContent = "Could not load library.";
             }
@@ -207,7 +220,7 @@ async function checkHealth() {
                         <div class="note-text" dir="auto">${escapeHtml(note.note)}</div>
                         <div class="note-footer">
                             <span class="note-date">${formatDate(note.created_at)}</span>
-                            <button class="btn-delete" onclick="deleteNote(${note.id})">delete</button>
+                            <button class="btn-delete" onclick="deleteNote(${note.id})">Delete</button>
                         </div>
                     </div>
                 `).join("");
@@ -257,6 +270,7 @@ async function checkHealth() {
             const book = document.getElementById("bookFilter").value;
             loadNotes();
             loadSimilarBooks(book);
+            highlightSelectedChip(book);
         });
 
         document.addEventListener("keydown", (e) => {
