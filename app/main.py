@@ -7,6 +7,10 @@ from fastapi.staticfiles import StaticFiles
 from app.api.routes import router
 from app.services.note_store import init_db
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 
 app = FastAPI(

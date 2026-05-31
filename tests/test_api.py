@@ -5,6 +5,7 @@ API tests for the FastAPI application.
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.schemas.agent import RelatedNoteItem
 from app.services.note_store import init_db
 
 
@@ -369,6 +370,7 @@ def test_reorder_notes_changes_custom_order(tmp_path, monkeypatch):
 def test_get_related_notes_by_id(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
     monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
 
     init_db()
     
@@ -382,3 +384,38 @@ def test_get_related_notes_by_id(tmp_path, monkeypatch):
     assert data["source_note_id"] == second_id
     assert len(data["related"]) <= 3
     assert data["related"][0]["note_id"] == first_id
+
+
+def test_get_related_notes_uses_openai_when_key_set(tmp_path, monkeypatch):
+    db_path = tmp_path / "test.db"
+    monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+
+    def fake_openai_pick(source, others, api_key):
+        assert api_key == "test-key"
+        note = others[0]
+        return [
+            RelatedNoteItem(
+                note_id=note["id"],
+                book=note["book"],
+                chapter=note["chapter"],
+                note=note["note"],
+                reason="Same book and theme.",
+            )
+        ]
+
+    monkeypatch.setattr(
+        "app.services.note_agent._pick_related_with_openai",
+        fake_openai_pick,
+    )
+
+    init_db()
+
+    first_id = client.post("/notes", json={"book_name": "Book A", "chapter_number": 1, "note_text": "one"}).json()["id"]
+    second_id = client.post("/notes", json={"book_name": "Book A", "chapter_number": 2, "note_text": "two"}).json()["id"]
+    result = client.post(f"/notes/{second_id}/related")
+    data = result.json()
+
+    assert result.status_code == 200
+    assert data["related"][0]["note_id"] == first_id
+    assert data["related"][0]["reason"] == "Same book and theme."
