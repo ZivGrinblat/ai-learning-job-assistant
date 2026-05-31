@@ -9,13 +9,21 @@ from app.schemas.notes import (
     NoteUpdateRequest,
     ReorderNotesRequest,
     SimilarBook,
+    
 )
+
+from app.schemas.agent import (
+    RelatedNotesResponse,
+
+)
+
 from app.schemas.text_analysis import (
     TextAnalysisRequest,
     TextAnalysisResponse,
     TextCleaningRequest,
     TextCleaningResponse,
 )
+
 from app.services.audit_logger import write_api_log
 from app.services.booksearch import find_similar_books
 from app.services.note_store import (
@@ -28,10 +36,12 @@ from app.services.note_store import (
     update_note,
     count_notes_for_one_book,
 )
-from app.services.text_analyzer import analyze_text, clean_text
 
+from app.services.text_analyzer import analyze_text, clean_text
 from app.services.bioinformatics import calculate_gc_content, return_reverse_complement_dna_string, return_neucleotids_counts
 from app.schemas.bio import DnaResponse, DnaRequest, ComplementDnaResponse, NeucleotidsCounts
+from app.services.note_agent import find_related_notes
+
 
 router = APIRouter()
 
@@ -156,4 +166,10 @@ def bio_neucleotide_counts_endpoint(payload: DnaRequest) -> NeucleotidsCounts:
         return return_neucleotids_counts(payload.dna_string)
     except ValueError as error:
         raise HTTPException(status_code = 422, detail=str(error)) from error
-    
+
+@router.post("/notes/{note_id}/related", response_model=RelatedNotesResponse)
+def related_notes_endpoint(note_id: int) -> RelatedNotesResponse:
+    result = find_related_notes(note_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Note not found")
+    return result

@@ -340,6 +340,7 @@ function renderNoteItem(note, dragEnabled) {
                 <div class="note-footer">
                     <span class="note-date">${formatDate(note.created_at)}</span>
                     <div class="note-actions">
+                        <button type="button" class="btn-related" onclick="findRelatedNotes(${note.id})">Related</button>
                         <button type="button" class="btn-edit" onclick="startEdit(${note.id})">Edit</button>
                         <button type="button" class="btn-delete" onclick="deleteNote(${note.id})">Delete</button>
                     </div>
@@ -479,6 +480,60 @@ function clearForm() {
     setComposeMode("create");
 }
 
+async function findRelatedNotes(noteId) {
+    const panel = document.getElementById("relatedPanel");
+    const title = document.getElementById("relatedPanelTitle");
+    const container = document.getElementById("relatedResults");
+
+    panel.hidden = false;
+    title.textContent = `Related to note #${noteId}`;
+    container.innerHTML = '<p class="related-loading">Finding connections…</p>';
+    panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+    try {
+        const res = await fetch(`${API_BASE}/notes/${noteId}/related`, { method: "POST" });
+
+        if (res.status === 404) {
+            container.innerHTML = '<p class="related-empty">That note no longer exists.</p>';
+            return;
+        }
+
+        if (!res.ok) {
+            container.innerHTML = '<p class="related-empty">Could not load related notes.</p>';
+            return;
+        }
+
+        const data = await res.json();
+
+        if (data.related.length === 0) {
+            container.innerHTML = `
+                <div class="related-empty-block">
+                    <p class="related-empty-title">No connections yet</p>
+                    <p class="related-empty">Save more notes — once you have others to compare, related ones will show up here.</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = data.related.map((item) => `
+            <article class="related-card ${noteThemeClass(item.note_id)}">
+                <div class="related-card-top">
+                    <span class="related-card-book" dir="auto">${escapeHtml(item.book)}</span>
+                    <span class="note-chapter-badge">Ch. ${item.chapter}</span>
+                </div>
+                <p class="related-card-text" dir="auto">${escapeHtml(item.note)}</p>
+                <p class="related-card-reason">${escapeHtml(item.reason)}</p>
+                <button type="button" class="btn-edit btn-small" onclick="startEdit(${item.note_id})">Open note</button>
+            </article>
+        `).join("");
+    } catch {
+        container.innerHTML = '<p class="related-empty">Could not reach API.</p>';
+    }
+}
+
+function closeRelatedPanel() {
+    document.getElementById("relatedPanel").hidden = true;
+}
+
 function clearFormAfterSave() {
     document.getElementById("chapter").value = "";
     document.getElementById("noteText").value = "";
@@ -523,6 +578,7 @@ document.getElementById("bookFilter").addEventListener("input", () => {
 });
 
 document.getElementById("clearFilterBtn").addEventListener("click", clearFilter);
+document.getElementById("closeRelatedBtn").addEventListener("click", closeRelatedPanel);
 document.getElementById("noteSort").addEventListener("change", loadNotes);
 
 document.addEventListener("keydown", (e) => {

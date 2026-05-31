@@ -365,3 +365,20 @@ def test_reorder_notes_changes_custom_order(tmp_path, monkeypatch):
 
     notes = client.get("/notes?sort=custom").json()
     assert [note["id"] for note in notes] == [second, first]
+
+def test_get_related_notes_by_id(tmp_path, monkeypatch):
+    db_path = tmp_path / "test.db"
+    monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
+
+    init_db()
+    
+    first_id = client.post("/notes", json={"book_name": "Book A", "chapter_number": 1, "note_text": "one"}).json()["id"]
+    second_id = client.post("/notes", json={"book_name": "Book A", "chapter_number": 2, "note_text": "two"}).json()["id"]
+    result = client.post(f"/notes/{second_id}/related")
+    data = result.json()
+    
+
+    assert result.status_code == 200
+    assert data["source_note_id"] == second_id
+    assert len(data["related"]) <= 3
+    assert data["related"][0]["note_id"] == first_id

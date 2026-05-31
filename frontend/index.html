@@ -6,7 +6,7 @@
     <title>Book Notes</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=4">
+    <link rel="stylesheet" href="css/styles.css?v=6">
 </head>
 <body>
     <header class="site-header">
@@ -132,6 +132,13 @@
             </div>
         </div>
         <p class="shell drag-hint" id="dragHint">Drag notes by the handle to reorder</p>
+        <div class="shell related-panel" id="relatedPanel" hidden>
+            <div class="related-panel-head">
+                <h4 id="relatedPanelTitle">Related notes</h4>
+                <button type="button" class="btn-cancel btn-small" id="closeRelatedBtn">Close</button>
+            </div>
+            <div class="related-results" id="relatedResults"></div>
+        </div>
         <div class="shell notes-feed" id="notesList">
             <div class="empty-state">
                 <div class="empty-icon">📖</div>
