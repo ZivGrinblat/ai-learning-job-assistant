@@ -12,7 +12,7 @@ import os
 
 from openai import OpenAI
 
-from app.schemas.agent import RelatedNoteItem, RelatedNotesResponse
+from app.schemas.agent import CreateNoteFromPromptResponse, RelatedNoteItem, RelatedNotesResponse
 from app.services.note_store import get_note_by_id, get_notes
 
 SYSTEM_PROMPT = """You are given a source note and a list of candidate notes.
@@ -128,3 +128,75 @@ def find_related_notes(source_note_id: int) -> RelatedNotesResponse | None:
         source_note_id=source_note_id,
         related=related,
     )
+    
+EXTRACT_NOTE_SYSTEM_PROMPT = """
+You are given a user message about a reading note.
+The message may contain a book name, chapter number, and note content.
+
+Extract book, chapter, and note from the message.
+Respond with JSON only, no other text:
+{"book": "<string>", "chapter": <integer>, "note": "<string>", "ai_message": "<string>"}
+
+Rules:
+- book: max 30 characters
+- chapter: integer > 0
+- note: max 150 characters; summarize if needed
+- ai_message: one sentence for the user explaining what you extracted; max 200 characters
+- If something is unclear, make a reasonable guess and mention it in ai_message
+"""
+
+def _stub_extract_from_prompt(prompt: str) -> CreateNoteFromPromptResponse:
+    
+    prompt = prompt.strip()
+    
+    if not prompt:
+        return CreateNoteFromPromptResponse(
+            book= "Unknown", 
+            chapter= 1,
+            note= "No content",
+            ai_message= "Stub preview...",
+        )
+    else:
+        note = prompt[:150]
+        return CreateNoteFromPromptResponse(
+            book= "Unknown", 
+            chapter= 1,
+            note= note,
+            ai_message= "Stub preview...",
+        )
+
+def _extract_with_openai(prompt: str, api_key: str) -> CreateNoteFromPromptResponse:
+    client = OpenAI(api_key=api_key)
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages = [
+            {"role": "system", "content": EXTRACT_NOTE_SYSTEM_PROMPT},
+            {"role": "user", "content": prompt},
+        ],
+        response_format={"type": "json_object"},
+    )
+    raw = response.choices[0].message.content or "{}"
+    parsed = json.loads(raw)
+    
+    
+    return CreateNoteFromPromptResponse(
+        book = str(parsed.get("book", "Unknown"))[:30],
+        chapter = int(parsed.get("chapter", 1)),
+        note = str(parsed.get("note", ""))[:150],
+        ai_message = str(parsed.get("ai_message", "Extracted from your message."))[:200],
+    )
+    
+def extract_note_from_prompt(prompt: str) -> CreateNoteFromPromptResponse:
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        return _stub_extract_from_prompt(prompt)
+    else:
+        try:
+            return _extract_with_openai(prompt, api_key)
+        except Exception:
+            return _stub_extract_from_prompt(prompt)
+    
+        
+        
+
+

@@ -10,7 +10,7 @@ from app.services.note_store import (
     reorder_notes,
 )
 import sqlite3
-
+from app.services.note_agent import extract_note_from_prompt
 
 def test_delete_note_returns_true_for_existing_note(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
@@ -138,3 +138,15 @@ def test_reorder_notes_updates_sort_order(tmp_path, monkeypatch):
 
     notes = get_notes(sort="custom")
     assert [note["id"] for note in notes] == [second, first]
+    
+    
+def test_extract_note_from_prompt(monkeypatch):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    
+    result = extract_note_from_prompt("Dune chapter 3 - desert teaches")
+    
+    assert result.book == "Unknown"
+    assert "desert" in result.note.lower()
+    assert "Stub" in result.ai_message
+    
+    

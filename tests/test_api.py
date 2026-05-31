@@ -5,7 +5,9 @@ API tests for the FastAPI application.
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.schemas.agent import RelatedNoteItem
+from app.schemas.agent import RelatedNoteItem, CreateNoteFromPromptResponse
+
+
 from app.services.note_store import init_db
 
 
@@ -420,7 +422,6 @@ def test_get_related_notes_uses_openai_when_key_set(tmp_path, monkeypatch):
     assert data["related"][0]["note_id"] == first_id
     assert data["related"][0]["reason"] == "Same book and theme."
 
-
 def test_search_notes_by_query(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
     monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
@@ -451,3 +452,44 @@ def test_book_stats_endpoint(tmp_path, monkeypatch):
     assert response.status_code == 200
     assert data["note_count"] == 2
     assert data["chapter_count"] == 2
+    
+def test_create_note_from_prompt_endpoint(monkeypatch):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    response = client.post(
+        "/notes/from-prompt",
+        json={"prompt_input": "Dune chapter 3 - desert teaches"},
+    )
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["book"] == "Unknown"
+    assert data["chapter"] == 1
+    assert "Stub" in data["ai_message"]
+    assert "desert" in data["note"].lower()
+
+def test_create_note_from_prompt_when_key_set(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    def fake_extract(prompt, api_key):
+        assert api_key == "test-key"
+        assert "Dune" in prompt
+        return CreateNoteFromPromptResponse(
+            book="Dune",
+            chapter=3,
+            note="desert teaches",
+            ai_message="Extracted from your message.",
+        )
+    monkeypatch.setattr(
+        "app.services.note_agent._extract_with_openai",
+        fake_extract,
+    )
+    
+    response = client.post(
+    "/notes/from-prompt",
+    json={"prompt_input": "Dune chapter 3 - desert teaches"},
+    )
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["book"] == "Dune"
+    assert data["chapter"] == 3
+    assert "desert" in data["note"]

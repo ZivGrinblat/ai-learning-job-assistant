@@ -19,3 +19,13 @@ class RelatedNoteItem(BaseModel):
 class RelatedNotesResponse(BaseModel):
     source_note_id: int = Field(gt=0)
     related: list[RelatedNoteItem] = Field(max_length=3)
+
+class CreateNoteFromPromptRequest(BaseModel):
+    prompt_input : str = Field(min_length=1, max_length=1000)
+
+class CreateNoteFromPromptResponse(BaseModel):
+    book: str = Field(min_length=1, max_length=30)
+    chapter: int = Field(gt=0)
+    note: str = Field(min_length=1, max_length=150)
+    ai_message: str = Field(min_length=1, max_length=200)
+
