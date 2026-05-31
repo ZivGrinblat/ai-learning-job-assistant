@@ -113,7 +113,7 @@ function updateFilterUI() {
 function highlightSelectedChip(bookTitle) {
     const selected = bookTitle.trim();
 
-    document.querySelectorAll(".book-chip").forEach((btn) => {
+    document.querySelectorAll(".book-tile").forEach((btn) => {
         btn.classList.toggle("selected", btn.dataset.book === selected);
     });
 }
@@ -131,22 +131,22 @@ function setComposeMode(mode) {
     const desc = document.getElementById("composeDesc");
     const saveBtn = document.getElementById("saveBtn");
     const cancelBtn = document.getElementById("cancelEditBtn");
-    const composeCard = document.querySelector(".compose-card");
+    const composePanel = document.querySelector(".compose-panel");
 
     if (mode === "edit") {
-        title.textContent = "Edit Note";
-        desc.textContent = "Update this note, then save your changes";
-        saveBtn.textContent = "Update Note";
+        title.textContent = "Edit note";
+        desc.textContent = "Update this note, then save";
+        saveBtn.textContent = "Update note";
         cancelBtn.hidden = false;
-        composeCard.classList.add("editing");
+        composePanel.classList.add("editing");
         return;
     }
 
-    title.textContent = "New Note";
-    desc.textContent = "Capture a thought while you read — 150 characters max";
-    saveBtn.textContent = "Save Note";
+    title.textContent = "New note";
+    desc.textContent = "150 characters — short and sharp";
+    saveBtn.textContent = "Save note";
     cancelBtn.hidden = true;
-    composeCard.classList.remove("editing");
+    composePanel.classList.remove("editing");
     editingNoteId = null;
 }
 
@@ -157,7 +157,7 @@ function startEditNote(note) {
     document.getElementById("noteText").value = note.note;
     updateCharCount();
     setComposeMode("edit");
-    document.querySelector(".compose-card").scrollIntoView({ behavior: "smooth", block: "start" });
+    document.querySelector(".zone-compose").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function startEdit(noteId) {
@@ -230,7 +230,7 @@ async function saveNote() {
     }
 
     btn.disabled = false;
-    btn.textContent = isEditing ? "Update Note" : "Save Note";
+    btn.textContent = isEditing ? "Update note" : "Save note";
 }
 
 async function deleteNote(id) {
@@ -274,19 +274,19 @@ async function loadBooks() {
 
         document.getElementById("libraryCount").textContent = String(books.length);
 
-        container.innerHTML = "";
-        for (const item of books) {
-            const btn = document.createElement("button");
-            btn.type = "button";
-            btn.className = "book-chip";
-            btn.dataset.book = item.book;
-            btn.dir = "auto";
-            btn.innerHTML = `${escapeHtml(item.book)}<span class="count">${item.note_count}</span>`;
+                container.innerHTML = "";
+                books.forEach((item, index) => {
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.className = `book-tile ${BOOK_TILE_COLORS[index % BOOK_TILE_COLORS.length]}`;
+                    btn.dataset.book = item.book;
+                    btn.dir = "auto";
+                    btn.innerHTML = `<span>${escapeHtml(item.book)}</span><span class="count">${item.note_count}</span>`;
             btn.addEventListener("click", () => {
                 selectBook(item.book);
             });
-            container.appendChild(btn);
-        }
+                    container.appendChild(btn);
+                });
 
         highlightSelectedChip(document.getElementById("bookFilter").value.trim());
     } catch {
@@ -299,6 +299,15 @@ function canDragNotes() {
     const bookFilter = document.getElementById("bookFilter").value.trim();
     return sort === "custom" && !bookFilter;
 }
+
+const BOOK_TILE_COLORS = [
+    "tile-orange",
+    "tile-pink",
+    "tile-teal",
+    "tile-indigo",
+    "tile-green",
+    "tile-red",
+];
 
 const NOTE_THEMES = [
     "note-theme-purple",

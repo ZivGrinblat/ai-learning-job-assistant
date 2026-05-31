@@ -6,157 +6,139 @@
     <title>Book Notes</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=4">
 </head>
 <body>
-    <div class="top-shell">
-        <div class="header">
-            <div class="header-inner">
-                <div class="logo">
-                    <div class="logo-icon">B</div>
-                    <div>
-                        <h1>Book Notes</h1>
-                        <p class="logo-sub">Learning Assistant</p>
-                    </div>
+    <header class="site-header">
+        <div class="shell">
+            <div class="brand">
+                <div class="brand-mark">B</div>
+                <div>
+                    <h1>Book Notes</h1>
+                    <p>Learning Assistant</p>
                 </div>
-                <div class="status-badge">
-                    <span class="status-dot" id="statusDot"></span>
-                    <span id="statusText">Connecting...</span>
-                </div>
+            </div>
+            <div class="status-pill">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Connecting...</span>
             </div>
         </div>
-
-        <nav class="page-tabs" aria-label="Main">
-            <div class="page-tabs-inner">
-                <a href="/" class="page-tab active">
-                    <span class="page-tab-icon notes-icon">B</span>
-                    Book Notes
-                </a>
-                <a href="/dna.html" class="page-tab">
-                    <span class="page-tab-icon genome-icon">G</span>
-                    Genome Analyzer
-                </a>
-            </div>
+        <nav class="site-nav shell" aria-label="Main">
+            <a href="/" class="nav-pill active">
+                <span class="nav-icon notes">B</span>
+                Book Notes
+            </a>
+            <a href="/dna.html" class="nav-pill">
+                <span class="nav-icon genome">G</span>
+                Genome Analyzer
+            </a>
         </nav>
-    </div>
+    </header>
 
-    <div class="page-intro">
-        <div class="page-intro-inner">
-            <p class="intro-eyebrow">Your reading desk</p>
-            <h2 class="intro-title">Capture ideas. Revisit them. Keep reading.</h2>
+    <section class="hero-band">
+        <div class="shell">
+            <p class="hero-tag">Your reading desk</p>
+            <h2 class="hero-headline">Write it down while it’s still fresh.</h2>
         </div>
-    </div>
+    </section>
 
-    <section class="library-section">
-        <div class="card card-library">
-            <div class="card-header card-header-library">
-                <div class="card-header-text">
-                    <span class="section-emoji" aria-hidden="true">📚</span>
-                    <div>
-                        <h2>Library</h2>
-                        <p class="card-desc">Tap a book to filter notes and discover similar titles</p>
-                    </div>
-                </div>
-                <span class="badge badge-amber" id="libraryCount">0</span>
+    <section class="zone zone-library">
+        <div class="shell zone-head">
+            <div>
+                <span class="zone-label">📚 Library</span>
+                <h3>Pick a book</h3>
             </div>
-            <div class="card-body">
-                <div class="book-library" id="bookLibrary">Loading books...</div>
-                <div class="library-extras" id="libraryExtras" hidden>
-                    <p class="extras-label">Selected book</p>
-                    <div class="shop-links">
-                        <a class="shop-link amazon" id="amazonLink" href="#" target="_blank" rel="noopener noreferrer">Amazon</a>
-                        <a class="shop-link blackwells" id="blackwellsLink" href="#" target="_blank" rel="noopener noreferrer">Blackwells</a>
-                    </div>
-                    <p class="extras-label">Similar books (Open Library)</p>
-                    <ul class="similar-list" id="similarList"></ul>
+            <span class="count-pill count-amber" id="libraryCount">0</span>
+        </div>
+        <div class="shell">
+            <div class="book-shelf" id="bookLibrary">Loading books...</div>
+            <div class="library-extras" id="libraryExtras" hidden>
+                <p class="mini-label">Shop &amp; explore</p>
+                <div class="shop-row">
+                    <a class="shop-btn amazon" id="amazonLink" href="#" target="_blank" rel="noopener noreferrer">Amazon</a>
+                    <a class="shop-btn blackwells" id="blackwellsLink" href="#" target="_blank" rel="noopener noreferrer">Blackwells</a>
                 </div>
+                <p class="mini-label">Similar books</p>
+                <ul class="similar-list" id="similarList"></ul>
             </div>
         </div>
     </section>
 
-    <div class="main">
-        <div class="card compose-card">
-            <div class="card-header card-header-compose">
-                <div class="card-header-text">
-                    <span class="section-emoji" aria-hidden="true">✏️</span>
-                    <div>
-                        <h2 id="composeTitle">New Note</h2>
-                        <p class="card-desc" id="composeDesc">Capture a thought while you read — 150 characters max</p>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="form-row">
-                    <div class="form-group grow">
-                        <label for="bookName">Book</label>
-                        <input type="text" id="bookName" placeholder="The Muslim Jesus" maxlength="30" dir="auto">
-                    </div>
-                    <div class="form-group shrink">
-                        <label for="chapter">Ch.</label>
-                        <input type="number" id="chapter" placeholder="1" min="1">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="noteText">Your thought</label>
-                    <textarea id="noteText" placeholder="What stood out? What connection did you notice?" maxlength="150" dir="auto"></textarea>
-                    <div class="field-footer">
-                        <span class="field-hint">Short and sharp beats long and vague</span>
-                        <span class="char-count" id="charCount">0/150</span>
-                    </div>
-                </div>
-                <div class="compose-actions">
-                    <button class="btn-primary" id="saveBtn" onclick="saveNote()">Save Note</button>
-                    <button type="button" class="btn-ghost" id="cancelEditBtn" hidden onclick="cancelEdit()">Cancel</button>
-                </div>
-                <div class="shortcut-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> to save</div>
+    <section class="zone zone-compose">
+        <div class="shell zone-head">
+            <div>
+                <span class="zone-label">✏️ Write</span>
+                <h3 id="composeTitle">New note</h3>
+                <p class="zone-sub" id="composeDesc">150 characters — short and sharp</p>
             </div>
         </div>
-
-        <div class="card notes-panel">
-            <div class="card-header card-header-notes notes-header">
-                <div class="card-header-text">
-                    <span class="section-emoji" aria-hidden="true">💡</span>
-                    <div>
-                        <h2>Your Notes</h2>
-                        <p class="card-desc" id="notesSubtitle">All notes</p>
-                    </div>
+        <div class="shell compose-panel">
+            <div class="form-row">
+                <div class="form-group grow">
+                    <label for="bookName">Book</label>
+                    <input type="text" id="bookName" placeholder="The Muslim Jesus" maxlength="30" dir="auto">
                 </div>
-                <span class="badge badge-violet" id="noteCount">0</span>
+                <div class="form-group shrink">
+                    <label for="chapter">Chapter</label>
+                    <input type="number" id="chapter" placeholder="1" min="1">
+                </div>
             </div>
-
-            <div class="notes-toolbar">
-                <div class="filter-wrap">
-                    <span class="filter-icon" aria-hidden="true">⌕</span>
-                    <input
-                        type="text"
-                        id="bookFilter"
-                        class="filter-input"
-                        placeholder="Filter by book…"
-                        dir="auto"
-                        aria-label="Filter notes by book"
-                    >
-                    <button type="button" class="filter-clear" id="clearFilterBtn" hidden aria-label="Clear filter">×</button>
+            <div class="form-group">
+                <label for="noteText">Your thought</label>
+                <textarea id="noteText" placeholder="What stood out? What connection did you notice?" maxlength="150" dir="auto"></textarea>
+                <div class="field-footer">
+                    <span class="field-hint">Keep the book, change chapter each time</span>
+                    <span class="char-count" id="charCount">0/150</span>
                 </div>
-                <div class="notes-controls">
-                    <label class="sort-label" for="noteSort">Sort</label>
-                    <select id="noteSort" class="sort-select" aria-label="Sort notes">
-                        <option value="custom">Custom order</option>
-                        <option value="newest">Newest first</option>
-                        <option value="oldest">Oldest first</option>
-                        <option value="book">Book + chapter</option>
-                    </select>
-                </div>
-                <p class="drag-hint" id="dragHint">Drag notes to reorder (custom order, all notes)</p>
             </div>
+            <div class="compose-actions">
+                <button class="btn-save" id="saveBtn" onclick="saveNote()">Save note</button>
+                <button type="button" class="btn-cancel" id="cancelEditBtn" hidden onclick="cancelEdit()">Cancel</button>
+            </div>
+            <p class="shortcut-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> to save</p>
+        </div>
+    </section>
 
-            <div class="notes-scroll" id="notesList">
-                <div class="empty-state">
-                    <div class="empty-icon">B</div>
-                    Loading...
-                </div>
+    <section class="zone zone-notes">
+        <div class="shell zone-head">
+            <div>
+                <span class="zone-label">💡 Notes</span>
+                <h3>Your stack</h3>
+                <p class="zone-sub" id="notesSubtitle">All notes</p>
+            </div>
+            <span class="count-pill count-violet" id="noteCount">0</span>
+        </div>
+        <div class="shell notes-controls-bar">
+            <div class="filter-wrap">
+                <span class="filter-icon" aria-hidden="true">⌕</span>
+                <input
+                    type="text"
+                    id="bookFilter"
+                    class="filter-input"
+                    placeholder="Filter by book…"
+                    dir="auto"
+                    aria-label="Filter notes by book"
+                >
+                <button type="button" class="filter-clear" id="clearFilterBtn" hidden aria-label="Clear filter">×</button>
+            </div>
+            <div class="sort-wrap">
+                <label class="sort-label" for="noteSort">Sort</label>
+                <select id="noteSort" class="sort-select" aria-label="Sort notes">
+                    <option value="custom">Custom order</option>
+                    <option value="newest">Newest first</option>
+                    <option value="oldest">Oldest first</option>
+                    <option value="book">Book + chapter</option>
+                </select>
             </div>
         </div>
-    </div>
+        <p class="shell drag-hint" id="dragHint">Drag notes by the handle to reorder</p>
+        <div class="shell notes-feed" id="notesList">
+            <div class="empty-state">
+                <div class="empty-icon">📖</div>
+                Loading...
+            </div>
+        </div>
+    </section>
 
     <div class="toast" id="toast"></div>
 
