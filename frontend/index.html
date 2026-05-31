@@ -6,7 +6,7 @@
     <title>Book Notes</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=7">
+    <link rel="stylesheet" href="css/styles.css?v=8">
 </head>
 <body>
     <header class="site-header">
@@ -35,147 +35,155 @@
         </nav>
     </header>
 
-    <section class="hero-band">
-        <div class="shell">
-            <p class="hero-tag">Your reading desk</p>
-            <h2 class="hero-headline">Write it down while it’s still fresh.</h2>
-        </div>
-    </section>
+    <main class="desk shell">
+        <aside class="book-sidebar zone-library" aria-label="Book library">
+            <div class="sidebar-head">
+                <div>
+                    <span class="zone-label">📚 Books</span>
+                    <h3>Your library</h3>
+                </div>
+                <span class="count-pill count-amber" id="libraryCount">0</span>
+            </div>
+            <button type="button" class="btn-new-book" id="addBookBtn">
+                <span aria-hidden="true">+</span> New book
+            </button>
+            <ol class="book-list" id="bookLibrary">
+                <li class="book-list-loading">Loading books…</li>
+            </ol>
+        </aside>
 
-    <section class="zone zone-library">
-        <div class="shell zone-head">
-            <div>
-                <span class="zone-label">📚 Library</span>
-                <h3>Pick a book</h3>
-            </div>
-            <span class="count-pill count-amber" id="libraryCount">0</span>
-        </div>
-        <div class="shell">
-            <div class="book-shelf" id="bookLibrary">Loading books...</div>
-            <div class="library-extras" id="libraryExtras" hidden>
-                <p class="mini-label">Shop &amp; explore</p>
-                <div class="shop-row">
-                    <a class="shop-btn amazon" id="amazonLink" href="#" target="_blank" rel="noopener noreferrer">Amazon</a>
-                    <a class="shop-btn blackwells" id="blackwellsLink" href="#" target="_blank" rel="noopener noreferrer">Blackwells</a>
-                </div>
-                <p class="mini-label">Similar books</p>
-                <ul class="similar-list" id="similarList"></ul>
-            </div>
-        </div>
-    </section>
-
-    <section class="zone zone-compose">
-        <div class="shell zone-head">
-            <div>
-                <span class="zone-label">✏️ Write</span>
-                <h3 id="composeTitle">New note</h3>
-                <p class="zone-sub" id="composeDesc">150 characters — short and sharp</p>
-            </div>
-        </div>
-        <div class="shell compose-panel">
-            <div class="form-row">
-                <div class="form-group grow">
-                    <label for="bookName">Book</label>
-                    <input type="text" id="bookName" placeholder="The Muslim Jesus" maxlength="30" dir="auto">
-                </div>
-                <div class="form-group shrink">
-                    <label for="chapter">Chapter</label>
-                    <input type="number" id="chapter" placeholder="1" min="1">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="noteText">Your thought</label>
-                <textarea id="noteText" placeholder="What stood out? What connection did you notice?" maxlength="150" dir="auto"></textarea>
-                <div class="field-footer">
-                    <span class="field-hint">Keep the book, change chapter each time</span>
-                    <span class="char-count" id="charCount">0/150</span>
-                </div>
-            </div>
-            <div class="compose-actions">
-                <button class="btn-save" id="saveBtn" onclick="saveNote()">Save note</button>
-                <button type="button" class="btn-cancel" id="cancelEditBtn" hidden onclick="cancelEdit()">Cancel</button>
-            </div>
-            <p class="shortcut-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> to save</p>
-        </div>
-    </section>
-
-    <section class="zone zone-ai">
-        <div class="shell zone-head">
-            <div>
-                <span class="zone-label">✨ AI Connections</span>
-                <h3>Find related notes</h3>
-                <p class="zone-sub">Pick a note — AI compares it to your others by book, topic, or content</p>
-            </div>
-            <span class="ai-badge">Powered by AI</span>
-        </div>
-        <div class="shell ai-panel">
-            <div class="ai-picker-row">
-                <div class="form-group grow">
-                    <label for="aiNotePick">Start from this note</label>
-                    <select id="aiNotePick" class="ai-select" aria-label="Choose a note to find connections">
-                        <option value="">Save notes first…</option>
-                    </select>
-                </div>
-                <button type="button" class="btn-ai-find" id="aiFindBtn" disabled>
-                    <span class="btn-ai-icon" aria-hidden="true">✨</span>
-                    Find connections
-                </button>
-            </div>
-            <p class="ai-hint">Or click <strong>Connect</strong> on any note below for the same result.</p>
-            <div class="related-panel" id="relatedPanel" hidden>
-                <div class="related-panel-head">
+        <div class="book-workspace" id="bookWorkspace" hidden>
+            <header class="workspace-header">
+                <div class="workspace-title-block">
+                    <button type="button" class="btn-back-books" id="backToBooksBtn" aria-label="Show all books">← Books</button>
                     <div>
-                        <h4 id="relatedPanelTitle">Related notes</h4>
-                        <p class="related-panel-sub" id="relatedPanelSub"></p>
+                        <h2 class="workspace-title" id="activeBookTitle">Book title</h2>
+                        <p class="workspace-sub" id="workspaceSub">Write notes, connect ideas with AI</p>
                     </div>
-                    <button type="button" class="btn-cancel btn-small" id="closeRelatedBtn">Close</button>
                 </div>
-                <div class="source-note-card" id="sourceNoteCard" hidden></div>
-                <div class="related-results" id="relatedResults"></div>
-            </div>
-        </div>
-    </section>
+                <span class="count-pill count-violet" id="noteCount">0</span>
+            </header>
 
-    <section class="zone zone-notes">
-        <div class="shell zone-head">
-            <div>
-                <span class="zone-label">💡 Notes</span>
-                <h3>Your stack</h3>
-                <p class="zone-sub" id="notesSubtitle">All notes</p>
-            </div>
-            <span class="count-pill count-violet" id="noteCount">0</span>
+            <section class="workspace-section compose-section">
+                <div class="section-head">
+                    <span class="section-label">✏️ Write</span>
+                    <h3 id="composeTitle">New note</h3>
+                </div>
+                <div class="compose-panel">
+                    <div class="form-row" id="bookFieldRow" hidden>
+                        <div class="form-group grow">
+                            <label for="bookName">Book title</label>
+                            <input type="text" id="bookName" placeholder="e.g. The Islamic Jesus" maxlength="30" dir="auto">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group shrink">
+                            <label for="chapter">Chapter</label>
+                            <input type="number" id="chapter" placeholder="1" min="1">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="noteText">Your thought</label>
+                        <textarea id="noteText" placeholder="What stood out? What connection did you notice?" maxlength="150" dir="auto"></textarea>
+                        <div class="field-footer">
+                            <span class="field-hint" id="composeHint">150 characters — short and sharp</span>
+                            <span class="char-count" id="charCount">0/150</span>
+                        </div>
+                    </div>
+                    <div class="compose-actions">
+                        <button class="btn-save" id="saveBtn" onclick="saveNote()">Save note</button>
+                        <button type="button" class="btn-cancel" id="cancelEditBtn" hidden onclick="cancelEdit()">Cancel</button>
+                    </div>
+                    <p class="shortcut-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> to save</p>
+                </div>
+            </section>
+
+            <section class="workspace-section ai-section">
+                <div class="section-head section-head-ai">
+                    <div>
+                        <span class="section-label">✨ AI Connections</span>
+                        <h3>Find related notes</h3>
+                        <p class="section-sub">Compare a note to your whole library by topic or content</p>
+                    </div>
+                    <span class="ai-badge">Powered by AI</span>
+                </div>
+                <div class="ai-panel">
+                    <div class="ai-picker-row">
+                        <div class="form-group grow">
+                            <label for="aiNotePick">Start from this note</label>
+                            <select id="aiNotePick" class="ai-select" aria-label="Choose a note to find connections">
+                                <option value="">Save notes first…</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn-ai-find" id="aiFindBtn" disabled>
+                            <span class="btn-ai-icon" aria-hidden="true">✨</span>
+                            Find connections
+                        </button>
+                    </div>
+                    <p class="ai-hint">Or click <strong>Connect</strong> on any note below.</p>
+                    <div class="related-panel" id="relatedPanel" hidden>
+                        <div class="related-panel-head">
+                            <div>
+                                <h4 id="relatedPanelTitle">Related notes</h4>
+                                <p class="related-panel-sub" id="relatedPanelSub"></p>
+                            </div>
+                            <button type="button" class="btn-cancel btn-small" id="closeRelatedBtn">Close</button>
+                        </div>
+                        <div class="source-note-card" id="sourceNoteCard" hidden></div>
+                        <div class="related-results" id="relatedResults"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="workspace-section notes-section">
+                <div class="section-head">
+                    <div>
+                        <span class="section-label">💡 Notes</span>
+                        <h3 id="notesSectionTitle">Notes for this book</h3>
+                    </div>
+                    <div class="sort-wrap">
+                        <label class="sort-label" for="noteSort">Sort</label>
+                        <select id="noteSort" class="sort-select" aria-label="Sort notes">
+                            <option value="custom">Custom order</option>
+                            <option value="newest">Newest first</option>
+                            <option value="oldest">Oldest first</option>
+                            <option value="book">Chapter order</option>
+                        </select>
+                    </div>
+                </div>
+                <p class="drag-hint" id="dragHint">Drag notes by the handle to reorder</p>
+                <div class="notes-feed" id="notesList">
+                    <div class="empty-state">
+                        <div class="empty-icon">📖</div>
+                        Loading...
+                    </div>
+                </div>
+            </section>
+
+            <section class="workspace-section extras-section" id="libraryExtras" hidden>
+                <div class="section-head">
+                    <span class="section-label">🛒 Explore</span>
+                    <h3>Shop &amp; similar</h3>
+                </div>
+                <div class="library-extras">
+                    <div class="shop-row">
+                        <a class="shop-btn amazon" id="amazonLink" href="#" target="_blank" rel="noopener noreferrer">Amazon</a>
+                        <a class="shop-btn blackwells" id="blackwellsLink" href="#" target="_blank" rel="noopener noreferrer">Blackwells</a>
+                    </div>
+                    <p class="mini-label">Similar books</p>
+                    <ul class="similar-list" id="similarList"></ul>
+                </div>
+            </section>
         </div>
-        <div class="shell notes-controls-bar">
-            <div class="filter-wrap">
-                <span class="filter-icon" aria-hidden="true">⌕</span>
-                <input
-                    type="text"
-                    id="bookFilter"
-                    class="filter-input"
-                    placeholder="Filter by book…"
-                    dir="auto"
-                    aria-label="Filter notes by book"
-                >
-                <button type="button" class="filter-clear" id="clearFilterBtn" hidden aria-label="Clear filter">×</button>
-            </div>
-            <div class="sort-wrap">
-                <label class="sort-label" for="noteSort">Sort</label>
-                <select id="noteSort" class="sort-select" aria-label="Sort notes">
-                    <option value="custom">Custom order</option>
-                    <option value="newest">Newest first</option>
-                    <option value="oldest">Oldest first</option>
-                    <option value="book">Book + chapter</option>
-                </select>
+
+        <div class="workspace-welcome" id="workspaceWelcome">
+            <div class="welcome-card">
+                <div class="welcome-icon">📚</div>
+                <h2>Pick a book to get started</h2>
+                <p>Choose a title from the list on the left — or add a new book — then write notes, sort them, and find AI connections.</p>
             </div>
         </div>
-        <p class="shell drag-hint" id="dragHint">Drag notes by the handle to reorder</p>
-        <div class="shell notes-feed" id="notesList">
-            <div class="empty-state">
-                <div class="empty-icon">📖</div>
-                Loading...
-            </div>
-        </div>
-    </section>
+    </main>
 
     <div class="toast" id="toast"></div>
 

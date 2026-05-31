@@ -6,6 +6,15 @@ const API_BASE =
 let editingNoteId = null;
 let draggedNoteId = null;
 let loadedNotes = [];
+let activeBook = null;
+let isNewBookMode = false;
+
+function getBookFilter() {
+    if (isNewBookMode || !activeBook) {
+        return "";
+    }
+    return activeBook;
+}
 
 async function checkHealth() {
     const dot = document.getElementById("statusDot");
@@ -25,9 +34,18 @@ async function checkHealth() {
 }
 
 async function loadNoteCount() {
-    const res = await fetch(`${API_BASE}/notes/count`);
-    const data = await res.json();
-    document.getElementById("noteCount").textContent = data.count;
+    const bookFilter = getBookFilter();
+    if (!bookFilter) {
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/notes?book=${encodeURIComponent(bookFilter)}`);
+        const notes = await res.json();
+        document.getElementById("noteCount").textContent = String(notes.length);
+    } catch {
+        document.getElementById("noteCount").textContent = "—";
+    }
 }
 
 function updateShopLinks(bookTitle) {
@@ -43,7 +61,7 @@ async function loadSimilarBooks(bookTitle) {
     const list = document.getElementById("similarList");
     const trimmed = bookTitle.trim();
 
-    if (!trimmed) {
+    if (!trimmed || isNewBookMode) {
         extras.hidden = true;
         return;
     }
@@ -74,48 +92,105 @@ async function loadSimilarBooks(bookTitle) {
     }
 }
 
+function openBookWorkspace() {
+    document.getElementById("bookWorkspace").hidden = false;
+    document.getElementById("workspaceWelcome").hidden = true;
+}
+
+function closeBookWorkspace() {
+    document.getElementById("bookWorkspace").hidden = true;
+    document.getElementById("workspaceWelcome").hidden = false;
+    document.getElementById("libraryExtras").hidden = true;
+    closeRelatedPanel();
+}
+
+function updateWorkspaceHeader() {
+    const title = document.getElementById("activeBookTitle");
+    const sub = document.getElementById("workspaceSub");
+    const bookFieldRow = document.getElementById("bookFieldRow");
+    const notesTitle = document.getElementById("notesSectionTitle");
+
+    if (isNewBookMode) {
+        title.textContent = "New book";
+        sub.textContent = "Enter the title, then save your first note";
+        bookFieldRow.hidden = false;
+        notesTitle.textContent = "Notes";
+        return;
+    }
+
+    bookFieldRow.hidden = true;
+    title.textContent = activeBook || "";
+    sub.textContent = "Write notes · sort · find AI connections";
+    notesTitle.textContent = `Notes for “${activeBook}”`;
+}
+
 function selectBook(bookTitle) {
-    document.getElementById("bookFilter").value = bookTitle;
+    isNewBookMode = false;
+    activeBook = bookTitle;
     document.getElementById("bookName").value = bookTitle;
+    openBookWorkspace();
+    updateWorkspaceHeader();
+    highlightSelectedBook(bookTitle);
     loadNotes();
     loadSimilarBooks(bookTitle);
-    highlightSelectedChip(bookTitle);
-    updateFilterUI();
+    updateWorkspaceUI();
+    document.querySelector(".compose-panel").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function clearFilter() {
-    document.getElementById("bookFilter").value = "";
+function startNewBook() {
+    isNewBookMode = true;
+    activeBook = null;
+    editingNoteId = null;
+    document.getElementById("bookName").value = "";
+    document.getElementById("chapter").value = "";
+    document.getElementById("noteText").value = "";
+    updateCharCount();
+    setComposeMode("create");
+    openBookWorkspace();
+    updateWorkspaceHeader();
+    highlightSelectedBook("");
+    loadedNotes = [];
+    document.getElementById("notesList").innerHTML = `
+        <div class="empty-state">
+            <div class="empty-icon">✏️</div>
+            <p class="empty-title">First note for this book</p>
+            <p>Enter the book title above, then write your first thought.</p>
+        </div>`;
+    document.getElementById("noteCount").textContent = "0";
     document.getElementById("libraryExtras").hidden = true;
-    loadNotes();
-    highlightSelectedChip("");
-    updateFilterUI();
+    populateAiNotePicker();
+    updateWorkspaceUI();
+    document.getElementById("bookName").focus();
 }
 
-function updateFilterUI() {
-    const filter = document.getElementById("bookFilter").value.trim();
-    const clearBtn = document.getElementById("clearFilterBtn");
-    const subtitle = document.getElementById("notesSubtitle");
+function deselectBook() {
+    isNewBookMode = false;
+    activeBook = null;
+    editingNoteId = null;
+    closeBookWorkspace();
+    highlightSelectedBook("");
+    updateWorkspaceUI();
+}
+
+function updateWorkspaceUI() {
     const sort = document.getElementById("noteSort").value;
     const dragHint = document.getElementById("dragHint");
+    const bookFilter = getBookFilter();
+    const dragEnabled = sort === "custom" && Boolean(bookFilter);
 
-    clearBtn.hidden = !filter;
-    subtitle.textContent = filter
-        ? `Filtered by “${filter}”`
-        : "All notes";
-
-    const dragEnabled = sort === "custom" && !filter;
     dragHint.hidden = !dragEnabled;
     dragHint.textContent = dragEnabled
         ? "Drag notes by the handle to reorder"
-        : "Clear filter and choose Custom order to drag notes";
+        : "Choose Custom order to drag notes within this book";
 }
 
-function highlightSelectedChip(bookTitle) {
+function highlightSelectedBook(bookTitle) {
     const selected = bookTitle.trim();
 
-    document.querySelectorAll(".book-tile").forEach((btn) => {
+    document.querySelectorAll(".book-list-item").forEach((btn) => {
         btn.classList.toggle("selected", btn.dataset.book === selected);
     });
+    document.getElementById("addBookBtn").classList.toggle("selected", isNewBookMode);
 }
 
 function showToast(message, isError = false) {
@@ -128,14 +203,14 @@ function showToast(message, isError = false) {
 
 function setComposeMode(mode) {
     const title = document.getElementById("composeTitle");
-    const desc = document.getElementById("composeDesc");
     const saveBtn = document.getElementById("saveBtn");
     const cancelBtn = document.getElementById("cancelEditBtn");
     const composePanel = document.querySelector(".compose-panel");
+    const hint = document.getElementById("composeHint");
 
     if (mode === "edit") {
         title.textContent = "Edit note";
-        desc.textContent = "Update this note, then save";
+        hint.textContent = "Update this note, then save";
         saveBtn.textContent = "Update note";
         cancelBtn.hidden = false;
         composePanel.classList.add("editing");
@@ -143,7 +218,7 @@ function setComposeMode(mode) {
     }
 
     title.textContent = "New note";
-    desc.textContent = "150 characters — short and sharp";
+    hint.textContent = "150 characters — short and sharp";
     saveBtn.textContent = "Save note";
     cancelBtn.hidden = true;
     composePanel.classList.remove("editing");
@@ -157,15 +232,39 @@ function startEditNote(note) {
     document.getElementById("noteText").value = note.note;
     updateCharCount();
     setComposeMode("edit");
-    document.querySelector(".zone-compose").scrollIntoView({ behavior: "smooth", block: "start" });
+    document.querySelector(".compose-section").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function startEdit(noteId) {
-    const note = loadedNotes.find((item) => item.id === noteId);
+async function startEdit(noteId) {
+    let note = loadedNotes.find((item) => item.id === noteId);
+
+    if (!note) {
+        try {
+            const res = await fetch(`${API_BASE}/notes?sort=newest`);
+            const allNotes = await res.json();
+            note = allNotes.find((item) => item.id === noteId);
+        } catch {
+            showToast("Could not load note for editing", true);
+            return;
+        }
+    }
+
     if (!note) {
         showToast("Could not load note for editing", true);
         return;
     }
+
+    if (note.book !== activeBook || isNewBookMode) {
+        isNewBookMode = false;
+        activeBook = note.book;
+        document.getElementById("bookName").value = note.book;
+        openBookWorkspace();
+        updateWorkspaceHeader();
+        highlightSelectedBook(note.book);
+        await loadNotes();
+        loadSimilarBooks(note.book);
+    }
+
     startEditNote(note);
 }
 
@@ -208,19 +307,23 @@ async function saveNote() {
         if (res.ok) {
             const data = await res.json();
             showToast(isEditing ? `Updated — note #${data.id}` : `Saved — note #${data.id}`);
-            if (isEditing) {
-                setComposeMode("create");
-                document.getElementById("bookName").value = bookName;
-            } else {
-                clearFormAfterSave();
-                document.getElementById("bookName").value = bookName;
+
+            if (isNewBookMode) {
+                isNewBookMode = false;
+                activeBook = bookName;
+                updateWorkspaceHeader();
             }
+
+            setComposeMode("create");
+            document.getElementById("bookName").value = bookName;
             document.getElementById("chapter").value = "";
             document.getElementById("noteText").value = "";
             updateCharCount();
-            loadBooks();
+            await loadBooks();
             loadNoteCount();
             loadNotes();
+            loadSimilarBooks(bookName);
+            highlightSelectedBook(bookName);
         } else {
             const err = await res.json();
             showToast(err.detail?.[0]?.msg || err.detail || "Save failed", true);
@@ -247,7 +350,7 @@ async function deleteNote(id) {
 
         if (res.ok) {
             showToast("Note deleted");
-            loadBooks();
+            await loadBooks();
             loadNoteCount();
             loadNotes();
         } else {
@@ -264,40 +367,42 @@ async function loadBooks() {
     try {
         const res = await fetch(`${API_BASE}/books`);
         const books = await res.json();
+        books.sort((a, b) => a.book.localeCompare(b.book, undefined, { sensitivity: "base" }));
 
         if (books.length === 0) {
             container.innerHTML =
-                '<p class="library-empty">No books yet. Save your first note below to start your library.</p>';
+                '<li class="book-list-empty">No books yet. Click <strong>New book</strong> to start.</li>';
             document.getElementById("libraryCount").textContent = "0";
             return;
         }
 
         document.getElementById("libraryCount").textContent = String(books.length);
+        container.innerHTML = "";
 
-                container.innerHTML = "";
-                books.forEach((item, index) => {
-                    const btn = document.createElement("button");
-                    btn.type = "button";
-                    btn.className = `book-tile ${BOOK_TILE_COLORS[index % BOOK_TILE_COLORS.length]}`;
-                    btn.dataset.book = item.book;
-                    btn.dir = "auto";
-                    btn.innerHTML = `<span>${escapeHtml(item.book)}</span><span class="count">${item.note_count}</span>`;
-            btn.addEventListener("click", () => {
-                selectBook(item.book);
-            });
-                    container.appendChild(btn);
-                });
+        books.forEach((item, index) => {
+            const li = document.createElement("li");
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = `book-list-item ${BOOK_TILE_COLORS[index % BOOK_TILE_COLORS.length]}`;
+            btn.dataset.book = item.book;
+            btn.dir = "auto";
+            btn.innerHTML = `
+                <span class="book-list-name">${escapeHtml(item.book)}</span>
+                <span class="book-list-count">${item.note_count} note${item.note_count === 1 ? "" : "s"}</span>`;
+            btn.addEventListener("click", () => selectBook(item.book));
+            li.appendChild(btn);
+            container.appendChild(li);
+        });
 
-        highlightSelectedChip(document.getElementById("bookFilter").value.trim());
+        highlightSelectedBook(isNewBookMode ? "" : (activeBook || ""));
     } catch {
-        container.textContent = "Could not load library.";
+        container.innerHTML = '<li class="book-list-empty">Could not load library.</li>';
     }
 }
 
 function canDragNotes() {
     const sort = document.getElementById("noteSort").value;
-    const bookFilter = document.getElementById("bookFilter").value.trim();
-    return sort === "custom" && !bookFilter;
+    return sort === "custom" && Boolean(getBookFilter());
 }
 
 const BOOK_TILE_COLORS = [
@@ -321,6 +426,8 @@ function noteThemeClass(noteId) {
 }
 
 function renderNoteItem(note, dragEnabled) {
+    const showBook = !getBookFilter();
+
     return `
         <article
             class="note-item ${noteThemeClass(note.id)}${dragEnabled ? " draggable" : ""}"
@@ -331,7 +438,7 @@ function renderNoteItem(note, dragEnabled) {
             <div class="note-content">
                 <div class="note-top">
                     <div class="note-meta">
-                        <div class="note-book" dir="auto">${escapeHtml(note.book)}</div>
+                        ${showBook ? `<div class="note-book" dir="auto">${escapeHtml(note.book)}</div>` : ""}
                         <span class="note-chapter-badge">Ch. ${note.chapter}</span>
                     </div>
                     <span class="note-id">#${note.id}</span>
@@ -423,8 +530,17 @@ function setupDragAndDrop(container) {
 async function loadNotes() {
     const container = document.getElementById("notesList");
     const badge = document.getElementById("noteCount");
-    const bookFilter = document.getElementById("bookFilter").value.trim();
+    const bookFilter = getBookFilter();
     const sort = document.getElementById("noteSort").value;
+
+    if (isNewBookMode) {
+        populateAiNotePicker();
+        return;
+    }
+
+    if (!activeBook) {
+        return;
+    }
 
     const params = new URLSearchParams();
     if (bookFilter) {
@@ -440,25 +556,14 @@ async function loadNotes() {
         loadedNotes = notes;
 
         badge.textContent = String(notes.length);
-        updateFilterUI();
+        updateWorkspaceUI();
 
         if (notes.length === 0) {
-            const filterActive = Boolean(bookFilter);
-            container.innerHTML = filterActive
-                ? `
+            container.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-icon">🔍</div>
-                    <p class="empty-title">No notes for this book</p>
-                    <p>Try another filter or add a note for “${escapeHtml(bookFilter)}”.</p>
-                    <div class="empty-action">
-                        <button type="button" class="btn-ghost" onclick="clearFilter()">Clear filter</button>
-                    </div>
-                </div>`
-                : `
-                <div class="empty-state">
-                    <div class="empty-icon">📖</div>
-                    <p class="empty-title">Your desk is empty</p>
-                    <p>Save your first note — it’ll show up here, colorful and ready to revisit.</p>
+                    <div class="empty-icon">✏️</div>
+                    <p class="empty-title">No notes yet</p>
+                    <p>Write your first note for “${escapeHtml(activeBook)}” above.</p>
                 </div>`;
             populateAiNotePicker();
             return;
@@ -472,14 +577,6 @@ async function loadNotes() {
         container.innerHTML = '<div class="empty-state">Could not load notes.</div>';
         badge.textContent = "—";
     }
-}
-
-function clearForm() {
-    document.getElementById("bookName").value = "";
-    document.getElementById("chapter").value = "";
-    document.getElementById("noteText").value = "";
-    updateCharCount();
-    setComposeMode("create");
 }
 
 function populateAiNotePicker() {
@@ -500,7 +597,8 @@ function populateAiNotePicker() {
     findBtn.disabled = false;
     select.innerHTML = loadedNotes.map((note) => {
         const preview = note.note.length > 42 ? `${note.note.slice(0, 42)}…` : note.note;
-        return `<option value="${note.id}">#${note.id} · ${escapeHtml(note.book)} Ch.${note.chapter} — ${escapeHtml(preview)}</option>`;
+        const prefix = getBookFilter() ? "" : `${escapeHtml(note.book)} · `;
+        return `<option value="${note.id}">#${note.id} · ${prefix}Ch.${note.chapter} — ${escapeHtml(preview)}</option>`;
     }).join("");
 }
 
@@ -549,7 +647,7 @@ async function findRelatedNotes(noteId) {
     panel.hidden = false;
     title.textContent = "Finding connections…";
     subtitle.textContent = source
-        ? `Comparing note #${noteId} to ${Math.max(loadedNotes.length - 1, 0)} other note(s)`
+        ? `Comparing note #${noteId} against your full library`
         : "";
     sourceCard.hidden = !source;
     sourceCard.innerHTML = source ? renderSourceNoteCard(source) : "";
@@ -620,7 +718,10 @@ async function findRelatedNotes(noteId) {
 }
 
 function closeRelatedPanel() {
-    document.getElementById("relatedPanel").hidden = true;
+    const panel = document.getElementById("relatedPanel");
+    if (panel) {
+        panel.hidden = true;
+    }
     highlightSourceNote(null);
 }
 
@@ -659,15 +760,8 @@ function updateCharCount() {
 }
 
 document.getElementById("noteText").addEventListener("input", updateCharCount);
-document.getElementById("bookFilter").addEventListener("input", () => {
-    const book = document.getElementById("bookFilter").value;
-    loadNotes();
-    loadSimilarBooks(book);
-    highlightSelectedChip(book);
-    updateFilterUI();
-});
-
-document.getElementById("clearFilterBtn").addEventListener("click", clearFilter);
+document.getElementById("addBookBtn").addEventListener("click", startNewBook);
+document.getElementById("backToBooksBtn").addEventListener("click", deselectBook);
 document.getElementById("closeRelatedBtn").addEventListener("click", closeRelatedPanel);
 document.getElementById("aiFindBtn").addEventListener("click", findConnectionsFromPicker);
 document.getElementById("noteSort").addEventListener("change", loadNotes);
@@ -680,6 +774,4 @@ document.addEventListener("keydown", (e) => {
 
 checkHealth();
 loadBooks();
-loadNoteCount();
-loadNotes();
-updateFilterUI();
+updateWorkspaceUI();
