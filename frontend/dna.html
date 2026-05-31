@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Genome Analyzer</title>
+    <title>DNA Lab · Ziv Grinblat</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=4">
-    <link rel="stylesheet" href="css/dna.css?v=4">
+    <link rel="stylesheet" href="css/styles.css?v=9">
+    <link rel="stylesheet" href="css/dna.css?v=5">
 </head>
 <body>
     <header class="site-header site-header-genome">
         <div class="shell">
             <div class="brand">
-                <div class="brand-mark">G</div>
+                <div class="brand-mark">ZG</div>
                 <div>
-                    <h1>Genome Analyzer</h1>
-                    <p>Learning Assistant</p>
+                    <h1>Ziv Grinblat</h1>
+                    <p>DNA Lab</p>
                 </div>
             </div>
             <div class="status-pill">
@@ -26,20 +26,25 @@
         </div>
         <nav class="site-nav shell" aria-label="Main">
             <a href="/" class="nav-pill">
+                <span class="nav-icon home">Z</span>
+                Home
+            </a>
+            <a href="/notes.html" class="nav-pill">
                 <span class="nav-icon notes">B</span>
                 Book Notes
             </a>
             <a href="/dna.html" class="nav-pill active">
                 <span class="nav-icon genome">G</span>
-                Genome Analyzer
+                DNA Lab
             </a>
         </nav>
     </header>
 
     <section class="hero-band hero-band-genome">
         <div class="shell">
-            <p class="hero-tag">DNA lab</p>
-            <h2 class="hero-headline">Paste a sequence. See what it’s made of.</h2>
+            <p class="hero-tag">Research tooling</p>
+            <h2 class="hero-headline">Explore DNA sequences with API-backed analysis.</h2>
+            <p class="hero-context">Part of my biology × software learning path — same FastAPI backend as Book Notes.</p>
         </div>
     </section>
 
@@ -48,21 +53,36 @@
             <div>
                 <span class="zone-label">🧬 Analyze</span>
                 <h3>Sequence tools</h3>
-                <p class="zone-sub">Valid bases: A, T, G, C — up to 1,000 characters</p>
+                <p class="zone-sub">Paste raw DNA or FASTA — bases A, T, G, C — up to 1,000 characters</p>
             </div>
         </div>
         <div class="shell compose-panel genome-panel">
+            <div class="dna-toolbar">
+                <div class="form-group grow">
+                    <label for="dnaExampleSelect">Load example</label>
+                    <select id="dnaExampleSelect" class="sort-select">
+                        <option value="">Choose a sequence…</option>
+                        <option value="atgc">Basic ATGC</option>
+                        <option value="brca1">BRCA1 fragment (demo)</option>
+                        <option value="covid">SARS-CoV-2 spike fragment (demo)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dnaFileInput">FASTA file</label>
+                    <input type="file" id="dnaFileInput" class="dna-file-input" accept=".fasta,.fa,.txt">
+                </div>
+            </div>
             <div class="form-group">
                 <label for="dnaInput">DNA sequence</label>
                 <textarea
                     id="dnaInput"
                     class="dna-input"
-                    placeholder="Enter A, T, G, C only — e.g. ATGC"
+                    placeholder="ATGC or FASTA (lines starting with &gt; are ignored)"
                     maxlength="1000"
                     spellcheck="false"
                 ></textarea>
                 <div class="field-footer">
-                    <button type="button" class="btn-text" id="dnaExampleBtn">Load example</button>
+                    <button type="button" class="btn-text" id="dnaClearBtn">Clear</button>
                     <span class="char-count" id="dnaCharCount">0/1000</span>
                 </div>
             </div>
@@ -83,6 +103,10 @@
                     <div class="gc-bar-fill" id="gcBarFill"></div>
                 </div>
                 <div class="dna-result-block">
+                    <p class="result-label">Nucleotide distribution</p>
+                    <div class="nucleotide-chart" id="nucleotideChart"></div>
+                </div>
+                <div class="dna-result-block">
                     <p class="result-label">Reverse complement</p>
                     <p class="dna-sequence" id="reverseComplement"></p>
                 </div>
@@ -98,6 +122,7 @@
 
     <div class="toast" id="toast"></div>
 
+    <script src="js/site.js"></script>
     <script src="js/dna.js"></script>
 </body>
 </html>

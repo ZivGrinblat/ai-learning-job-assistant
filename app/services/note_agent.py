@@ -1,3 +1,12 @@
+"""
+Related-notes agent — finds up to 3 notes connected to a source note.
+
+Uses OpenAI when OPENAI_API_KEY is set; otherwise stub (first 3 candidates).
+Returns typed RelatedNotesResponse; None if source note missing (route → 404).
+
+Depends on note_store for data — does not know HTTP.
+"""
+
 import json
 import os
 
@@ -18,15 +27,18 @@ Respond with JSON only:
 
 
 def _stub_related(others: list[dict]) -> list[RelatedNoteItem]:
+    """Deterministic fallback — no API key or after OpenAI failure."""
     related = []
     for note in others[:3]:
-        related.append(RelatedNoteItem(
-            note_id=note["id"],
-            book=note["book"],
-            chapter=note["chapter"],
-            note=note["note"],
-            reason="Stub match - LLM not connected yet",
-        ))
+        related.append(
+            RelatedNoteItem(
+                note_id=note["id"],
+                book=note["book"],
+                chapter=note["chapter"],
+                note=note["note"],
+                reason="Stub match - LLM not connected yet",
+            )
+        )
     return related
 
 
@@ -35,6 +47,7 @@ def _pick_related_with_openai(
     others: list[dict],
     api_key: str,
 ) -> list[RelatedNoteItem]:
+    """Ask gpt-4o-mini for ids + reasons; ignore hallucinated ids."""
     if not others:
         return []
 
@@ -77,18 +90,24 @@ def _pick_related_with_openai(
         note = others_by_id.get(note_id)
         if note is None or not reason:
             continue
-        related.append(RelatedNoteItem(
-            note_id=note["id"],
-            book=note["book"],
-            chapter=note["chapter"],
-            note=note["note"],
-            reason=reason[:200],
-        ))
+        related.append(
+            RelatedNoteItem(
+                note_id=note["id"],
+                book=note["book"],
+                chapter=note["chapter"],
+                note=note["note"],
+                reason=reason[:200],
+            )
+        )
 
     return related
 
 
 def find_related_notes(source_note_id: int) -> RelatedNotesResponse | None:
+    """
+    Load source + all other notes, pick related via OpenAI or stub.
+    None means source id not found — caller maps to HTTP 404.
+    """
     source = get_note_by_id(source_note_id)
     if source is None:
         return None

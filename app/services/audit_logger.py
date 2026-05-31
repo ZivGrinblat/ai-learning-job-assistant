@@ -1,8 +1,14 @@
+"""
+Append-only API request log for text analysis endpoints.
+
+LOG_FILE_PATH is monkeypatched in tests to write to a temp directory.
+Side effect only — callers don't use the return value.
+"""
+
 import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-
 
 LOG_FILE_PATH = Path("logs/api_requests.log")
 LOG_ENTRY_SEPARATOR = "\n---\n\n"

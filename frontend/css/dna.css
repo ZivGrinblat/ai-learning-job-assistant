@@ -148,7 +148,72 @@
     border: 2px solid #fca5a5;
 }
 
+.hero-context {
+    margin-top: 0.65rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #047857;
+    max-width: 36rem;
+    line-height: 1.5;
+}
+
+.dna-toolbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dna-file-input {
+    font-family: inherit;
+    font-size: 0.85rem;
+    max-width: 220px;
+}
+
+.nucleotide-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.chart-row {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr 2.5rem;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.chart-label {
+    font-weight: 800;
+    font-size: 0.9rem;
+}
+
+.chart-bar-track {
+    height: 10px;
+    background: rgba(6, 78, 59, 0.12);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.chart-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    min-width: 2px;
+}
+
+.chart-a { background: #16a34a; }
+.chart-t { background: #dc2626; }
+.chart-g { background: #d97706; }
+.chart-c { background: #2563eb; }
+
+.chart-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: right;
+}
+
 @media (max-width: 768px) {
+    .dna-toolbar { grid-template-columns: 1fr; }
     .dna-stats-row { grid-template-columns: 1fr; }
     .nucleotide-count-list { grid-template-columns: repeat(2, 1fr); }
 }

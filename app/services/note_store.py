@@ -1,7 +1,14 @@
-import sqlite3
-import os
+"""
+SQLite persistence for reading notes.
 
-from app.schemas import notes
+All SQL lives here — routes never touch the database directly.
+Returns plain dicts/lists so services and tests don't depend on Pydantic.
+
+DB_PATH is a module constant so tests can monkeypatch to an isolated file.
+"""
+
+import os
+import sqlite3
 
 DB_PATH = "data/notes.db"
 
@@ -23,6 +30,7 @@ SORT_CLAUSES = {
 
 
 def _row_to_note(row) -> dict:
+    """Convert sqlite tuple row to the dict shape NoteItem expects."""
     return {
         "id": row[0],
         "book": row[1],
@@ -34,6 +42,7 @@ def _row_to_note(row) -> dict:
 
 
 def _ensure_schema(connection: sqlite3.Connection) -> None:
+    """Migrate older DBs: add sort_order column and backfill from id order."""
     columns = {
         row[1] for row in connection.execute("PRAGMA table_info(notes)").fetchall()
     }
@@ -49,15 +58,18 @@ def _ensure_schema(connection: sqlite3.Connection) -> None:
             )
 
 
-def init_db():
+def init_db() -> None:
+    """Create data dir, table, and run migrations — called on app startup."""
     os.makedirs("data", exist_ok=True)
     connection = sqlite3.connect(DB_PATH)
     connection.execute(CREATE_TABLE)
     _ensure_schema(connection)
     connection.commit()
     connection.close()
-    
-def save_note(book: str, chapter: int, note: str):
+
+
+def save_note(book: str, chapter: int, note: str) -> int:
+    """Insert note at end of global sort_order; return new row id."""
     connection = sqlite3.connect(DB_PATH)
     _ensure_schema(connection)
     next_order = connection.execute(
@@ -72,8 +84,10 @@ def save_note(book: str, chapter: int, note: str):
     connection.commit()
     connection.close()
     return new_id
-    
-def delete_note(note_id: int):
+
+
+def delete_note(note_id: int) -> bool:
+    """Return True if a row was deleted."""
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.execute("DELETE FROM notes WHERE id = ?", (note_id,))
     deleted = cursor.rowcount > 0
@@ -83,6 +97,7 @@ def delete_note(note_id: int):
 
 
 def update_note(note_id: int, book: str, chapter: int, note: str) -> bool:
+    """Return True if note_id existed."""
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.execute(
         "UPDATE notes SET book = ?, chapter = ?, note = ? WHERE id = ?",
@@ -95,6 +110,7 @@ def update_note(note_id: int, book: str, chapter: int, note: str) -> bool:
 
 
 def reorder_notes(note_ids: list[int]) -> None:
+    """Set sort_order from list index — used after drag-and-drop in UI."""
     connection = sqlite3.connect(DB_PATH)
     for index, note_id in enumerate(note_ids):
         connection.execute(
@@ -105,20 +121,32 @@ def reorder_notes(note_ids: list[int]) -> None:
     connection.close()
 
 
-def get_notes(book_name: str | None = None, sort: str = "custom") -> list[dict]:
+def get_notes(
+    book_name: str | None = None,
+    sort: str = "custom",
+    query: str | None = None,
+) -> list[dict]:
+    """Filtered list; query matches note text (LIKE); sort from SORT_CLAUSES."""
     order_clause = SORT_CLAUSES.get(sort, SORT_CLAUSES["custom"])
+    conditions = []
+    params: list = []
+
+    if book_name is not None:
+        conditions.append("book = ?")
+        params.append(book_name)
+
+    if query:
+        conditions.append("note LIKE ?")
+        params.append(f"%{query}%")
+
+    where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
 
     try:
         with sqlite3.connect(DB_PATH) as connection:
-            if book_name is None:
-                rows = connection.execute(
-                    f"SELECT * FROM notes ORDER BY {order_clause}"
-                ).fetchall()
-            else:
-                rows = connection.execute(
-                    f"SELECT * FROM notes WHERE book = ? ORDER BY {order_clause}",
-                    (book_name,),
-                ).fetchall()
+            rows = connection.execute(
+                f"SELECT * FROM notes {where_clause} ORDER BY {order_clause}",
+                params,
+            ).fetchall()
     except sqlite3.Error as error:
         print(f"Database error: {error}")
         return []
@@ -126,16 +154,33 @@ def get_notes(book_name: str | None = None, sort: str = "custom") -> list[dict]:
     return [_row_to_note(row) for row in rows]
 
 
-def get_all_notes():
+def get_book_stats(book_name: str) -> dict | None:
+    """Derive stats from notes; None if book has no notes (route → 404)."""
+    notes = get_notes(book_name=book_name)
+    if not notes:
+        return None
+
+    chapters = {note["chapter"] for note in notes}
+    return {
+        "book": book_name,
+        "note_count": len(notes),
+        "chapter_count": len(chapters),
+        "last_updated": max(note["created_at"] for note in notes),
+    }
+
+
+def get_all_notes() -> list[dict]:
+    """Unfiltered list — convenience wrapper."""
     return get_notes()
 
 
-def get_note_by_id(note_id: int):
+def get_note_by_id(note_id: int) -> dict | None:
+    """Single note — used by note_agent and edit flows."""
     try:
         with sqlite3.connect(DB_PATH) as connection:
             row = connection.execute(
                 "SELECT * FROM notes WHERE id = ?",
-                (note_id,)
+                (note_id,),
             ).fetchone()
 
     except sqlite3.Error as error:
@@ -145,41 +190,43 @@ def get_note_by_id(note_id: int):
     if row is None:
         return None
 
-    new_note = _row_to_note(row)
+    return _row_to_note(row)
 
-    return new_note
 
 def count_notes() -> int | None:
+    """Total note count across all books."""
     try:
         with sqlite3.connect(DB_PATH) as connection:
-            number_of_notes = connection.execute("SELECT COUNT(*) FROM notes").fetchone()
-            
+            number_of_notes = connection.execute(
+                "SELECT COUNT(*) FROM notes"
+            ).fetchone()
+
     except sqlite3.Error as error:
         print(f"Database error: {error}")
         return None
-    
+
     return number_of_notes[0]
 
 
 def count_notes_for_one_book(book_name: str) -> int | None:
     try:
         with sqlite3.connect(DB_PATH) as connection:
-            notes_count = connection.execute("SELECT COUNT(*) FROM notes WHERE book = ?", (book_name, )).fetchone()
+            notes_count = connection.execute(
+                "SELECT COUNT(*) FROM notes WHERE book = ?",
+                (book_name,),
+            ).fetchone()
     except sqlite3.Error as error:
         print(f"Database error: {error}")
         return None
     return notes_count[0]
 
 
-def get_books():
+def get_books() -> list[dict]:
+    """Library sidebar data: GROUP BY book with counts."""
     connection = sqlite3.connect(DB_PATH)
     rows = connection.execute(
         "SELECT book, COUNT(*) FROM notes GROUP BY book"
     ).fetchall()
     connection.close()
 
-    list_of_books = []
-    for row in rows:
-        list_of_books.append({"book": row[0], "note_count": row[1]})
-
-    return list_of_books
+    return [{"book": row[0], "note_count": row[1]} for row in rows]

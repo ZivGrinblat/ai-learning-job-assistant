@@ -419,3 +419,35 @@ def test_get_related_notes_uses_openai_when_key_set(tmp_path, monkeypatch):
     assert result.status_code == 200
     assert data["related"][0]["note_id"] == first_id
     assert data["related"][0]["reason"] == "Same book and theme."
+
+
+def test_search_notes_by_query(tmp_path, monkeypatch):
+    db_path = tmp_path / "test.db"
+    monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
+    init_db()
+
+    client.post("/notes", json={"book_name": "Bio Book", "chapter_number": 1, "note_text": "genomics DNA"})
+    client.post("/notes", json={"book_name": "Bio Book", "chapter_number": 2, "note_text": "unrelated topic"})
+
+    response = client.get("/notes?q=genomics")
+    data = response.json()
+
+    assert response.status_code == 200
+    assert len(data) == 1
+    assert "genomics" in data[0]["note"]
+
+
+def test_book_stats_endpoint(tmp_path, monkeypatch):
+    db_path = tmp_path / "test.db"
+    monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
+    init_db()
+
+    client.post("/notes", json={"book_name": "Stats Book", "chapter_number": 1, "note_text": "one"})
+    client.post("/notes", json={"book_name": "Stats Book", "chapter_number": 3, "note_text": "two"})
+
+    response = client.get("/books/stats?book=Stats%20Book")
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["note_count"] == 2
+    assert data["chapter_count"] == 2

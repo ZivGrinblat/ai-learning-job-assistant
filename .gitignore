@@ -6,6 +6,6 @@ __pycache__/
 .pytest_cache/
 .env
 logs/
-data/
+/data/
 Untitled
 to_be_deleted/

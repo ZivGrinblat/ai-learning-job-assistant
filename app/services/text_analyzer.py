@@ -1,3 +1,11 @@
+"""
+Text statistics and normalization — no HTTP.
+
+analyze_text returns a dict that TextAnalysisResponse unpacks in the route.
+clean_text collapses whitespace; analyze_text runs counts on cleaned text.
+"""
+
+
 def is_empty_or_whitespace(text: str) -> bool:
     return not text or not text.strip()
 
@@ -27,25 +35,25 @@ def count_lines(text: str) -> int:
     return len(text.splitlines())
 
 
+def clean_text(text: str) -> str:
+    if is_empty_or_whitespace(text):
+        return ""
+
+    splitted_text = text.split()
+    return " ".join(splitted_text)
+
+
 def analyze_text(text: str) -> dict:
+    """Bundle all metrics for POST /analyze-text."""
     is_empty = is_empty_or_whitespace(text)
     cleaned_text = clean_text(text)
 
     return {
         "word_count": count_words(cleaned_text),
         "character_count": count_characters(cleaned_text),
-        "character_count_without_spaces": count_characters(cleaned_text, include_spaces=False),
+        "character_count_without_spaces": count_characters(
+            cleaned_text, include_spaces=False
+        ),
         "line_count": count_lines(cleaned_text),
         "is_empty": is_empty,
     }
-    
-def clean_text(text: str) -> str:
-    
-    if is_empty_or_whitespace(text):
-        return ""
-    
-    splitted_text = text.split()
-    return " ".join(splitted_text)
-
-    
-    

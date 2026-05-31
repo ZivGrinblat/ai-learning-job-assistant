@@ -1318,6 +1318,58 @@ textarea {
     font-family: inherit;
 }
 
+.book-stats {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #7c3aed;
+    margin-top: 0.35rem;
+}
+
+.notes-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.notes-search-wrap {
+    flex: 1;
+    min-width: 200px;
+}
+
+.btn-export {
+    white-space: nowrap;
+}
+
+.site-footer-shared {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 1.5rem 0 2.5rem;
+    margin-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.site-footer-nav {
+    display: flex;
+    gap: 1rem;
+}
+
+.site-footer-nav a {
+    color: #64748b;
+    text-decoration: none;
+}
+
+.site-footer-nav a:hover {
+    color: #4f46e5;
+}
+
 @media (max-width: 768px) {
     .site-nav { grid-template-columns: 1fr; }
     .form-row { flex-direction: column; }

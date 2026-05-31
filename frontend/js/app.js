@@ -1,13 +1,23 @@
+/**
+ * Book Notes app (notes.html) — frontend state + fetch calls to /notes, /books.
+ *
+ * State at top mirrors backend: activeBook, loadedNotes, editingNoteId.
+ * Sections: config/state · health/stats · book workspace · CRUD · library ·
+ * drag reorder · AI connections · form helpers.
+ * Full function map: ARCHITECTURE.md → Frontend JavaScript map.
+ */
 const API_BASE =
     window.location.protocol === "file:"
         ? "http://127.0.0.1:8000"
         : window.location.origin;
 
+// --- Client state (not persisted until saveNote / reorder) ---
 let editingNoteId = null;
 let draggedNoteId = null;
 let loadedNotes = [];
 let activeBook = null;
 let isNewBookMode = false;
+let noteSearchQuery = "";
 
 function getBookFilter() {
     if (isNewBookMode || !activeBook) {
@@ -17,6 +27,9 @@ function getBookFilter() {
 }
 
 async function checkHealth() {
+    if (window.Site) {
+        return Site.checkHealth();
+    }
     const dot = document.getElementById("statusDot");
     const text = document.getElementById("statusText");
 
@@ -31,6 +44,49 @@ async function checkHealth() {
         dot.classList.remove("online");
         text.textContent = "Offline";
     }
+}
+
+async function loadBookStats() {
+    const statsEl = document.getElementById("bookStats");
+    if (!statsEl || !activeBook || isNewBookMode) {
+        if (statsEl) {
+            statsEl.hidden = true;
+        }
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/books/stats?book=${encodeURIComponent(activeBook)}`);
+        if (!res.ok) {
+            statsEl.hidden = true;
+            return;
+        }
+        const stats = await res.json();
+        statsEl.hidden = false;
+        statsEl.textContent = `${stats.note_count} notes · ${stats.chapter_count} chapters · updated ${formatDate(stats.last_updated)}`;
+    } catch {
+        statsEl.hidden = true;
+    }
+}
+
+function exportBookNotes() {
+    if (!activeBook || loadedNotes.length === 0) {
+        showToast("No notes to export", true);
+        return;
+    }
+
+    const lines = loadedNotes.map(
+        (note) => `#${note.id} · Ch.${note.chapter} (${formatDate(note.created_at)})\n${note.note}\n`
+    );
+    const content = `# ${activeBook}\n\n${lines.join("\n")}`;
+    const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${activeBook.replace(/[^\w\s-]/g, "").trim() || "notes"}.md`;
+    link.click();
+    URL.revokeObjectURL(url);
+    showToast("Book exported");
 }
 
 async function loadNoteCount() {
@@ -92,6 +148,7 @@ async function loadSimilarBooks(bookTitle) {
     }
 }
 
+// --- Book workspace: sidebar selection → main panel ---
 function openBookWorkspace() {
     document.getElementById("bookWorkspace").hidden = false;
     document.getElementById("workspaceWelcome").hidden = true;
@@ -127,11 +184,17 @@ function updateWorkspaceHeader() {
 function selectBook(bookTitle) {
     isNewBookMode = false;
     activeBook = bookTitle;
+    noteSearchQuery = "";
+    const searchInput = document.getElementById("noteSearch");
+    if (searchInput) {
+        searchInput.value = "";
+    }
     document.getElementById("bookName").value = bookTitle;
     openBookWorkspace();
     updateWorkspaceHeader();
     highlightSelectedBook(bookTitle);
     loadNotes();
+    loadBookStats();
     loadSimilarBooks(bookTitle);
     updateWorkspaceUI();
     document.querySelector(".compose-panel").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -273,6 +336,7 @@ function cancelEdit() {
     setComposeMode("create");
 }
 
+// --- CRUD: POST /notes, PATCH /notes/{id}, DELETE /notes/{id} ---
 async function saveNote() {
     const bookName = document.getElementById("bookName").value.trim();
     const chapter = parseInt(document.getElementById("chapter").value, 10);
@@ -322,6 +386,7 @@ async function saveNote() {
             await loadBooks();
             loadNoteCount();
             loadNotes();
+            loadBookStats();
             loadSimilarBooks(bookName);
             highlightSelectedBook(bookName);
         } else {
@@ -353,6 +418,7 @@ async function deleteNote(id) {
             await loadBooks();
             loadNoteCount();
             loadNotes();
+            loadBookStats();
         } else {
             showToast("Delete failed", true);
         }
@@ -361,6 +427,7 @@ async function deleteNote(id) {
     }
 }
 
+// --- Library sidebar: GET /books ---
 async function loadBooks() {
     const container = document.getElementById("bookLibrary");
 
@@ -402,7 +469,7 @@ async function loadBooks() {
 
 function canDragNotes() {
     const sort = document.getElementById("noteSort").value;
-    return sort === "custom" && Boolean(getBookFilter());
+    return sort === "custom" && Boolean(getBookFilter()) && !noteSearchQuery.trim();
 }
 
 const BOOK_TILE_COLORS = [
@@ -457,6 +524,7 @@ function renderNoteItem(note, dragEnabled) {
     `;
 }
 
+// --- Custom sort: drag DOM → PUT /notes/reorder ---
 function setupDragAndDrop(container) {
     if (!canDragNotes()) {
         return;
@@ -547,6 +615,10 @@ async function loadNotes() {
         params.set("book", bookFilter);
     }
     params.set("sort", sort);
+    const search = noteSearchQuery.trim();
+    if (search) {
+        params.set("q", search);
+    }
 
     const url = `${API_BASE}/notes?${params.toString()}`;
 
@@ -559,7 +631,15 @@ async function loadNotes() {
         updateWorkspaceUI();
 
         if (notes.length === 0) {
-            container.innerHTML = `
+            const searchActive = Boolean(noteSearchQuery.trim());
+            container.innerHTML = searchActive
+                ? `
+                <div class="empty-state">
+                    <div class="empty-icon">🔍</div>
+                    <p class="empty-title">No matching notes</p>
+                    <p>Try a different search term.</p>
+                </div>`
+                : `
                 <div class="empty-state">
                     <div class="empty-icon">✏️</div>
                     <p class="empty-title">No notes yet</p>
@@ -579,6 +659,7 @@ async function loadNotes() {
     }
 }
 
+// --- AI Connections: POST /notes/{id}/related ---
 function populateAiNotePicker() {
     const select = document.getElementById("aiNotePick");
     const findBtn = document.getElementById("aiFindBtn");
@@ -765,6 +846,11 @@ document.getElementById("backToBooksBtn").addEventListener("click", deselectBook
 document.getElementById("closeRelatedBtn").addEventListener("click", closeRelatedPanel);
 document.getElementById("aiFindBtn").addEventListener("click", findConnectionsFromPicker);
 document.getElementById("noteSort").addEventListener("change", loadNotes);
+document.getElementById("noteSearch").addEventListener("input", (event) => {
+    noteSearchQuery = event.target.value;
+    loadNotes();
+});
+document.getElementById("exportBookBtn").addEventListener("click", exportBookNotes);
 
 document.addEventListener("keydown", (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {

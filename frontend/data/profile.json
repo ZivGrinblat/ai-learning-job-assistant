@@ -1,0 +1,70 @@
+{
+  "name": "Ziv Grinblat",
+  "tagline": "Security engineer expanding into agentic AI, research tooling, and biology-adjacent engineering — through shipped projects.",
+  "role": "Security Engineer at eToro",
+  "email": "",
+  "resumeUrl": "/assets/resume.pdf",
+  "nowLearning": "Agent orchestration patterns, bioinformatics APIs, and production-grade FastAPI services.",
+  "github": "https://github.com/ZivGrinblat",
+  "linkedin": "https://www.linkedin.com/in/ziv-grinblat-69429a257/",
+  "whatsapp": "https://wa.me/972548053779",
+  "lookingFor": {
+    "title": "What I'm looking for",
+    "targets": [
+      "Agentic Engineer",
+      "Researcher",
+      "Biology & Healthcare"
+    ],
+    "body": "I am looking for roles where engineering meets research — building agentic systems, research workflows, or tools in biology and healthcare. I bring a security background, hands-on fullstack delivery, and growing experience with LLM-powered features and bioinformatics. I want teams that ship carefully, think clearly about data, and care about real-world impact in science and health."
+  },
+  "experience": [
+    {
+      "role": "Security Engineer",
+      "company": "eToro",
+      "period": "Present",
+      "highlights": [
+        "Security engineering in a large fintech environment",
+        "Collaboration with product and engineering on risk and delivery",
+        "Building toward backend and agentic tooling in personal projects"
+      ]
+    }
+  ],
+  "githubHighlights": [
+    {
+      "name": "ai-learning-job-assistant",
+      "description": "FastAPI portfolio app — notes, LLM connections, DNA tools, deployed on Render.",
+      "url": "https://github.com/ZivGrinblat/ai-learning-job-assistant"
+    }
+  ],
+  "skills": {
+    "label": "Current focus",
+    "hint": "Current stack and areas of active development.",
+    "items": [
+      "Python & FastAPI",
+      "REST APIs",
+      "SQLite & data modeling",
+      "JavaScript & fetch",
+      "Docker & deployment",
+      "LLM & agentic systems",
+      "Bioinformatics basics",
+      "Security engineering",
+      "Git & CI habits",
+      "Testing with pytest",
+      "HTML/CSS UI"
+    ]
+  },
+  "projects": [
+    {
+      "title": "Book Notes",
+      "description": "FastAPI + SQLite app for short reading notes, with AI-powered connections between ideas.",
+      "href": "/notes.html",
+      "badge": "Fullstack"
+    },
+    {
+      "title": "Genome Analyzer",
+      "description": "DNA tools — GC content, complement, nucleotide counts — wired to the same API.",
+      "href": "/dna.html",
+      "badge": "Bio + API"
+    }
+  ]
+}

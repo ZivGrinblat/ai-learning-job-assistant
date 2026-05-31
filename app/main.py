@@ -1,13 +1,19 @@
+"""
+Application entry point.
+
+Wires FastAPI, CORS, API routes, DB init on startup, and static frontend.
+Mount StaticFiles last — otherwise it steals paths like /health and /notes.
+"""
+
 from pathlib import Path
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import router
 from app.services.note_store import init_db
-
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -32,6 +38,7 @@ app.include_router(router)
 
 @app.on_event("startup")
 def on_startup() -> None:
+    """Ensure SQLite exists before any request hits note endpoints."""
     init_db()
 
 
