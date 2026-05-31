@@ -11,18 +11,12 @@
 <body>
     <div class="header">
         <div class="header-inner">
-            <div class="header-left">
-                <div class="logo">
-                    <div class="logo-icon">B</div>
-                    <div>
-                        <h1>Book Notes</h1>
-                        <p class="logo-sub">Learning Assistant</p>
-                    </div>
+            <div class="logo">
+                <div class="logo-icon">B</div>
+                <div>
+                    <h1>Book Notes</h1>
+                    <p class="logo-sub">Learning Assistant</p>
                 </div>
-                <nav class="app-nav" aria-label="Main">
-                    <a href="/" class="nav-link active">Book Notes</a>
-                    <a href="/dna.html" class="nav-link">Genome Analyzer</a>
-                </nav>
             </div>
             <div class="status-badge">
                 <span class="status-dot" id="statusDot"></span>
@@ -30,6 +24,19 @@
             </div>
         </div>
     </div>
+
+    <nav class="page-tabs" aria-label="Main">
+        <div class="page-tabs-inner">
+            <a href="/" class="page-tab active">
+                <span class="page-tab-icon notes-icon">B</span>
+                Book Notes
+            </a>
+            <a href="/dna.html" class="page-tab">
+                <span class="page-tab-icon genome-icon">G</span>
+                Genome Analyzer
+            </a>
+        </div>
+    </nav>
 
     <section class="library-section">
         <div class="card">
