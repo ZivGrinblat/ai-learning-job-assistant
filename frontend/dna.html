@@ -3,122 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DNA Lab · Ziv Grinblat</title>
+    <title>Genome · Ziv Grinblat</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css?v=9">
-    <link rel="stylesheet" href="css/dna.css?v=5">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site.css?v=2">
+    <link rel="stylesheet" href="css/dna.css?v=7">
 </head>
-<body>
-    <header class="site-header site-header-genome">
-        <div class="shell">
-            <div class="brand">
-                <div class="brand-mark">ZG</div>
-                <div>
-                    <h1>Ziv Grinblat</h1>
-                    <p>DNA Lab</p>
+<body class="page-genome">
+    <header class="site-header shell">
+        <div class="site-header-row">
+            <a href="/" class="site-logo">Ziv Grinblat</a>
+            <div class="site-header-end">
+                <span class="site-page-title">Genome</span>
+                <div class="status-pill">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Connecting…</span>
                 </div>
             </div>
-            <div class="status-pill">
-                <span class="status-dot" id="statusDot"></span>
-                <span id="statusText">Connecting...</span>
-            </div>
         </div>
-        <nav class="site-nav shell" aria-label="Main">
-            <a href="/" class="nav-pill">
-                <span class="nav-icon home">Z</span>
-                Home
-            </a>
-            <a href="/notes.html" class="nav-pill">
-                <span class="nav-icon notes">B</span>
-                Book Notes
-            </a>
-            <a href="/dna.html" class="nav-pill active">
-                <span class="nav-icon genome">G</span>
-                DNA Lab
-            </a>
+        <nav class="site-nav" aria-label="Main">
+            <a href="/" class="site-nav-link">Overview</a>
+            <a href="/notes.html" class="site-nav-link">Notes</a>
+            <a href="/dna.html" class="site-nav-link active">Genome</a>
         </nav>
     </header>
 
-    <section class="hero-band hero-band-genome">
-        <div class="shell">
-            <p class="hero-tag">Research tooling</p>
-            <h2 class="hero-headline">Explore DNA sequences with API-backed analysis.</h2>
-            <p class="hero-context">Part of my biology × software learning path — same FastAPI backend as Book Notes.</p>
-        </div>
+    <section class="page-band page-band--teal shell">
+        <p class="page-band-tag">Bioinformatics</p>
+        <h1 class="page-band-title">Sequence analysis</h1>
+        <p class="page-band-sub">GC content, nucleotide composition, and reverse complement — powered by the same FastAPI backend.</p>
     </section>
 
-    <section class="zone zone-genome">
-        <div class="shell zone-head">
-            <div>
-                <span class="zone-label">🧬 Analyze</span>
-                <h3>Sequence tools</h3>
-                <p class="zone-sub">Paste raw DNA or FASTA — bases A, T, G, C — up to 1,000 characters</p>
+    <main class="genome-main shell">
+        <section class="workspace-section">
+            <div class="section-head">
+                <div>
+                    <span class="section-label">Input</span>
+                    <h3>Analyze a sequence</h3>
+                    <p class="section-sub">Paste raw DNA or FASTA (A, T, G, C) — up to 1,000 characters</p>
+                </div>
             </div>
-        </div>
-        <div class="shell compose-panel genome-panel">
-            <div class="dna-toolbar">
-                <div class="form-group grow">
-                    <label for="dnaExampleSelect">Load example</label>
-                    <select id="dnaExampleSelect" class="sort-select">
-                        <option value="">Choose a sequence…</option>
-                        <option value="atgc">Basic ATGC</option>
-                        <option value="brca1">BRCA1 fragment (demo)</option>
-                        <option value="covid">SARS-CoV-2 spike fragment (demo)</option>
-                    </select>
+            <div class="compose-panel genome-panel">
+                <div class="dna-toolbar">
+                    <div class="form-group grow">
+                        <label for="dnaExampleSelect">Load example</label>
+                        <select id="dnaExampleSelect" class="sort-select">
+                            <option value="">Choose a sequence…</option>
+                            <option value="atgc">Basic ATGC</option>
+                            <option value="brca1">BRCA1 fragment (demo)</option>
+                            <option value="covid">SARS-CoV-2 spike fragment (demo)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dnaFileInput">FASTA file</label>
+                        <input type="file" id="dnaFileInput" class="dna-file-input" accept=".fasta,.fa,.txt">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="dnaFileInput">FASTA file</label>
-                    <input type="file" id="dnaFileInput" class="dna-file-input" accept=".fasta,.fa,.txt">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="dnaInput">DNA sequence</label>
-                <textarea
-                    id="dnaInput"
-                    class="dna-input"
-                    placeholder="ATGC or FASTA (lines starting with &gt; are ignored)"
-                    maxlength="1000"
-                    spellcheck="false"
-                ></textarea>
-                <div class="field-footer">
-                    <button type="button" class="btn-text" id="dnaClearBtn">Clear</button>
-                    <span class="char-count" id="dnaCharCount">0/1000</span>
-                </div>
-            </div>
-            <button class="btn-save btn-genome" id="dnaAnalyzeBtn" onclick="analyzeDna()">Analyze sequence</button>
-
-            <div class="dna-results" id="dnaResults" hidden>
-                <div class="dna-stats-row">
-                    <div class="dna-stat">
-                        <p class="result-label">Length</p>
-                        <p class="dna-stat-value" id="dnaLength">—</p>
-                    </div>
-                    <div class="dna-stat">
-                        <p class="result-label">GC content</p>
-                        <p class="dna-stat-value" id="gcPercent">—</p>
+                    <label for="dnaInput">DNA sequence</label>
+                    <textarea
+                        id="dnaInput"
+                        class="dna-input"
+                        placeholder="ATGC or FASTA (lines starting with &gt; are ignored)"
+                        maxlength="1000"
+                        spellcheck="false"
+                    ></textarea>
+                    <div class="field-footer">
+                        <button type="button" class="btn-text" id="dnaClearBtn">Clear</button>
+                        <span class="char-count" id="dnaCharCount">0/1000</span>
                     </div>
                 </div>
-                <div class="gc-bar" aria-hidden="true">
-                    <div class="gc-bar-fill" id="gcBarFill"></div>
-                </div>
-                <div class="dna-result-block">
-                    <p class="result-label">Nucleotide distribution</p>
-                    <div class="nucleotide-chart" id="nucleotideChart"></div>
-                </div>
-                <div class="dna-result-block">
-                    <p class="result-label">Reverse complement</p>
-                    <p class="dna-sequence" id="reverseComplement"></p>
-                </div>
-                <div class="dna-result-block">
-                    <p class="result-label">Nucleotide counts</p>
-                    <ul class="nucleotide-count-list" id="nucleotideCounts"></ul>
-                </div>
-            </div>
+                <button class="btn-save btn-genome" id="dnaAnalyzeBtn" onclick="analyzeDna()">Analyze sequence</button>
 
-            <p class="dna-error" id="dnaError" hidden></p>
-        </div>
-    </section>
+                <div class="dna-results" id="dnaResults" hidden>
+                    <div class="dna-stats-row">
+                        <div class="dna-stat">
+                            <p class="result-label">Length</p>
+                            <p class="dna-stat-value" id="dnaLength">—</p>
+                        </div>
+                        <div class="dna-stat">
+                            <p class="result-label">GC content</p>
+                            <p class="dna-stat-value" id="gcPercent">—</p>
+                        </div>
+                    </div>
+                    <div class="gc-bar" aria-hidden="true">
+                        <div class="gc-bar-fill" id="gcBarFill"></div>
+                    </div>
+                    <div class="dna-result-block">
+                        <p class="result-label">Nucleotide distribution</p>
+                        <div class="nucleotide-chart" id="nucleotideChart"></div>
+                    </div>
+                    <div class="dna-result-block">
+                        <p class="result-label">Reverse complement</p>
+                        <p class="dna-sequence" id="reverseComplement"></p>
+                    </div>
+                    <div class="dna-result-block">
+                        <p class="result-label">Nucleotide counts</p>
+                        <ul class="nucleotide-count-list" id="nucleotideCounts"></ul>
+                    </div>
+                </div>
+
+                <p class="dna-error" id="dnaError" hidden></p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer shell">
+        <p>&copy; <span id="footerYear"></span> Ziv Grinblat</p>
+        <nav class="site-footer-nav" aria-label="Footer">
+            <a href="/">Overview</a>
+            <a href="/notes.html">Notes</a>
+            <a href="/dna.html">Genome</a>
+        </nav>
+    </footer>
 
     <div class="toast" id="toast"></div>
 

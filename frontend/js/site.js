@@ -1,8 +1,5 @@
 /**
- * Shared utilities for notes.html and dna.html.
- * apiBase: same origin in prod, localhost when opening HTML from disk.
- * checkHealth: polls GET /health for the status dot.
- * injectFooter: adds Home / Book Notes / DNA nav on non-portfolio pages.
+ * Shared utilities for all site pages.
  */
 const Site = {
     apiBase:
@@ -21,9 +18,7 @@ const Site = {
             const res = await fetch(`${this.apiBase}/health`);
             if (res.ok) {
                 dot.classList.add("online");
-                text.textContent = document.body.classList.contains("portfolio-page")
-                    ? "Projects live"
-                    : "Connected";
+                text.textContent = "Online";
             }
         } catch {
             dot.classList.remove("online");
@@ -31,30 +26,18 @@ const Site = {
         }
     },
 
-    injectFooter() {
-        if (document.querySelector(".site-footer-shared")) {
-            return;
+    setFooterYear() {
+        const yearEl = document.getElementById("footerYear");
+        if (yearEl) {
+            yearEl.textContent = String(new Date().getFullYear());
         }
-
-        const footer = document.createElement("footer");
-        footer.className = "site-footer-shared shell";
-        footer.innerHTML = `
-            <p>&copy; ${new Date().getFullYear()} Ziv Grinblat</p>
-            <nav class="site-footer-nav" aria-label="Footer">
-                <a href="/">Home</a>
-                <a href="/notes.html">Book Notes</a>
-                <a href="/dna.html">DNA Lab</a>
-            </nav>`;
-        document.body.appendChild(footer);
     },
 };
 
 window.Site = Site;
 
+Site.setFooterYear();
+
 if (document.getElementById("statusDot")) {
     Site.checkHealth();
-}
-
-if (!document.body.classList.contains("portfolio-page")) {
-    Site.injectFooter();
 }

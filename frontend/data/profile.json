@@ -1,14 +1,19 @@
 {
   "name": "Ziv Grinblat",
-  "tagline": "Security engineer at eToro with a growing practice in backend development, LLM-integrated applications, and tooling for life-sciences data.",
-  "role": "Security Engineer, eToro",
+  "tagline": "Security engineer at eToro, building backend systems, LLM-integrated applications, and tooling for life-sciences data.",
+  "role": "Security Engineer · eToro",
   "email": "",
   "resumeUrl": "/assets/resume.pdf",
   "github": "https://github.com/ZivGrinblat",
   "linkedin": "https://www.linkedin.com/in/ziv-grinblat-69429a257/",
   "lookingFor": {
-    "title": "Focus",
-    "body": "Engineering roles at the intersection of software and research—internal platforms, data services, or applied AI in biology and healthcare. Background in security within regulated environments; current independent work centers on API design, structured data, and production deployment."
+    "title": "Career focus",
+    "targets": [
+      "Research engineering",
+      "Applied AI",
+      "Healthcare & biology"
+    ],
+    "body": "Roles where software supports research and clinical workflows—platforms, data services, or applied AI in biology and healthcare. Background in security within regulated environments; independent work focuses on API design, structured data, and production deployment."
   },
   "experience": [
     {
@@ -17,8 +22,8 @@
       "period": "Present",
       "highlights": [
         "Security engineering across a global fintech platform under regulatory requirements",
-        "Partnership with product and engineering teams on risk assessment and secure delivery",
-        "Ongoing development of backend services and research-oriented tooling outside of core role"
+        "Partnership with product and engineering on risk assessment and secure delivery",
+        "Ongoing development of backend services and research-oriented tooling"
       ]
     }
   ],
@@ -30,9 +35,9 @@
     }
   ],
   "skills": {
+    "hint": "Languages, frameworks, and domains in active use.",
     "items": [
-      "Python",
-      "FastAPI",
+      "Python & FastAPI",
       "REST APIs",
       "SQLite",
       "JavaScript",
@@ -48,12 +53,14 @@
     {
       "title": "Book Notes",
       "description": "Structured reading notes with search and AI-assisted cross-referencing.",
-      "href": "/notes.html"
+      "href": "/notes.html",
+      "badge": "Application"
     },
     {
       "title": "Genome Analyzer",
-      "description": "Sequence analysis—GC content, complement, nucleotide composition.",
-      "href": "/dna.html"
+      "description": "Sequence analysis — GC content, complement, nucleotide composition.",
+      "href": "/dna.html",
+      "badge": "Bioinformatics"
     }
   ]
 }

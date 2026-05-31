@@ -11,74 +11,67 @@ function isPlaceholderUrl(url) {
     return !url || url.includes("YOUR-") || url.includes("your-profile");
 }
 
-function renderWorkList(profile) {
-    const items = [];
-
-    for (const project of profile.projects || []) {
-        items.push(`
-            <li>
-                <a class="work-item" href="${escapeHtml(project.href)}">
-                    <span class="work-title">${escapeHtml(project.title)}</span>
-                    <span class="work-desc">${escapeHtml(project.description)}</span>
-                    <span class="work-meta">Site</span>
-                </a>
-            </li>
-        `);
+function setupSocialLink(element, url) {
+    if (!element) {
+        return;
     }
 
-    for (const repo of profile.githubHighlights || []) {
-        items.push(`
-            <li>
-                <a class="work-item work-item--external" href="${escapeHtml(repo.url)}" target="_blank" rel="noopener noreferrer">
-                    <span class="work-title">${escapeHtml(repo.name)}</span>
-                    <span class="work-desc">${escapeHtml(repo.description)}</span>
-                    <span class="work-meta">GitHub</span>
-                </a>
-            </li>
-        `);
+    if (isPlaceholderUrl(url)) {
+        element.classList.add("social-placeholder");
+        element.href = "#";
+        element.removeAttribute("target");
+        return;
     }
 
-    return items.join("");
+    element.href = url;
+    element.classList.remove("social-placeholder");
 }
 
 function renderProfile(profile) {
-    document.title = profile.name;
+    document.title = `${profile.name} · Portfolio`;
+    document.getElementById("headerRole").textContent = profile.role || "Portfolio";
     document.getElementById("profileName").textContent = profile.name;
-    document.getElementById("profileRole").textContent = profile.role;
     document.getElementById("profileTagline").textContent = profile.tagline;
+    document.getElementById("profileRole").textContent = profile.role;
 
-    const contactParts = [];
+    setupSocialLink(document.getElementById("linkedinLink"), profile.linkedin);
+    setupSocialLink(document.getElementById("githubLink"), profile.github);
 
-    if (profile.resumeUrl) {
-        contactParts.push(`<a href="${escapeHtml(profile.resumeUrl)}" download>Resume</a>`);
-    }
-    if (profile.email) {
-        contactParts.push(`<a href="mailto:${escapeHtml(profile.email)}">Email</a>`);
-    }
-    if (!isPlaceholderUrl(profile.linkedin)) {
-        contactParts.push(
-            `<a href="${escapeHtml(profile.linkedin)}" target="_blank" rel="noopener noreferrer">LinkedIn</a>`
-        );
-    }
-    if (!isPlaceholderUrl(profile.github)) {
-        contactParts.push(
-            `<a href="${escapeHtml(profile.github)}" target="_blank" rel="noopener noreferrer">GitHub</a>`
-        );
+    const emailLink = document.getElementById("emailLink");
+    if (emailLink && profile.email) {
+        emailLink.hidden = false;
+        emailLink.href = `mailto:${profile.email}`;
     }
 
-    document.getElementById("contactRow").innerHTML = contactParts.join('<span class="contact-sep">·</span>');
+    const resumeLink = document.getElementById("resumeLink");
+    if (resumeLink && profile.resumeUrl) {
+        resumeLink.hidden = false;
+        resumeLink.href = profile.resumeUrl;
+    }
 
     document.getElementById("lookingTitle").textContent = profile.lookingFor.title;
     document.getElementById("lookingBody").textContent = profile.lookingFor.body;
 
+    const targets = profile.lookingFor.targets || [];
+    document.getElementById("lookingTargets").innerHTML = targets
+        .map((target) => `<li class="target-role">${escapeHtml(target)}</li>`)
+        .join("");
+
+    const heroTargets = document.getElementById("heroTargetRoles");
+    if (heroTargets && targets.length) {
+        heroTargets.textContent = targets.join(" · ");
+    }
+
     document.getElementById("experienceList").innerHTML = (profile.experience || [])
         .map((job) => `
             <article class="experience-item">
-                <div class="experience-item-header">
-                    <h3>${escapeHtml(job.role)}</h3>
-                    <p class="experience-company">${escapeHtml(job.company)}</p>
+                <div class="experience-top">
+                    <div>
+                        <h4>${escapeHtml(job.role)}</h4>
+                        <p class="experience-company">${escapeHtml(job.company)}</p>
+                    </div>
+                    <span class="experience-period">${escapeHtml(job.period)}</span>
                 </div>
-                <span class="experience-period">${escapeHtml(job.period)}</span>
                 <ul class="experience-highlights">
                     ${job.highlights.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
                 </ul>
@@ -86,9 +79,35 @@ function renderProfile(profile) {
         `)
         .join("");
 
-    document.getElementById("skillsList").textContent = profile.skills.items.join(" · ");
+    const skillsHint = document.getElementById("skillsHint");
+    if (skillsHint) {
+        skillsHint.textContent = profile.skills.hint || "";
+    }
 
-    document.getElementById("workList").innerHTML = renderWorkList(profile);
+    document.getElementById("skillsList").innerHTML = profile.skills.items
+        .map((skill) => `<li class="skill-chip">${escapeHtml(skill)}</li>`)
+        .join("");
+
+    document.getElementById("githubList").innerHTML = (profile.githubHighlights || [])
+        .map((repo) => `
+            <a class="github-card" href="${escapeHtml(repo.url)}" target="_blank" rel="noopener noreferrer">
+                <h4>${escapeHtml(repo.name)}</h4>
+                <p>${escapeHtml(repo.description)}</p>
+                <span class="project-cta">View on GitHub →</span>
+            </a>
+        `)
+        .join("");
+
+    document.getElementById("projectsGrid").innerHTML = profile.projects
+        .map((project) => `
+            <a class="project-card" href="${escapeHtml(project.href)}">
+                ${project.badge ? `<span class="project-badge">${escapeHtml(project.badge)}</span>` : ""}
+                <h4>${escapeHtml(project.title)}</h4>
+                <p>${escapeHtml(project.description)}</p>
+                <span class="project-cta">Open project →</span>
+            </a>
+        `)
+        .join("");
 }
 
 async function loadProfile() {

@@ -473,19 +473,19 @@ function canDragNotes() {
 }
 
 const BOOK_TILE_COLORS = [
-    "tile-orange",
-    "tile-pink",
-    "tile-teal",
-    "tile-indigo",
-    "tile-green",
-    "tile-red",
+    "book-accent-1",
+    "book-accent-2",
+    "book-accent-3",
+    "book-accent-4",
+    "book-accent-5",
+    "book-accent-6",
 ];
 
 const NOTE_THEMES = [
-    "note-theme-purple",
-    "note-theme-blue",
-    "note-theme-amber",
-    "note-theme-green",
+    "note-accent-1",
+    "note-accent-2",
+    "note-accent-3",
+    "note-accent-4",
 ];
 
 function noteThemeClass(noteId) {
@@ -514,7 +514,7 @@ function renderNoteItem(note, dragEnabled) {
                 <div class="note-footer">
                     <span class="note-date">${formatDate(note.created_at)}</span>
                     <div class="note-actions">
-                        <button type="button" class="btn-related" onclick="findRelatedNotes(${note.id})" title="Find AI connections">✨ Connect</button>
+                        <button type="button" class="btn-related" onclick="findRelatedNotes(${note.id})" title="Find AI connections">Connect</button>
                         <button type="button" class="btn-edit" onclick="startEdit(${note.id})">Edit</button>
                         <button type="button" class="btn-delete" onclick="deleteNote(${note.id})">Delete</button>
                     </div>
