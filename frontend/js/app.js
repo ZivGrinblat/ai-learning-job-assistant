@@ -340,7 +340,7 @@ function renderNoteItem(note, dragEnabled) {
                 <div class="note-footer">
                     <span class="note-date">${formatDate(note.created_at)}</span>
                     <div class="note-actions">
-                        <button type="button" class="btn-related" onclick="findRelatedNotes(${note.id})">Related</button>
+                        <button type="button" class="btn-related" onclick="findRelatedNotes(${note.id})" title="Find AI connections">✨ Connect</button>
                         <button type="button" class="btn-edit" onclick="startEdit(${note.id})">Edit</button>
                         <button type="button" class="btn-delete" onclick="deleteNote(${note.id})">Delete</button>
                     </div>
@@ -460,12 +460,14 @@ async function loadNotes() {
                     <p class="empty-title">Your desk is empty</p>
                     <p>Save your first note — it’ll show up here, colorful and ready to revisit.</p>
                 </div>`;
+            populateAiNotePicker();
             return;
         }
 
         const dragEnabled = canDragNotes();
         container.innerHTML = notes.map((note) => renderNoteItem(note, dragEnabled)).join("");
         setupDragAndDrop(container);
+        populateAiNotePicker();
     } catch {
         container.innerHTML = '<div class="empty-state">Could not load notes.</div>';
         badge.textContent = "—";
@@ -480,36 +482,117 @@ function clearForm() {
     setComposeMode("create");
 }
 
+function populateAiNotePicker() {
+    const select = document.getElementById("aiNotePick");
+    const findBtn = document.getElementById("aiFindBtn");
+    if (!select || !findBtn) {
+        return;
+    }
+
+    if (loadedNotes.length === 0) {
+        select.innerHTML = '<option value="">Save notes first…</option>';
+        select.disabled = true;
+        findBtn.disabled = true;
+        return;
+    }
+
+    select.disabled = false;
+    findBtn.disabled = false;
+    select.innerHTML = loadedNotes.map((note) => {
+        const preview = note.note.length > 42 ? `${note.note.slice(0, 42)}…` : note.note;
+        return `<option value="${note.id}">#${note.id} · ${escapeHtml(note.book)} Ch.${note.chapter} — ${escapeHtml(preview)}</option>`;
+    }).join("");
+}
+
+function findConnectionsFromPicker() {
+    const noteId = Number(document.getElementById("aiNotePick").value);
+    if (noteId) {
+        findRelatedNotes(noteId);
+    }
+}
+
+function renderSourceNoteCard(note) {
+    return `
+        <div class="source-note-label">Your starting note</div>
+        <div class="source-note-inner ${noteThemeClass(note.id)}">
+            <div class="source-note-meta">
+                <span class="source-note-book" dir="auto">${escapeHtml(note.book)}</span>
+                <span class="note-chapter-badge">Ch. ${note.chapter}</span>
+                <span class="note-id">#${note.id}</span>
+            </div>
+            <p class="source-note-text" dir="auto">${escapeHtml(note.note)}</p>
+        </div>`;
+}
+
+function highlightSourceNote(noteId) {
+    document.querySelectorAll(".note-item").forEach((item) => {
+        item.classList.toggle(
+            "note-source-highlight",
+            noteId !== null && Number(item.dataset.noteId) === noteId,
+        );
+    });
+}
+
 async function findRelatedNotes(noteId) {
     const panel = document.getElementById("relatedPanel");
     const title = document.getElementById("relatedPanelTitle");
+    const subtitle = document.getElementById("relatedPanelSub");
+    const sourceCard = document.getElementById("sourceNoteCard");
     const container = document.getElementById("relatedResults");
+    const source = loadedNotes.find((note) => note.id === noteId);
+
+    const aiPick = document.getElementById("aiNotePick");
+    if (aiPick) {
+        aiPick.value = String(noteId);
+    }
 
     panel.hidden = false;
-    title.textContent = `Related to note #${noteId}`;
-    container.innerHTML = '<p class="related-loading">Finding connections…</p>';
+    title.textContent = "Finding connections…";
+    subtitle.textContent = source
+        ? `Comparing note #${noteId} to ${Math.max(loadedNotes.length - 1, 0)} other note(s)`
+        : "";
+    sourceCard.hidden = !source;
+    sourceCard.innerHTML = source ? renderSourceNoteCard(source) : "";
+    container.innerHTML = `
+        <div class="related-loading-block">
+            <div class="ai-spinner" aria-hidden="true"></div>
+            <p class="related-loading">AI is reading your notes and looking for themes…</p>
+        </div>`;
+    highlightSourceNote(noteId);
     panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 
     try {
         const res = await fetch(`${API_BASE}/notes/${noteId}/related`, { method: "POST" });
 
         if (res.status === 404) {
+            title.textContent = "Note not found";
+            subtitle.textContent = "";
             container.innerHTML = '<p class="related-empty">That note no longer exists.</p>';
             return;
         }
 
         if (!res.ok) {
-            container.innerHTML = '<p class="related-empty">Could not load related notes.</p>';
+            title.textContent = "Something went wrong";
+            subtitle.textContent = "";
+            container.innerHTML = '<p class="related-empty">Could not load related notes. Try again in a moment.</p>';
             return;
         }
 
         const data = await res.json();
+        const isStub = data.related.some((item) => item.reason.includes("Stub match"));
+
+        title.textContent = data.related.length
+            ? `${data.related.length} connection${data.related.length === 1 ? "" : "s"} found`
+            : "No connections yet";
+        subtitle.textContent = isStub
+            ? "Demo mode — add OPENAI_API_KEY on the server for real AI reasons"
+            : "Matched by book, topic, or content";
 
         if (data.related.length === 0) {
             container.innerHTML = `
                 <div class="related-empty-block">
-                    <p class="related-empty-title">No connections yet</p>
-                    <p class="related-empty">Save more notes — once you have others to compare, related ones will show up here.</p>
+                    <p class="related-empty-title">No matches yet</p>
+                    <p class="related-empty">Save more notes on this book or related topics — AI needs other notes to compare against.</p>
                 </div>`;
             return;
         }
@@ -519,19 +602,26 @@ async function findRelatedNotes(noteId) {
                 <div class="related-card-top">
                     <span class="related-card-book" dir="auto">${escapeHtml(item.book)}</span>
                     <span class="note-chapter-badge">Ch. ${item.chapter}</span>
+                    <span class="note-id">#${item.note_id}</span>
                 </div>
                 <p class="related-card-text" dir="auto">${escapeHtml(item.note)}</p>
-                <p class="related-card-reason">${escapeHtml(item.reason)}</p>
+                <div class="related-reason-block">
+                    <span class="related-reason-label">Why it matches</span>
+                    <p class="related-card-reason">${escapeHtml(item.reason)}</p>
+                </div>
                 <button type="button" class="btn-edit btn-small" onclick="startEdit(${item.note_id})">Open note</button>
             </article>
         `).join("");
     } catch {
+        title.textContent = "Offline";
+        subtitle.textContent = "";
         container.innerHTML = '<p class="related-empty">Could not reach API.</p>';
     }
 }
 
 function closeRelatedPanel() {
     document.getElementById("relatedPanel").hidden = true;
+    highlightSourceNote(null);
 }
 
 function clearFormAfterSave() {
@@ -579,6 +669,7 @@ document.getElementById("bookFilter").addEventListener("input", () => {
 
 document.getElementById("clearFilterBtn").addEventListener("click", clearFilter);
 document.getElementById("closeRelatedBtn").addEventListener("click", closeRelatedPanel);
+document.getElementById("aiFindBtn").addEventListener("click", findConnectionsFromPicker);
 document.getElementById("noteSort").addEventListener("change", loadNotes);
 
 document.addEventListener("keydown", (e) => {
