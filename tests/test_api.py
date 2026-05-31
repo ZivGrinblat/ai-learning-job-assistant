@@ -291,9 +291,77 @@ def test_return_neucleotids_counts():
     assert response.status_code == 200
     assert data["dna_string"] == "atgc"
     assert data["a"] == 1 and data["c"] == 1 and data["g"] == 1 and data["t"] == 1
-    
-    
-    
-    
-    
-    
+
+
+def test_patch_note_updates_fields(tmp_path, monkeypatch):
+    db_path = tmp_path / "test.db"
+    monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
+
+    init_db()
+
+    create = client.post(
+        "/notes",
+        json={"book_name": "Book A", "chapter_number": 1, "note_text": "original"},
+    )
+    note_id = create.json()["id"]
+
+    response = client.patch(
+        f"/notes/{note_id}",
+        json={"book_name": "Book B", "chapter_number": 3, "note_text": "updated"},
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"message": "Note updated", "id": note_id}
+
+    notes = client.get("/notes").json()
+    assert notes[0]["book"] == "Book B"
+    assert notes[0]["chapter"] == 3
+    assert notes[0]["note"] == "updated"
+
+
+def test_patch_note_returns_404_for_missing_note(tmp_path, monkeypatch):
+    db_path = tmp_path / "test.db"
+    monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
+
+    init_db()
+
+    response = client.patch(
+        "/notes/999",
+        json={"book_name": "Book A", "chapter_number": 1, "note_text": "updated"},
+    )
+
+    assert response.status_code == 404
+
+
+def test_get_notes_sorts_by_newest(tmp_path, monkeypatch):
+    db_path = tmp_path / "test.db"
+    monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
+
+    init_db()
+
+    client.post("/notes", json={"book_name": "Book A", "chapter_number": 1, "note_text": "first"})
+    client.post("/notes", json={"book_name": "Book A", "chapter_number": 2, "note_text": "second"})
+
+    response = client.get("/notes?sort=newest")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 2
+    assert data[0]["chapter"] == 2
+
+
+def test_reorder_notes_changes_custom_order(tmp_path, monkeypatch):
+    db_path = tmp_path / "test.db"
+    monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
+
+    init_db()
+
+    first = client.post("/notes", json={"book_name": "Book A", "chapter_number": 1, "note_text": "one"}).json()["id"]
+    second = client.post("/notes", json={"book_name": "Book A", "chapter_number": 2, "note_text": "two"}).json()["id"]
+
+    response = client.put("/notes/reorder", json={"note_ids": [second, first]})
+
+    assert response.status_code == 200
+
+    notes = client.get("/notes?sort=custom").json()
+    assert [note["id"] for note in notes] == [second, first]

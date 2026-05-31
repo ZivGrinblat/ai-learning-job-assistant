@@ -1,6 +1,15 @@
 from fastapi import APIRouter, HTTPException, Request
 
-from app.schemas.notes import BookSummary, CountForOneBook, NoteItem, NoteRequest, NoteResponse, SimilarBook
+from app.schemas.notes import (
+    BookSummary,
+    CountForOneBook,
+    NoteItem,
+    NoteRequest,
+    NoteResponse,
+    NoteUpdateRequest,
+    ReorderNotesRequest,
+    SimilarBook,
+)
 from app.schemas.text_analysis import (
     TextAnalysisRequest,
     TextAnalysisResponse,
@@ -12,10 +21,11 @@ from app.services.booksearch import find_similar_books
 from app.services.note_store import (
     count_notes,
     delete_note,
-    get_all_notes,
     get_books,
-    get_notes_by_book_name,
+    get_notes,
+    reorder_notes,
     save_note,
+    update_note,
     count_notes_for_one_book,
 )
 from app.services.text_analyzer import analyze_text, clean_text
@@ -75,10 +85,29 @@ def notes_endpoint(payload: NoteRequest,
     return response
 
 @router.get("/notes", response_model=list[NoteItem])
-def get_notes_endpoint(book: str | None = None):
-    if book is None:
-        return get_all_notes()
-    return get_notes_by_book_name(book)
+def get_notes_endpoint(book: str | None = None, sort: str = "custom"):
+    if sort not in {"custom", "newest", "oldest", "book"}:
+        raise HTTPException(status_code=422, detail="Invalid sort option")
+    return get_notes(book_name=book, sort=sort)
+
+
+@router.put("/notes/reorder")
+def reorder_notes_endpoint(payload: ReorderNotesRequest):
+    reorder_notes(payload.note_ids)
+    return {"message": "Notes reordered"}
+
+
+@router.patch("/notes/{note_id}", response_model=NoteResponse)
+def update_note_endpoint(note_id: int, payload: NoteUpdateRequest) -> NoteResponse:
+    updated = update_note(
+        note_id,
+        payload.book_name,
+        payload.chapter_number,
+        payload.note_text,
+    )
+    if not updated:
+        raise HTTPException(status_code=404, detail="Note not found")
+    return NoteResponse(message="Note updated", id=note_id)
 
 @router.get("/notes/book-count", response_model=CountForOneBook)
 def get_count_for_one_book(book: str):

@@ -4,7 +4,16 @@ class NoteRequest(BaseModel):
     book_name: str = Field(min_length=1, max_length=30)
     chapter_number: int = Field(gt=0)
     note_text: str = Field(min_length=1, max_length=150)
-    
+
+
+class NoteUpdateRequest(BaseModel):
+    book_name: str = Field(min_length=1, max_length=30)
+    chapter_number: int = Field(gt=0)
+    note_text: str = Field(min_length=1, max_length=150)
+
+
+class ReorderNotesRequest(BaseModel):
+    note_ids: list[int] = Field(min_length=1)
 
 class NoteResponse(BaseModel):
     message: str

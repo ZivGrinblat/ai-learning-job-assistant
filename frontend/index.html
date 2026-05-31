@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Notes</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -40,14 +40,24 @@
         </nav>
     </div>
 
+    <div class="page-intro">
+        <div class="page-intro-inner">
+            <p class="intro-eyebrow">Your reading desk</p>
+            <h2 class="intro-title">Capture ideas. Revisit them. Keep reading.</h2>
+        </div>
+    </div>
+
     <section class="library-section">
-        <div class="card">
-            <div class="card-header">
-                <div>
-                    <h2>Library</h2>
-                    <p class="card-desc">Click a book to filter notes and find similar titles</p>
+        <div class="card card-library">
+            <div class="card-header card-header-library">
+                <div class="card-header-text">
+                    <span class="section-emoji" aria-hidden="true">📚</span>
+                    <div>
+                        <h2>Library</h2>
+                        <p class="card-desc">Tap a book to filter notes and discover similar titles</p>
+                    </div>
                 </div>
-                <span class="badge badge-muted" id="libraryCount">0</span>
+                <span class="badge badge-amber" id="libraryCount">0</span>
             </div>
             <div class="card-body">
                 <div class="book-library" id="bookLibrary">Loading books...</div>
@@ -66,10 +76,13 @@
 
     <div class="main">
         <div class="card compose-card">
-            <div class="card-header">
-                <div>
-                    <h2>New Note</h2>
-                    <p class="card-desc">Capture a thought while you read — 150 characters max</p>
+            <div class="card-header card-header-compose">
+                <div class="card-header-text">
+                    <span class="section-emoji" aria-hidden="true">✏️</span>
+                    <div>
+                        <h2 id="composeTitle">New Note</h2>
+                        <p class="card-desc" id="composeDesc">Capture a thought while you read — 150 characters max</p>
+                    </div>
                 </div>
             </div>
             <div class="card-body">
@@ -91,18 +104,24 @@
                         <span class="char-count" id="charCount">0/150</span>
                     </div>
                 </div>
-                <button class="btn-primary" id="saveBtn" onclick="saveNote()">Save Note</button>
+                <div class="compose-actions">
+                    <button class="btn-primary" id="saveBtn" onclick="saveNote()">Save Note</button>
+                    <button type="button" class="btn-ghost" id="cancelEditBtn" hidden onclick="cancelEdit()">Cancel</button>
+                </div>
                 <div class="shortcut-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> to save</div>
             </div>
         </div>
 
         <div class="card notes-panel">
-            <div class="card-header notes-header">
-                <div>
-                    <h2>Your Notes</h2>
-                    <p class="card-desc" id="notesSubtitle">All notes</p>
+            <div class="card-header card-header-notes notes-header">
+                <div class="card-header-text">
+                    <span class="section-emoji" aria-hidden="true">💡</span>
+                    <div>
+                        <h2>Your Notes</h2>
+                        <p class="card-desc" id="notesSubtitle">All notes</p>
+                    </div>
                 </div>
-                <span class="badge" id="noteCount">0</span>
+                <span class="badge badge-violet" id="noteCount">0</span>
             </div>
 
             <div class="notes-toolbar">
@@ -118,6 +137,16 @@
                     >
                     <button type="button" class="filter-clear" id="clearFilterBtn" hidden aria-label="Clear filter">×</button>
                 </div>
+                <div class="notes-controls">
+                    <label class="sort-label" for="noteSort">Sort</label>
+                    <select id="noteSort" class="sort-select" aria-label="Sort notes">
+                        <option value="custom">Custom order</option>
+                        <option value="newest">Newest first</option>
+                        <option value="oldest">Oldest first</option>
+                        <option value="book">Book + chapter</option>
+                    </select>
+                </div>
+                <p class="drag-hint" id="dragHint">Drag notes to reorder (custom order, all notes)</p>
             </div>
 
             <div class="notes-scroll" id="notesList">
