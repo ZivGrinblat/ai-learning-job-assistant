@@ -47,6 +47,7 @@
                     <h2>Library</h2>
                     <p class="card-desc">Click a book to filter notes and find similar titles</p>
                 </div>
+                <span class="badge badge-muted" id="libraryCount">0</span>
             </div>
             <div class="card-body">
                 <div class="book-library" id="bookLibrary">Loading books...</div>
@@ -64,9 +65,12 @@
     </section>
 
     <div class="main">
-        <div class="card">
+        <div class="card compose-card">
             <div class="card-header">
-                <h2>New Note</h2>
+                <div>
+                    <h2>New Note</h2>
+                    <p class="card-desc">Capture a thought while you read — 150 characters max</p>
+                </div>
             </div>
             <div class="card-body">
                 <div class="form-row">
@@ -83,7 +87,7 @@
                     <label for="noteText">Your thought</label>
                     <textarea id="noteText" placeholder="What stood out? What connection did you notice?" maxlength="150" dir="auto"></textarea>
                     <div class="field-footer">
-                        <span></span>
+                        <span class="field-hint">Short and sharp beats long and vague</span>
                         <span class="char-count" id="charCount">0/150</span>
                     </div>
                 </div>
@@ -93,20 +97,26 @@
         </div>
 
         <div class="card notes-panel">
-            <div class="card-header">
-                <h2>Your Notes</h2>
+            <div class="card-header notes-header">
+                <div>
+                    <h2>Your Notes</h2>
+                    <p class="card-desc" id="notesSubtitle">All notes</p>
+                </div>
                 <span class="badge" id="noteCount">0</span>
             </div>
 
-            <div class="card-body">
-                <div class="form-group">
-                    <label for="bookFilter">Filter by book</label>
+            <div class="notes-toolbar">
+                <div class="filter-wrap">
+                    <span class="filter-icon" aria-hidden="true">⌕</span>
                     <input
                         type="text"
                         id="bookFilter"
-                        placeholder="Type a book name"
+                        class="filter-input"
+                        placeholder="Filter by book…"
                         dir="auto"
+                        aria-label="Filter notes by book"
                     >
+                    <button type="button" class="filter-clear" id="clearFilterBtn" hidden aria-label="Clear filter">×</button>
                 </div>
             </div>
 

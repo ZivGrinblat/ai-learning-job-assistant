@@ -209,6 +209,17 @@
             border: 1px solid rgba(56, 139, 253, 0.25);
         }
 
+        .badge-muted {
+            background: rgba(110, 118, 129, 0.15);
+            color: #8b949e;
+            border-color: rgba(110, 118, 129, 0.25);
+        }
+
+        .field-hint {
+            font-size: 0.68rem;
+            color: #484f58;
+        }
+
         .card-body {
             padding: 1.25rem;
         }
@@ -362,9 +373,62 @@
             flex-direction: column;
         }
 
+        .notes-header {
+            align-items: flex-start;
+        }
+
+        .notes-toolbar {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #21262d;
+            background: rgba(22, 27, 34, 0.35);
+        }
+
+        .filter-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .filter-icon {
+            position: absolute;
+            left: 0.75rem;
+            color: #484f58;
+            font-size: 0.9rem;
+            pointer-events: none;
+        }
+
+        .filter-input {
+            padding-left: 2rem !important;
+            padding-right: 2.25rem !important;
+        }
+
+        .filter-clear {
+            position: absolute;
+            right: 0.45rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: none;
+            border-radius: 6px;
+            background: #21262d;
+            color: #8b949e;
+            font-size: 1rem;
+            line-height: 1;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .filter-clear:hover {
+            background: #30363d;
+            color: #f0f6fc;
+        }
+
+        .filter-clear[hidden] {
+            display: none;
+        }
+
         .notes-scroll {
             overflow-y: auto;
-            padding: 0.75rem;
+            padding: 0.85rem;
             flex: 1;
         }
 
@@ -382,8 +446,8 @@
             border: 1px solid #21262d;
             border-left: 3px solid #8b5cf6;
             border-radius: 10px;
-            padding: 0.85rem 1rem;
-            margin-bottom: 0.6rem;
+            padding: 0.9rem 1rem;
+            margin-bottom: 0.65rem;
             transition: border-color 0.2s, transform 0.15s, box-shadow 0.15s;
             position: relative;
         }
@@ -399,19 +463,46 @@
             margin-bottom: 0;
         }
 
-        .note-book {
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: #8b5cf6;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            margin-bottom: 0.15rem;
+        .note-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.55rem;
         }
 
-        .note-chapter {
-            font-size: 0.7rem;
+        .note-meta {
+            min-width: 0;
+        }
+
+        .note-book {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #c4b5fd;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.2rem;
+            word-break: break-word;
+        }
+
+        .note-chapter-badge {
+            display: inline-block;
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #8b949e;
+            background: #21262d;
+            border: 1px solid #30363d;
+            padding: 0.15rem 0.45rem;
+            border-radius: 999px;
+        }
+
+        .note-id {
+            font-size: 0.62rem;
             color: #484f58;
-            margin-bottom: 0.4rem;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+            padding-top: 0.1rem;
         }
 
         .note-text {
@@ -465,6 +556,41 @@
             font-size: 2rem;
             margin-bottom: 0.75rem;
             opacity: 0.4;
+        }
+
+        .empty-state .empty-title {
+            color: #8b949e;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+        }
+
+        .empty-state .empty-action {
+            margin-top: 0.85rem;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            border-radius: 8px;
+            padding: 0.45rem 0.85rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .btn-ghost:hover {
+            border-color: #388bfd;
+            background: rgba(56, 139, 253, 0.08);
+        }
+
+        .library-empty {
+            padding: 1rem 0 0.25rem;
+            color: #6e7681;
+            font-size: 0.82rem;
+            line-height: 1.55;
         }
 
         .toast {

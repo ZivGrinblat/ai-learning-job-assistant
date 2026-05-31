@@ -77,6 +77,26 @@ async function checkHealth() {
             loadNotes();
             loadSimilarBooks(bookTitle);
             highlightSelectedChip(bookTitle);
+            updateFilterUI();
+        }
+
+        function clearFilter() {
+            document.getElementById("bookFilter").value = "";
+            document.getElementById("libraryExtras").hidden = true;
+            loadNotes();
+            highlightSelectedChip("");
+            updateFilterUI();
+        }
+
+        function updateFilterUI() {
+            const filter = document.getElementById("bookFilter").value.trim();
+            const clearBtn = document.getElementById("clearFilterBtn");
+            const subtitle = document.getElementById("notesSubtitle");
+
+            clearBtn.hidden = !filter;
+            subtitle.textContent = filter
+                ? `Filtered by “${filter}”`
+                : "All notes";
         }
 
         function highlightSelectedChip(bookTitle) {
@@ -124,7 +144,7 @@ async function checkHealth() {
                 if (res.ok) {
                     const data = await res.json();
                     showToast(`Saved — note #${data.id}`);
-                    clearForm();
+                    clearFormAfterSave();
                     loadBooks();
                     loadNoteCount();
                     loadNotes();
@@ -141,6 +161,10 @@ async function checkHealth() {
         }
 
         async function deleteNote(id) {
+            if (!confirm("Delete this note? This cannot be undone.")) {
+                return;
+            }
+
             try {
                 const res = await fetch(`${API_BASE}/notes/${id}`, { method: "DELETE" });
 
@@ -165,9 +189,13 @@ async function checkHealth() {
                 const books = await res.json();
 
                 if (books.length === 0) {
-                    container.textContent = "No books yet — save a note to start your library.";
+                    container.innerHTML =
+                        '<p class="library-empty">No books yet. Save your first note below to start your library.</p>';
+                    document.getElementById("libraryCount").textContent = "0";
                     return;
                 }
+
+                document.getElementById("libraryCount").textContent = String(books.length);
 
                 container.innerHTML = "";
                 for (const item of books) {
@@ -203,26 +231,46 @@ async function checkHealth() {
             try {
                 const res = await fetch(url);
                 const notes = await res.json();
-                
+
+                badge.textContent = String(notes.length);
+                updateFilterUI();
+
                 if (notes.length === 0) {
-                    container.innerHTML = `
+                    const filterActive = Boolean(bookFilter);
+                    container.innerHTML = filterActive
+                        ? `
+                        <div class="empty-state">
+                            <div class="empty-icon">⌕</div>
+                            <p class="empty-title">No notes for this book</p>
+                            <p>Try another filter or add a note for “${escapeHtml(bookFilter)}”.</p>
+                            <div class="empty-action">
+                                <button type="button" class="btn-ghost" onclick="clearFilter()">Clear filter</button>
+                            </div>
+                        </div>`
+                        : `
                         <div class="empty-state">
                             <div class="empty-icon">B</div>
-                            No notes found.
+                            <p class="empty-title">No notes yet</p>
+                            <p>Your saved thoughts will show up here.</p>
                         </div>`;
                     return;
                 }
-        
+
                 container.innerHTML = notes.map(note => `
-                    <div class="note-item">
-                        <div class="note-book" dir="auto">${escapeHtml(note.book)}</div>
-                        <div class="note-chapter">Chapter ${note.chapter}</div>
+                    <article class="note-item">
+                        <div class="note-top">
+                            <div class="note-meta">
+                                <div class="note-book" dir="auto">${escapeHtml(note.book)}</div>
+                                <span class="note-chapter-badge">Ch. ${note.chapter}</span>
+                            </div>
+                            <span class="note-id">#${note.id}</span>
+                        </div>
                         <div class="note-text" dir="auto">${escapeHtml(note.note)}</div>
                         <div class="note-footer">
                             <span class="note-date">${formatDate(note.created_at)}</span>
                             <button class="btn-delete" onclick="deleteNote(${note.id})">Delete</button>
                         </div>
-                    </div>
+                    </article>
                 `).join("");
             } catch {
                 container.innerHTML = '<div class="empty-state">Could not load notes.</div>';
@@ -232,6 +280,12 @@ async function checkHealth() {
 
         function clearForm() {
             document.getElementById("bookName").value = "";
+            document.getElementById("chapter").value = "";
+            document.getElementById("noteText").value = "";
+            updateCharCount();
+        }
+
+        function clearFormAfterSave() {
             document.getElementById("chapter").value = "";
             document.getElementById("noteText").value = "";
             updateCharCount();
@@ -271,7 +325,10 @@ async function checkHealth() {
             loadNotes();
             loadSimilarBooks(book);
             highlightSelectedChip(book);
+            updateFilterUI();
         });
+
+        document.getElementById("clearFilterBtn").addEventListener("click", clearFilter);
 
         document.addEventListener("keydown", (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
@@ -283,3 +340,4 @@ async function checkHealth() {
         loadBooks();
         loadNoteCount();
         loadNotes();
+        updateFilterUI();
