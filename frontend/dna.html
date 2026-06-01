@@ -42,16 +42,19 @@
     </section>
 
     <main class="bio-lab-main shell">
-        <nav class="lab-crosslinks" aria-label="Lab tools">
-            <a href="/dna.html" class="lab-pill active" aria-current="page">
-                <span class="lab-pill-code">A T G C</span>
-                DNA Lab
-            </a>
-            <a href="/rna.html" class="lab-pill">
-                <span class="lab-pill-code">A U G C</span>
-                RNA Lab
-            </a>
-        </nav>
+        <div class="lab-nav-stack">
+            <nav class="lab-crosslinks" aria-label="Lab tools">
+                <a href="/dna.html" class="lab-pill active" aria-current="page">
+                    <span class="lab-pill-code">A T G C</span>
+                    DNA Lab
+                </a>
+                <a href="/rna.html" class="lab-pill">
+                    <span class="lab-pill-code">A U G C</span>
+                    RNA Lab
+                </a>
+            </nav>
+            <nav class="lab-crosslinks" id="upcomingPills" data-track="bioinformatics" aria-label="Coming next"></nav>
+        </div>
 
         <div class="bio-lab-grid">
             <section class="bio-lab-panel bio-lab-input" aria-labelledby="dnaInputHeading">
@@ -164,7 +167,9 @@
 
     <div class="toast" id="toast"></div>
 
-    <script src="js/site.js"></script>
+    <script src="js/site.js?v=2"></script>
+    <script src="js/roadmap-shared.js?v=1"></script>
     <script src="js/dna.js"></script>
+    <script>Roadmap.initUpcomingPills();</script>
 </body>
 </html>

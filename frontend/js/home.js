@@ -1,6 +1,5 @@
 /**
- * Portfolio home (index.html) — loads frontend/data/profile.json.
- * HTML includes static fallbacks so the page is readable before JS runs.
+ * Portfolio home (index.html) — profile from profile.json; roadmap teaser from roadmap.json.
  */
 const PROJECT_ICONS = {
     notes: `<svg class="project-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>`,
@@ -43,6 +42,25 @@ function projectIconMarkup(iconKey) {
     return `<div class="featured-project-icon featured-project-icon-${escapeHtml(iconKey)}">${icon}</div>`;
 }
 
+function renderDisplayName(element, fullName) {
+    if (!element) {
+        return;
+    }
+
+    const parts = (fullName || "Portfolio").trim().split(/\s+/);
+    const first = parts[0] || "Portfolio";
+    const last = parts.slice(1).join(" ");
+
+    if (last) {
+        element.innerHTML =
+            `<span class="name-first">${escapeHtml(first)}</span> ` +
+            `<span class="name-last">${escapeHtml(last)}</span>`;
+        return;
+    }
+
+    element.textContent = first;
+}
+
 function renderProfile(profile) {
     if (!profile || typeof profile !== "object") {
         throw new Error("Invalid profile payload");
@@ -57,7 +75,7 @@ function renderProfile(profile) {
 
     const profileName = document.getElementById("profileName");
     if (profileName) {
-        profileName.textContent = profile.name || "Portfolio";
+        renderDisplayName(profileName, profile.name || "Portfolio");
     }
 
     const profileHeadline = document.getElementById("profileHeadline");
@@ -193,23 +211,8 @@ function renderProfile(profile) {
 async function loadProfile() {
     const headline = document.getElementById("profileHeadline");
 
-    if (window.location.protocol === "file:") {
-        if (headline) {
-            headline.textContent =
-                "Open via the server (uvicorn app.main:app), not as a local file.";
-            headline.classList.remove("is-loading");
-        }
-        return;
-    }
-
-    const slowTimer = window.setTimeout(() => {
-        if (headline?.classList.contains("is-loading")) {
-            headline.textContent = "Waking server — first load on Render can take ~30s…";
-        }
-    }, 3000);
-
     try {
-        const res = await fetch("/data/profile.json", { cache: "no-store" });
+        const res = await fetch(Site.dataUrl("profile.json"), { cache: "no-store" });
         if (!res.ok) {
             throw new Error(`Profile fetch failed (${res.status})`);
         }
@@ -217,12 +220,15 @@ async function loadProfile() {
         renderProfile(await res.json());
     } catch (err) {
         console.error("Profile load failed:", err);
-        if (headline && headline.classList.contains("is-loading")) {
-            headline.textContent = "Could not refresh profile — showing cached page content.";
+        if (headline) {
             headline.classList.remove("is-loading");
         }
-    } finally {
-        window.clearTimeout(slowTimer);
+
+        const projectsGrid = document.getElementById("projectsGrid");
+        if (projectsGrid && !projectsGrid.textContent.trim()) {
+            projectsGrid.innerHTML =
+                '<p class="load-error">Could not load profile data. Serve with uvicorn and open <code>http://127.0.0.1:8000/</code> — do not open the HTML file directly.</p>';
+        }
     }
 }
 
@@ -233,6 +239,20 @@ function initHome() {
     }
 
     loadProfile();
+
+    Roadmap.fetch().then((roadmap) => {
+        if (roadmap) {
+            Roadmap.renderCompactTeaser(roadmap);
+            return;
+        }
+
+        for (const id of ["teaser-notes", "teaser-bioinformatics"]) {
+            const el = document.getElementById(id);
+            if (el && !el.textContent.trim()) {
+                el.innerHTML = '<p class="load-error">Roadmap data unavailable.</p>';
+            }
+        }
+    });
 }
 
 if (document.readyState === "loading") {

@@ -7,29 +7,46 @@
 
 .portfolio-main { padding-bottom: 4rem; }
 
+/* ── Portfolio header (slim — name lives in hero) ── */
+.site-header-portfolio .brand-portfolio {
+    text-decoration: none;
+    color: #fff;
+}
+
+.site-header-portfolio .brand-kicker {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.72);
+    letter-spacing: -0.01em;
+}
+
+.site-header-portfolio .brand-mark-pro {
+    background: linear-gradient(135deg, #3b82f6, #0d9488);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+
 /* ── Hero ── */
 .portfolio-hero {
     position: relative;
-    padding: 4.5rem 0 4rem;
+    padding: 3.5rem 0 4rem;
     background: linear-gradient(
-        135deg,
-        var(--page-accent-light) 0%,
-        #ffffff 38%,
+        160deg,
+        #ffffff 0%,
+        var(--page-accent-light) 42%,
         var(--page-bg) 100%
     );
     border-bottom: 1px solid var(--border);
     overflow: hidden;
 }
 
-.portfolio-hero::before {
-    content: "";
+.hero-bg-grid {
     position: absolute;
-    top: -80px;
-    right: -40px;
-    width: 360px;
-    height: 360px;
-    border-radius: 50%;
-    background: radial-gradient(circle, var(--page-accent-soft) 0%, transparent 65%);
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(37, 99, 235, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37, 99, 235, 0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse 80% 70% at 70% 20%, #000 20%, transparent 75%);
     pointer-events: none;
 }
 
@@ -43,26 +60,85 @@
     background: linear-gradient(90deg, var(--series-a), var(--series-b), var(--series-c));
 }
 
-.hero-inner {
+.hero-grid {
     position: relative;
     z-index: 1;
-    max-width: 54rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
+    gap: clamp(2rem, 4vw, 3.5rem);
+    align-items: center;
 }
 
-.hero-motif {
-    position: absolute;
-    top: 1.5rem;
-    right: max(1rem, calc((100% - 1320px) / 2 + 1rem));
-    width: clamp(140px, 18vw, 220px);
-    height: clamp(140px, 18vw, 220px);
-    pointer-events: none;
-    opacity: 0.14;
+.portfolio-hero-slim {
+    padding: 3rem 0 3.25rem;
+}
+
+.hero-inner-wide {
+    position: relative;
+    z-index: 1;
+    max-width: 48rem;
+}
+
+.hero-main {
+    min-width: 0;
+}
+
+.hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--page-accent);
+    margin-bottom: 1rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(37, 99, 235, 0.15);
+    box-shadow: var(--shadow);
 }
 
-.hero-motif-icon {
-    width: 100%;
-    height: 100%;
+.hero-eyebrow::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--series-b);
+    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.2);
+}
+
+.portfolio-name {
+    font-family: var(--font-sans);
+    font-size: clamp(2.5rem, 5.5vw, 3.65rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    line-height: 1.05;
+    margin-bottom: 1rem;
+}
+
+.portfolio-name .name-first {
+    color: var(--ink);
+}
+
+.portfolio-name .name-last {
+    background: linear-gradient(135deg, var(--series-a) 0%, var(--series-b) 55%, var(--series-c) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.portfolio-headline {
+    font-family: var(--font-sans);
+    font-size: clamp(1.15rem, 2vw, 1.4rem);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    color: var(--ink-muted);
+    line-height: 1.45;
+    margin-bottom: 1rem;
+    max-width: 36rem;
 }
 
 .portfolio-headline.is-loading {
@@ -87,33 +163,122 @@
     50% { opacity: 0.9; transform: scale(1); }
 }
 
-.portfolio-role {
-    font-size: 0.75rem;
+/* Hero side panel — live app stack */
+.hero-panel {
+    padding: 1.35rem;
+    border-radius: var(--radius-xl);
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(8px);
+}
+
+.hero-panel-label {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--page-accent);
-    margin-bottom: 1rem;
+    color: var(--ink-faint);
+    margin-bottom: 0.85rem;
 }
 
-.portfolio-name {
-    font-family: var(--font-serif);
-    font-size: clamp(2.75rem, 6vw, 4.25rem);
-    font-weight: 600;
-    letter-spacing: -0.04em;
-    color: var(--ink);
-    line-height: 1.05;
-    margin-bottom: 1.25rem;
+.hero-panel-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.25);
+    animation: pulse-dot 2s ease-in-out infinite;
 }
 
-.portfolio-headline {
-    font-family: var(--font-serif);
-    font-size: clamp(1.35rem, 2.8vw, 1.85rem);
-    font-weight: 600;
-    letter-spacing: -0.02em;
+.hero-app-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.hero-app-tile {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+.hero-app-tile:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow);
+}
+
+.hero-app-tile-notes:hover { border-color: #93c5fd; }
+.hero-app-tile-dna:hover { border-color: #5eead4; }
+.hero-app-tile-rna:hover { border-color: #c4b5fd; }
+
+.hero-app-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.35rem;
+    height: 2.35rem;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.hero-app-icon svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.hero-app-tile-notes .hero-app-icon {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    color: #1d4ed8;
+}
+
+.hero-app-tile-dna .hero-app-icon {
+    background: linear-gradient(135deg, #f0fdfa, #ccfbf1);
+    color: #0f766e;
+}
+
+.hero-app-tile-rna .hero-app-icon {
+    background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+    color: #6d28d9;
+}
+
+.hero-app-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+.hero-app-text strong {
+    font-size: 0.9rem;
+    font-weight: 700;
     color: var(--ink);
-    line-height: 1.35;
-    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+}
+
+.hero-app-text span {
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--ink-faint);
+}
+
+.hero-panel-foot {
+    margin-top: 0.85rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.72rem;
+    font-family: var(--font-mono);
+    color: var(--ink-faint);
 }
 
 .portfolio-pitch {
@@ -194,16 +359,21 @@
 }
 
 .section-header-wide {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
     margin-bottom: 2rem;
     padding-bottom: 0;
     border-bottom: none;
 }
 
 .section-header-wide h3 {
-    font-family: var(--font-serif);
-    font-size: clamp(1.5rem, 3vw, 1.95rem);
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-family: var(--font-sans);
+    font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
 }
 
 .section-eyebrow {
@@ -317,9 +487,9 @@
 }
 
 .featured-project h4 {
-    font-family: var(--font-serif);
-    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
-    font-weight: 600;
+    font-family: var(--font-sans);
+    font-size: clamp(1.15rem, 2.2vw, 1.35rem);
+    font-weight: 700;
     color: var(--ink);
     letter-spacing: -0.02em;
     margin-bottom: 0.45rem;
@@ -369,9 +539,9 @@
 }
 
 .section-header h3 {
-    font-family: var(--font-serif);
-    font-size: 1.4rem;
-    font-weight: 600;
+    font-family: var(--font-sans);
+    font-size: 1.25rem;
+    font-weight: 700;
     color: var(--ink);
     letter-spacing: -0.02em;
     margin-bottom: 0.2rem;
@@ -530,6 +700,21 @@
     border: 1px solid rgba(37, 99, 235, 0.12);
 }
 
+.load-error {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: #b45309;
+    padding: 1rem 1.15rem;
+    border-radius: var(--radius);
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+}
+
+.load-error code {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+}
+
 .career-prose {
     font-size: 1.05rem;
     line-height: 1.75;
@@ -541,8 +726,423 @@
     border: 1px solid var(--border);
 }
 
+/* ── Roadmap teaser (index overview) ── */
+.roadmap-teaser-section {
+    padding: 3rem 0;
+    border-top: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--bg-soft) 0%, #ffffff 100%);
+}
+
+.roadmap-teaser-link {
+    flex-shrink: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--page-accent);
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s;
+}
+
+.roadmap-teaser-link:hover {
+    border-bottom-color: var(--page-accent);
+}
+
+.roadmap-teaser-split {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.roadmap-teaser-track {
+    padding: 1.35rem 1.5rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    box-shadow: var(--shadow);
+}
+
+.roadmap-teaser-notes {
+    border-top: 3px solid #6366f1;
+}
+
+.roadmap-teaser-bio {
+    border-top: 3px solid #0d9488;
+}
+
+.teaser-division {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+}
+
+.roadmap-teaser-notes .teaser-division { color: #4f46e5; }
+.roadmap-teaser-bio .teaser-division { color: #0f766e; }
+
+.teaser-title {
+    font-family: var(--font-sans);
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.35rem;
+}
+
+.teaser-vision {
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    color: var(--ink-muted);
+    margin-bottom: 1rem;
+}
+
+.teaser-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.teaser-step {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: var(--radius);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+    text-decoration: none;
+    border: 1px dashed var(--border);
+    background: var(--bg-soft);
+    transition: border-color 0.15s, color 0.15s;
+}
+
+.teaser-step:hover {
+    border-color: var(--page-accent);
+    color: var(--page-accent);
+}
+
+.teaser-step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    background: var(--page-accent-light);
+    color: var(--page-accent);
+}
+
+.roadmap-page-main {
+    padding: 2rem 0 4rem;
+}
+
+.roadmap-method-page {
+    max-width: 42rem;
+    margin-bottom: 2rem;
+}
+
+/* On the bench — upcoming features (legacy alias) */
+.bench-section,
+.roadmap-section {
+    padding: 3.5rem 0;
+    background: linear-gradient(180deg, #fff 0%, var(--bg-soft) 100%);
+    border-bottom: 1px solid var(--border);
+}
+
+.roadmap-header .section-desc {
+    max-width: 46rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--ink-muted);
+}
+
+.roadmap-method {
+    margin-top: 0.85rem;
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: var(--ink-faint);
+    max-width: 42rem;
+}
+
+.roadmap-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.75rem;
+    align-items: start;
+    margin-top: 2rem;
+}
+
+.roadmap-track {
+    padding: 1.75rem 1.85rem;
+    border-radius: var(--radius-xl);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.roadmap-track::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.roadmap-track-notes::before {
+    background: linear-gradient(90deg, #4f46e5, #6366f1);
+}
+
+.roadmap-track-bio::before {
+    background: linear-gradient(90deg, #0d9488, #2563eb);
+}
+
+.roadmap-track-division {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+}
+
+.roadmap-track-notes .roadmap-track-division { color: #4f46e5; }
+.roadmap-track-bio .roadmap-track-division { color: #0f766e; }
+
+.roadmap-track-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+}
+
+.roadmap-track-vision {
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: var(--ink-muted);
+    margin-bottom: 1.25rem;
+}
+
+.roadmap-live {
+    padding: 1rem 1.1rem;
+    border-radius: var(--radius-lg);
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    margin-bottom: 1.35rem;
+}
+
+.roadmap-live-label,
+.roadmap-steps-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 0.55rem;
+}
+
+.roadmap-steps-label {
+    margin-bottom: 0.75rem;
+}
+
+.roadmap-live-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.roadmap-live-list li {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--ink-muted);
+    padding-left: 1rem;
+    position: relative;
+}
+
+.roadmap-live-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #34d399;
+}
+
+.roadmap-steps {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-bottom: 1.35rem;
+    counter-reset: roadmap;
+}
+
+.roadmap-step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.85rem;
+    align-items: start;
+}
+
+.roadmap-step-num {
+    width: 1.75rem;
+    height: 1.75rem;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    flex-shrink: 0;
+}
+
+.roadmap-track-notes .roadmap-step-num {
+    background: #eef2ff;
+    color: #4338ca;
+}
+
+.roadmap-track-bio .roadmap-step-num {
+    background: #f0fdfa;
+    color: #0f766e;
+}
+
+.roadmap-step-body h5 {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+}
+
+.roadmap-step-goal {
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    color: var(--ink-muted);
+    margin-bottom: 0.35rem;
+}
+
+.roadmap-deliverables {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.roadmap-deliverables li {
+    font-size: 0.68rem;
+    font-family: var(--font-mono);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: var(--bg-soft);
+    color: var(--ink-faint);
+    border: 1px solid var(--border);
+}
+
+.roadmap-closing {
+    margin-top: 2rem;
+    padding: 1.25rem 1.5rem;
+    border-radius: var(--radius-lg);
+    font-size: 0.975rem;
+    line-height: 1.7;
+    color: var(--ink-muted);
+    background: linear-gradient(135deg, var(--page-accent-light), #fff);
+    border: 1px solid var(--border);
+    max-width: 46rem;
+}
+
+.bench-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+}
+
+.bench-card {
+    display: block;
+    padding: 1.1rem 1.2rem;
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: inherit;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+.bench-card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.bench-card-notes:hover { border-color: #a5b4fc; }
+.bench-card-bioinformatics:hover { border-color: #5eead4; }
+
+.bench-card-step {
+    display: inline-block;
+    font-size: 0.62rem;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-right: 0.35rem;
+}
+
+.bench-card-badge {
+    display: inline-block;
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #1d4ed8;
+    margin-bottom: 0.45rem;
+}
+
+.bench-card-notes .bench-card-badge { color: #4338ca; }
+.bench-card-bioinformatics .bench-card-badge { color: #0f766e; }
+
+.bench-card h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+    letter-spacing: -0.02em;
+}
+
+.bench-card-tool {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--page-accent);
+    margin-bottom: 0.35rem;
+}
+
+.bench-card p:last-child {
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    color: var(--ink-muted);
+}
+
 @media (max-width: 860px) {
-    .hero-motif { display: none; }
+    .roadmap-split,
+    .roadmap-teaser-split {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 860px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-panel {
+        order: -1;
+    }
+
     .featured-project {
         grid-template-columns: 1fr;
         gap: 1rem;

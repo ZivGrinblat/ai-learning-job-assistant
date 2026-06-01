@@ -1,0 +1,175 @@
+{
+  "about": {
+    "title": "About this platform",
+    "intro": "This is not a static portfolio — it is a step-by-step research lab with two parallel product tracks. Every feature ships the same way: design the service, expose a typed API, cover it with pytest, wire a browser UI, deploy to Render. The live apps above are phase one; the roadmap below is phases two and three, built in public.",
+    "method": "Each step is a complete vertical slice — backend logic, HTTP contract, tests, and frontend — so progress is visible and auditable, not buried in a todo list.",
+    "closing": "The north star: med-tech-grade tooling — reading systems and sequence analysis that researchers can trust, built with the same rigor I apply to regulated fintech."
+  },
+  "tracks": [
+    {
+      "id": "notes",
+      "title": "Book Notes",
+      "division": "Research library track",
+      "accent": "notes",
+      "vision": "Turn technical reading into a connected knowledge base — searchable, tagged, and AI-assisted across your whole library.",
+      "liveToday": [
+        "Structured notes per book and chapter",
+        "In-book full-text search",
+        "AI related-notes with reasons",
+        "Markdown export per book"
+      ],
+      "toolKeys": ["topic-thread", "prompt-lens", "library-radar", "tag-shelf"]
+    },
+    {
+      "id": "bioinformatics",
+      "title": "Bioinformatics Lab",
+      "division": "Sequence analysis track",
+      "accent": "bio",
+      "vision": "A growing suite of sequence tools — from basic composition to cut sites, melting temperature, and translation — each backed by tested API endpoints.",
+      "liveToday": [
+        "DNA: GC content, nucleotide counts, reverse complement",
+        "RNA: reverse complement with A↔U pairing",
+        "FASTA parsing on DNA input",
+        "Shared lab UI with live status"
+      ],
+      "toolKeys": ["restriction", "tm", "rna-fasta", "translate", "align"]
+    }
+  ],
+  "tools": {
+    "topic-thread": {
+      "track": "notes",
+      "step": 1,
+      "funnyTitle": "The Topic Thread",
+      "toolName": "Cross-book topic graph",
+      "promise": "Surface related ideas across your entire library — not just within one book.",
+      "tagline": "Your reading, woven by topic.",
+      "blurb": "LLM-powered connections between notes in different books: shared concepts, contrasting views, follow-up threads. Builds on the existing related-notes agent with library-wide scope and a visual map.",
+      "goal": "Library-wide semantic links with explainable reasons per connection.",
+      "deliverables": ["Topic clustering service", "GET /notes/topics endpoint", "Graph UI in Notes app", "pytest for edge cases"],
+      "status": "Designing graph schema",
+      "backHref": "/notes.html",
+      "backLabel": "Back to Book Notes",
+      "pageClass": "page-notes"
+    },
+    "prompt-lens": {
+      "track": "notes",
+      "step": 2,
+      "funnyTitle": "The Prompt Lens",
+      "toolName": "Natural language → note preview",
+      "promise": "Describe what you read in plain language; preview structured fields before you save.",
+      "tagline": "Talk first, structure second.",
+      "blurb": "Extend the extract-from-prompt endpoint into a full preview flow: book, chapter, and note text suggested from a single sentence — you edit, then commit.",
+      "goal": "Frictionless capture for readers who think in prose, not forms.",
+      "deliverables": ["Preview schema", "POST /notes/extract + UI modal", "Validation before save", "API tests"],
+      "status": "Endpoint exists — UI next",
+      "backHref": "/notes.html",
+      "backLabel": "Back to Book Notes",
+      "pageClass": "page-notes"
+    },
+    "library-radar": {
+      "track": "notes",
+      "step": 3,
+      "funnyTitle": "The Library Radar",
+      "toolName": "Global library search",
+      "promise": "One search box across every book, chapter, and note — instant recall.",
+      "tagline": "Find any highlight in seconds.",
+      "blurb": "Cross-book SQLite search with ranked results, snippet context, and jump-to-note navigation. Extends today's per-book search to the full library.",
+      "goal": "Sub-second full-library search with highlighted matches.",
+      "deliverables": ["Search index / query layer", "GET /notes/search?q=", "Results panel in sidebar", "Performance tests"],
+      "status": "Query design in progress",
+      "backHref": "/notes.html",
+      "backLabel": "Back to Book Notes",
+      "pageClass": "page-notes"
+    },
+    "tag-shelf": {
+      "track": "notes",
+      "step": 4,
+      "funnyTitle": "The Tag Shelf",
+      "toolName": "Topics, tags & filters",
+      "promise": "Organize reading by theme — security, biology, systems — not just by book title.",
+      "tagline": "Shelve ideas by subject.",
+      "blurb": "Add tags to notes, filter the library by topic, and browse thematic shelves. Pairs with the topic graph for manual curation plus AI discovery.",
+      "goal": "Flexible tagging model with filter UI and tagged export.",
+      "deliverables": ["Tags column + migration", "PATCH /notes/{id} tags", "Filter chips in library", "Export by tag"],
+      "status": "Schema planning",
+      "backHref": "/notes.html",
+      "backLabel": "Back to Book Notes",
+      "pageClass": "page-notes"
+    },
+    "restriction": {
+      "track": "bioinformatics",
+      "step": 1,
+      "funnyTitle": "The Enzyme Room",
+      "toolName": "Restriction site finder",
+      "promise": "Pick enzymes, scan your sequence, see exact cut positions on both strands.",
+      "tagline": "Precision scissors for DNA.",
+      "blurb": "Common restriction enzymes (EcoRI, HindIII, BamHI, …), forward/reverse strand cut maps, and a clear table of site positions. Essential for cloning workflow planning.",
+      "goal": "Accurate cut-site detection for a curated enzyme library.",
+      "deliverables": ["Enzyme pattern service", "POST /bio/dna/restriction-sites", "Cut map UI", "Known-sequence tests"],
+      "status": "Enzyme library research",
+      "backHref": "/dna.html",
+      "backLabel": "Back to DNA Lab",
+      "pageClass": "page-genome"
+    },
+    "tm": {
+      "track": "bioinformatics",
+      "step": 2,
+      "funnyTitle": "The Melting Point",
+      "toolName": "Tm calculator",
+      "promise": "Melting temperature for oligos and short fragments — primer design you can defend.",
+      "tagline": "Know the heat before the PCR run.",
+      "blurb": "Nearest-neighbor thermodynamics for short sequences, salt-adjusted defaults, and clear reporting of assumptions. Built for primer sanity checks, not lab replacement.",
+      "goal": "Reliable Tm for sequences under 100 nt with documented method.",
+      "deliverables": ["Tm service (nearest-neighbor)", "POST /bio/dna/tm", "Input + result card", "Reference sequence tests"],
+      "status": "Formula selection",
+      "backHref": "/dna.html",
+      "backLabel": "Back to DNA Lab",
+      "pageClass": "page-genome"
+    },
+    "rna-fasta": {
+      "track": "bioinformatics",
+      "step": 3,
+      "funnyTitle": "The .fa Fridge",
+      "toolName": "RNA FASTA upload",
+      "promise": "Drop a .fa file, skip the paste step, run analysis on the whole record.",
+      "tagline": "Files in, results out.",
+      "blurb": "File upload path for RNA Lab mirroring DNA FASTA support — parse headers, validate alphabet, pipe into reverse complement and future RNA endpoints.",
+      "goal": "Parity with DNA file input on the RNA side.",
+      "deliverables": ["Client file parser", "Optional server upload route", "Progress + error states", "Integration tests"],
+      "status": "UI spec ready",
+      "backHref": "/rna.html",
+      "backLabel": "Back to RNA Lab",
+      "pageClass": "page-rna"
+    },
+    "translate": {
+      "track": "bioinformatics",
+      "step": 4,
+      "funnyTitle": "Lost in Translation",
+      "toolName": "DNA → protein",
+      "promise": "Six-frame translation with codon table, start/stop highlights, and readable ORF output.",
+      "tagline": "From bases to amino acids.",
+      "blurb": "Standard genetic code, all six reading frames, longest ORF highlighting, and export-friendly protein sequence. Bridges DNA Lab to protein-level questions.",
+      "goal": "Correct translation for bacterial/human code table with frame labels.",
+      "deliverables": ["Translation service", "POST /bio/dna/translate", "Frame selector UI", "Golden-path tests"],
+      "status": "Codon table drafted",
+      "backHref": "/dna.html",
+      "backLabel": "Back to DNA Lab",
+      "pageClass": "page-genome"
+    },
+    "align": {
+      "track": "bioinformatics",
+      "step": 5,
+      "funnyTitle": "Alignment Anonymous",
+      "toolName": "Pairwise sequence alignment",
+      "promise": "Line up two short sequences — matches, mismatches, gaps — with scores you can explain.",
+      "tagline": "See where sequences agree.",
+      "blurb": "Needleman–Wunsch or Smith–Waterman for educational-scale alignments: visual alignment string, score breakdown, tunable gap penalties.",
+      "goal": "Correct pairwise alignment for sequences up to 500 nt.",
+      "deliverables": ["Alignment algorithm service", "POST /bio/align", "Dual-sequence UI", "Alignment golden tests"],
+      "status": "Algorithm review",
+      "backHref": "/dna.html",
+      "backLabel": "Back to DNA Lab",
+      "pageClass": "page-genome"
+    }
+  }
+}

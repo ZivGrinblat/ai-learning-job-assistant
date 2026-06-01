@@ -7,6 +7,11 @@ const Site = {
             ? "http://127.0.0.1:8000"
             : window.location.origin,
 
+    /** JSON under frontend/data — works for http server and file:// previews. */
+    dataUrl(filename) {
+        return new URL(`data/${filename}`, window.location.href).href;
+    },
+
     async checkHealth() {
         const dot = document.getElementById("statusDot");
         const text = document.getElementById("statusText");

@@ -3,23 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Ziv Grinblat — Security engineer at eToro, all-in on med-tech, backend systems, applied AI, and bioinformatics.">
+    <meta name="description" content="Ziv Grinblat — From fintech security to med-tech engineering. Live portfolio with Book Notes, DNA Lab, and RNA Lab.">
     <title>Ziv Grinblat</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/site.css?v=7">
-    <link rel="stylesheet" href="css/portfolio.css?v=13">
+    <link rel="stylesheet" href="css/portfolio.css?v=17">
 </head>
 <body class="portfolio-page page-overview">
     <header class="site-header site-header-portfolio">
         <div class="shell header-inner">
-            <div class="brand brand-portfolio">
+            <a href="/" class="brand brand-portfolio" aria-label="Ziv Grinblat — home">
                 <div class="brand-mark brand-mark-pro">ZG</div>
-                <div>
-                    <h1>Ziv Grinblat</h1>
-                    <p id="headerRole">Security Engineer · eToro</p>
-                </div>
-            </div>
+                <span class="brand-kicker" id="headerRole">Security Engineer · eToro</span>
+            </a>
             <div class="header-meta">
                 <div class="status-pill status-pill-pro">
                     <span class="status-dot" id="statusDot"></span>
@@ -32,42 +29,27 @@
             <a href="/notes.html" class="nav-pill">Notes</a>
             <a href="/dna.html" class="nav-pill">DNA</a>
             <a href="/rna.html" class="nav-pill">RNA</a>
+            <a href="/roadmap.html" class="nav-pill">Roadmap</a>
         </nav>
     </header>
 
     <main class="portfolio-main">
-        <section class="portfolio-hero">
-            <div class="hero-motif" aria-hidden="true">
-                <svg class="hero-motif-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M2 15c6.667-6 13.333 0 20-6"/>
-                    <path d="M9 22c1.798-1.998 2.518-3.995 2.807-5.993"/>
-                    <path d="M15 2c-1.798 1.998-2.518 3.995-2.807 5.993"/>
-                    <path d="M17 6l-2.5 2.5"/>
-                    <path d="M14 8l-1-1"/>
-                    <path d="M7 18l2.5-2.5"/>
-                </svg>
-            </div>
-            <div class="shell hero-inner">
-                <p class="portfolio-role" id="profileRole">Security Engineer · eToro</p>
-                <h2 class="portfolio-name" id="profileName">Ziv Grinblat</h2>
-                <p class="portfolio-headline is-loading" id="profileHeadline">All-in on med-tech — backend systems, applied AI, and bioinformatics.</p>
-                <p class="portfolio-pitch" id="profilePitch">Security engineer at eToro by day. After hours: this platform, open source, always shipping — built to show what I know, not just list it.</p>
-                <ul class="hero-targets" id="heroTargets" aria-label="Target roles">
-                    <li class="target-role">Research engineering</li>
-                    <li class="target-role">Applied AI</li>
-                    <li class="target-role">Med-tech &amp; biology</li>
-                </ul>
+        <section class="portfolio-hero portfolio-hero-slim">
+            <div class="hero-bg-grid" aria-hidden="true"></div>
+            <div class="shell hero-inner hero-inner-wide">
+                <p class="hero-eyebrow" id="profileRole">Security Engineer · eToro</p>
+                <h1 class="portfolio-name" id="profileName">
+                    <span class="name-first">Ziv</span>
+                    <span class="name-last">Grinblat</span>
+                </h1>
+                <p class="portfolio-headline is-loading" id="profileHeadline">From fintech security to med-tech engineering — same standard, new domain.</p>
+                <p class="portfolio-pitch" id="profilePitch">Security engineer at eToro — regulated fintech, production stakes, no shortcuts. After hours this platform is my research lab: I design the APIs, write the tests, deploy the stack, and ship bioinformatics and AI tooling in the open.</p>
+                <ul class="hero-targets" id="heroTargets" aria-label="Target roles"></ul>
                 <div class="social-row" id="socialRow">
                     <a class="social-btn social-btn-primary" id="resumeLink" href="/assets/resume.pdf" download>Resume</a>
                     <a class="social-btn" id="emailLink" href="#" hidden>Email</a>
-                    <a class="social-btn" id="linkedinLink" href="https://www.linkedin.com/in/ziv-grinblat-69429a257/" target="_blank" rel="noopener noreferrer">
-                        <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 114.126 0 2.063 2.063 0 01-2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                        LinkedIn
-                    </a>
-                    <a class="social-btn" id="githubLink" href="https://github.com/ZivGrinblat" target="_blank" rel="noopener noreferrer">
-                        <svg class="social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-                        GitHub
-                    </a>
+                    <a class="social-btn" id="linkedinLink" href="https://www.linkedin.com/in/ziv-grinblat-69429a257/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                    <a class="social-btn" id="githubLink" href="https://github.com/ZivGrinblat" target="_blank" rel="noopener noreferrer">GitHub</a>
                 </div>
             </div>
         </section>
@@ -76,48 +58,28 @@
             <div class="shell">
                 <header class="section-header section-header-wide">
                     <div>
-                        <p class="section-eyebrow">
-                            <svg class="section-eyebrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h6"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg>
-                            Built &amp; running
-                        </p>
+                        <p class="section-eyebrow">Built &amp; running</p>
                         <h3 id="featuredHeading">Live on this platform</h3>
                         <p class="section-desc">Real applications — not mockups. Open them, break them, read the code.</p>
                     </div>
                 </header>
-                <div class="featured-list" id="projectsGrid">
-                    <a class="featured-project" href="/notes.html">
-                        <div class="featured-project-icon featured-project-icon-notes">
-                            <svg class="project-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
-                        </div>
-                        <div class="featured-project-body">
-                            <span class="project-badge">Live app</span>
-                            <h4>Book Notes</h4>
-                            <p>Structured reading notes with search and AI-assisted cross-referencing across your library.</p>
-                        </div>
-                        <span class="featured-project-cta">Open →</span>
-                    </a>
-                    <a class="featured-project" href="/dna.html">
-                        <div class="featured-project-icon featured-project-icon-dna">
-                            <svg class="project-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 15c6.667-6 13.333 0 20-6"/><path d="M9 22c1.798-1.998 2.518-3.995 2.807-5.993"/><path d="M15 2c-1.798 1.998-2.518 3.995-2.807 5.993"/><path d="M17 6l-2.5 2.5"/><path d="M14 8l-1-1"/><path d="M7 18l2.5-2.5"/></svg>
-                        </div>
-                        <div class="featured-project-body">
-                            <span class="project-badge">Bioinformatics</span>
-                            <h4>DNA Lab</h4>
-                            <p>GC content, nucleotide composition, reverse complement — full sequence analysis on DNA.</p>
-                        </div>
-                        <span class="featured-project-cta">Open →</span>
-                    </a>
-                    <a class="featured-project" href="/rna.html">
-                        <div class="featured-project-icon featured-project-icon-rna">
-                            <svg class="project-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h6"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg>
-                        </div>
-                        <div class="featured-project-body">
-                            <span class="project-badge">New</span>
-                            <h4>RNA Lab</h4>
-                            <p>RNA reverse complement with A↔U pairing — live in the browser.</p>
-                        </div>
-                        <span class="featured-project-cta">Open →</span>
-                    </a>
+                <div class="featured-list" id="projectsGrid"></div>
+            </div>
+        </section>
+
+        <section class="roadmap-teaser-section" aria-labelledby="teaserHeading">
+            <div class="shell">
+                <header class="section-header section-header-wide">
+                    <div>
+                        <p class="section-eyebrow">What's next</p>
+                        <h3 id="teaserHeading">Two tracks, step by step</h3>
+                        <p class="section-desc">Book Notes and Bioinformatics — each feature ships as service, API, tests, and UI.</p>
+                    </div>
+                    <a class="roadmap-teaser-link" href="/roadmap.html">Full roadmap →</a>
+                </header>
+                <div class="roadmap-teaser-split">
+                    <article class="roadmap-teaser-track roadmap-teaser-notes" id="teaser-notes"></article>
+                    <article class="roadmap-teaser-track roadmap-teaser-bio" id="teaser-bioinformatics"></article>
                 </div>
             </div>
         </section>
@@ -130,22 +92,7 @@
                         <p class="section-desc">Professional background</p>
                     </div>
                 </header>
-                <div class="experience-list" id="experienceList">
-                    <article class="experience-item">
-                        <div class="experience-top">
-                            <div>
-                                <h4>Security Engineer</h4>
-                                <p class="experience-company">eToro</p>
-                            </div>
-                            <span class="experience-period">Present</span>
-                        </div>
-                        <ul class="experience-highlights">
-                            <li>Security engineering across a global fintech platform under regulatory requirements</li>
-                            <li>Partnership with product and engineering on risk assessment and secure delivery</li>
-                            <li>Ongoing development of backend services and research-oriented tooling</li>
-                        </ul>
-                    </article>
-                </div>
+                <div class="experience-list" id="experienceList"></div>
             </section>
 
             <section class="portfolio-section portfolio-section-split">
@@ -153,21 +100,10 @@
                     <header class="section-header">
                         <div>
                             <h3>Technical stack</h3>
-                            <p class="section-desc" id="skillsHint">Languages, frameworks, and domains in active use.</p>
+                            <p class="section-desc" id="skillsHint"></p>
                         </div>
                     </header>
-                    <ul class="skills-inline" id="skillsList">
-                        <li class="skill-chip">Python &amp; FastAPI</li>
-                        <li class="skill-chip">REST APIs</li>
-                        <li class="skill-chip">SQLite</li>
-                        <li class="skill-chip">JavaScript</li>
-                        <li class="skill-chip">Docker</li>
-                        <li class="skill-chip">LLM integration</li>
-                        <li class="skill-chip">Bioinformatics</li>
-                        <li class="skill-chip">Security engineering</li>
-                        <li class="skill-chip">pytest</li>
-                        <li class="skill-chip">Git</li>
-                    </ul>
+                    <ul class="skills-inline" id="skillsList"></ul>
                 </div>
                 <div class="split-col">
                     <header class="section-header">
@@ -176,12 +112,7 @@
                             <p class="section-desc">Selected repositories</p>
                         </div>
                     </header>
-                    <div class="github-list" id="githubList">
-                        <a class="github-card" href="https://github.com/ZivGrinblat/ai-learning-job-assistant" target="_blank" rel="noopener noreferrer">
-                            <h4>ai-learning-job-assistant</h4>
-                            <p>Portfolio platform with REST API, persistent storage, LLM integration, and bioinformatics endpoints.</p>
-                        </a>
-                    </div>
+                    <div class="github-list" id="githubList"></div>
                 </div>
             </section>
 
@@ -192,12 +123,8 @@
                         <p class="section-desc">Where I'm headed next</p>
                     </div>
                 </header>
-                <ul class="target-roles" id="lookingTargets">
-                    <li class="target-role">Research engineering</li>
-                    <li class="target-role">Applied AI</li>
-                    <li class="target-role">Med-tech &amp; biology</li>
-                </ul>
-                <p class="career-prose" id="lookingBody">Roles where software supports research and clinical workflows — platforms, data services, or applied AI in biology and med-tech. Background in security within regulated environments; independent work focuses on API design, structured data, and production deployment.</p>
+                <ul class="target-roles" id="lookingTargets"></ul>
+                <p class="career-prose" id="lookingBody"></p>
             </section>
         </div>
     </main>
@@ -206,6 +133,7 @@
         <p>&copy; <span id="footerYear">2026</span> Ziv Grinblat</p>
         <nav class="site-footer-nav" aria-label="Footer">
             <a href="/">Overview</a>
+            <a href="/roadmap.html">Roadmap</a>
             <a href="/notes.html">Notes</a>
             <a href="/dna.html">DNA</a>
             <a href="/rna.html">RNA</a>
@@ -213,6 +141,7 @@
     </footer>
 
     <script src="js/site.js?v=2"></script>
-    <script src="js/home.js?v=2"></script>
+    <script src="js/roadmap-shared.js?v=1"></script>
+    <script src="js/home.js?v=7"></script>
 </body>
 </html>

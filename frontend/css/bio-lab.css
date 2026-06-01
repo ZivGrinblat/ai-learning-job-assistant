@@ -15,6 +15,33 @@
     margin-bottom: 1.75rem;
 }
 
+.lab-crosslinks-label {
+    display: flex;
+    align-items: center;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-right: 0.25rem;
+}
+
+.notes-roadmap-wrap {
+    padding-top: 1.25rem;
+    padding-bottom: 0.25rem;
+}
+
+.lab-nav-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin-bottom: 1.75rem;
+}
+
+.lab-nav-stack .lab-crosslinks {
+    margin-bottom: 0;
+}
+
 .lab-pill {
     display: inline-flex;
     align-items: center;
@@ -48,7 +75,22 @@
     font-weight: 700;
     padding: 0.15rem 0.45rem;
     border-radius: 4px;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.lab-pill-soon {
+    border-style: dashed;
+}
+
+.lab-pill-soon .lab-pill-badge {
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 0.12rem 0.4rem;
+    border-radius: 4px;
+    background: #fffbeb;
+    color: #b45309;
 }
 
 .bio-lab-grid {
