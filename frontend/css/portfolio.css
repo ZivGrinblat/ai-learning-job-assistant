@@ -49,6 +49,44 @@
     max-width: 54rem;
 }
 
+.hero-motif {
+    position: absolute;
+    top: 1.5rem;
+    right: max(1rem, calc((100% - 1320px) / 2 + 1rem));
+    width: clamp(140px, 18vw, 220px);
+    height: clamp(140px, 18vw, 220px);
+    pointer-events: none;
+    opacity: 0.14;
+    color: var(--page-accent);
+}
+
+.hero-motif-icon {
+    width: 100%;
+    height: 100%;
+}
+
+.portfolio-headline.is-loading {
+    position: relative;
+}
+
+.portfolio-headline.is-loading::after {
+    content: "";
+    display: inline-block;
+    width: 0.45em;
+    height: 0.45em;
+    margin-left: 0.35em;
+    border-radius: 50%;
+    background: var(--page-accent);
+    opacity: 0.55;
+    animation: pulse-dot 1.2s ease-in-out infinite;
+    vertical-align: middle;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 0.25; transform: scale(0.85); }
+    50% { opacity: 0.9; transform: scale(1); }
+}
+
 .portfolio-role {
     font-size: 0.75rem;
     font-weight: 700;
@@ -169,12 +207,21 @@
 }
 
 .section-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--page-accent);
     margin-bottom: 0.4rem;
+}
+
+.section-eyebrow-icon {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
 }
 
 .featured-list {
@@ -185,8 +232,8 @@
 
 .featured-project {
     display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 2rem;
+    grid-template-columns: auto 1fr auto;
+    gap: 1.35rem 2rem;
     align-items: center;
     padding: 1.75rem 2rem;
     border: 1px solid var(--border);
@@ -221,6 +268,40 @@
 }
 
 .featured-project-body { min-width: 0; }
+
+.featured-project-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 14px;
+    flex-shrink: 0;
+    box-shadow: var(--shadow);
+}
+
+.featured-project-icon .project-icon {
+    width: 1.65rem;
+    height: 1.65rem;
+}
+
+.featured-project-icon-notes {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+
+.featured-project-icon-dna {
+    background: linear-gradient(135deg, #f0fdfa, #ccfbf1);
+    color: #0f766e;
+    border: 1px solid #5eead4;
+}
+
+.featured-project-icon-rna {
+    background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+    color: #6d28d9;
+    border: 1px solid #c4b5fd;
+}
 
 .featured-project .project-badge {
     display: inline-block;
@@ -461,11 +542,13 @@
 }
 
 @media (max-width: 860px) {
+    .hero-motif { display: none; }
     .featured-project {
         grid-template-columns: 1fr;
         gap: 1rem;
         padding: 1.5rem;
     }
+    .featured-project-icon { display: none; }
     .featured-project-cta { align-self: flex-start; }
     .portfolio-section-split { grid-template-columns: 1fr; gap: 2.5rem; }
     .experience-top { flex-direction: column; gap: 0.25rem; }

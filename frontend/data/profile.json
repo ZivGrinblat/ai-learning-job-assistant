@@ -55,19 +55,22 @@
       "title": "Book Notes",
       "description": "Structured reading notes with search and AI-assisted cross-referencing across your library.",
       "href": "/notes.html",
-      "badge": "Live app"
+      "badge": "Live app",
+      "icon": "notes"
     },
     {
       "title": "DNA Lab",
       "description": "GC content, nucleotide composition, reverse complement — full sequence analysis on DNA.",
       "href": "/dna.html",
-      "badge": "Bioinformatics"
+      "badge": "Bioinformatics",
+      "icon": "dna"
     },
     {
       "title": "RNA Lab",
       "description": "RNA reverse complement with A↔U pairing — the endpoint you built, live in the browser.",
       "href": "/rna.html",
-      "badge": "New"
+      "badge": "New",
+      "icon": "rna"
     }
   ]
 }
