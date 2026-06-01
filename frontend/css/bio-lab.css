@@ -4,6 +4,10 @@
     padding: 2rem 0 4rem;
 }
 
+.bio-lab-main.shell {
+    max-width: min(1320px, 100%);
+}
+
 .lab-crosslinks {
     display: flex;
     flex-wrap: wrap;
@@ -60,6 +64,17 @@
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-md);
     overflow: hidden;
+    position: relative;
+}
+
+.bio-lab-panel::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--series-a), var(--page-accent), var(--series-c));
 }
 
 .bio-lab-panel-head {
@@ -176,12 +191,13 @@
 }
 
 .bio-empty-icon {
-    width: 48px;
-    height: 48px;
-    margin-bottom: 1rem;
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 1rem;
     border-radius: 14px;
-    background: var(--page-accent-light);
-    border: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--page-accent-light), var(--page-accent));
+    border: none;
+    opacity: 0.85;
 }
 
 .bio-results[hidden],

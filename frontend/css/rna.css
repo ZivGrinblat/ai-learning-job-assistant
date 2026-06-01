@@ -10,6 +10,25 @@
     box-shadow: 0 4px 16px rgba(124, 58, 237, 0.25);
 }
 
+.page-rna .bio-lab-panel-head {
+    background: linear-gradient(180deg, #ede9fe 0%, #f5f3ff 40%, #fff 100%);
+}
+
+.page-rna .bio-sequence-input {
+    background: linear-gradient(180deg, #fff 0%, #f5f3ff 120%);
+    border-color: #c4b5fd;
+}
+
+.page-rna .bio-result-card {
+    background: linear-gradient(145deg, #fff, #faf5ff);
+}
+
+.page-rna .bio-result-card.highlight {
+    background: linear-gradient(135deg, #ede9fe, #eef2ff);
+    border-color: #7c3aed;
+    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.12);
+}
+
 .rna-pair-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
