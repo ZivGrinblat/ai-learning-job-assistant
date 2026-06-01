@@ -1,0 +1,21 @@
+/* RNA lab — extends bio-lab.css */
+
+.page-rna .alphabet-letter:nth-child(1) { color: #16a34a; border-color: #bbf7d0; }
+.page-rna .alphabet-letter:nth-child(2) { color: #7c3aed; border-color: #ddd6fe; }
+.page-rna .alphabet-letter:nth-child(3) { color: #d97706; border-color: #fde68a; }
+.page-rna .alphabet-letter:nth-child(4) { color: #2563eb; border-color: #bfdbfe; }
+
+.page-rna .btn-bio-primary {
+    background: linear-gradient(135deg, #7c3aed, #6366f1);
+    box-shadow: 0 4px 16px rgba(124, 58, 237, 0.25);
+}
+
+.rna-pair-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 640px) {
+    .rna-pair-grid { grid-template-columns: 1fr; }
+}

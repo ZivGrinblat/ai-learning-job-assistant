@@ -8,7 +8,7 @@ No SQL, no OpenAI calls, no business rules beyond HTTP concerns (404, 422).
 from fastapi import APIRouter, HTTPException, Request
 
 from app.schemas.agent import CreateNoteFromPromptRequest, CreateNoteFromPromptResponse, RelatedNotesResponse
-from app.schemas.bio import ComplementDnaResponse, DnaRequest, DnaResponse, NeucleotidsCounts
+from app.schemas.bio import ComplementDnaResponse, DnaRequest, DnaResponse, NeucleotidsCounts, RnaRequest, ComplementRnaResponse
 from app.schemas.notes import (
     BookStats,
     BookSummary,
@@ -31,6 +31,7 @@ from app.services.bioinformatics import (
     calculate_gc_content,
     return_neucleotids_counts,
     return_reverse_complement_dna_string,
+    return_reverse_complement_rna_string,
 )
 from app.services.booksearch import find_similar_books
 from app.services.note_agent import extract_note_from_prompt, find_related_notes
@@ -206,7 +207,7 @@ def bio_gc_content_endpoint(payload: DnaRequest) -> DnaResponse:
 
 
 @router.post("/bio/reverse-complement", response_model=ComplementDnaResponse)
-def bio_reverse_complement_endpoint(payload: DnaRequest) -> ComplementDnaResponse:
+def bio_dna_reverse_complement_endpoint(payload: DnaRequest) -> ComplementDnaResponse:
     try:
         return return_reverse_complement_dna_string(payload.dna_string)
     except ValueError as error:
@@ -217,6 +218,13 @@ def bio_reverse_complement_endpoint(payload: DnaRequest) -> ComplementDnaRespons
 def bio_nucleotide_counts_endpoint(payload: DnaRequest) -> NeucleotidsCounts:
     try:
         return return_neucleotids_counts(payload.dna_string)
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    
+@router.post("/bio/rna/reverse-complement", response_model=ComplementRnaResponse)
+def bio_rna_reverse_complement_endpoint(payload: RnaRequest) -> ComplementRnaResponse:
+    try:
+        return return_reverse_complement_rna_string(payload.rna_string)
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
 

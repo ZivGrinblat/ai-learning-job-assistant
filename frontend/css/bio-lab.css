@@ -1,0 +1,295 @@
+/* Shared DNA / RNA lab layout */
+
+.bio-lab-main {
+    padding: 2rem 0 4rem;
+}
+
+.lab-crosslinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-bottom: 1.75rem;
+}
+
+.lab-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.55rem 1.15rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--ink-muted);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.lab-pill:hover {
+    border-color: var(--page-accent);
+    color: var(--page-accent);
+}
+
+.lab-pill.active {
+    background: var(--page-accent-light);
+    border-color: var(--page-accent);
+    color: var(--page-accent);
+}
+
+.lab-pill-code {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.bio-lab-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: 1.75rem;
+    align-items: start;
+}
+
+.bio-lab-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.bio-lab-panel-head {
+    padding: 1.35rem 1.6rem 1.1rem;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--page-accent-light) 0%, #fff 85%);
+}
+
+.bio-lab-panel-head h2 {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 0.35rem;
+}
+
+.bio-lab-panel-head p {
+    font-size: 0.925rem;
+    color: var(--ink-muted);
+    line-height: 1.55;
+}
+
+.bio-lab-panel-body {
+    padding: 1.5rem 1.6rem 1.75rem;
+}
+
+.alphabet-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 1.25rem;
+}
+
+.alphabet-letter {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    padding: 0.35rem 0.65rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-soft);
+    color: var(--ink-muted);
+}
+
+.bio-sequence-input {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    letter-spacing: 0.04em;
+    min-height: 8rem;
+    line-height: 1.6;
+    background: linear-gradient(180deg, #fff 0%, var(--page-accent-light) 160%);
+    border-color: var(--border-strong);
+}
+
+.bio-lab-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.1rem;
+}
+
+.btn-bio-primary {
+    flex: 1;
+    min-width: 10rem;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.85rem 1.35rem;
+    font-family: inherit;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--page-accent), var(--series-c));
+    box-shadow: 0 4px 16px var(--page-accent-soft);
+    transition: opacity 0.15s, transform 0.15s;
+}
+
+.btn-bio-primary:hover:not(:disabled) {
+    opacity: 0.95;
+    transform: translateY(-1px);
+}
+
+.btn-bio-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.bio-lab-output {
+    min-height: 22rem;
+}
+
+.bio-lab-output .bio-lab-panel-body {
+    min-height: 18rem;
+}
+
+.bio-empty-state {
+    display: grid;
+    place-items: center;
+    text-align: center;
+    min-height: 16rem;
+    padding: 2rem 1.5rem;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-soft);
+    color: var(--ink-muted);
+}
+
+.bio-empty-state p {
+    max-width: 22rem;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.bio-empty-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+    border-radius: 14px;
+    background: var(--page-accent-light);
+    border: 1px solid var(--border);
+}
+
+.bio-results[hidden],
+.bio-error[hidden],
+.bio-empty-state[hidden] {
+    display: none;
+}
+
+.bio-results {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.bio-result-card {
+    padding: 1.15rem 1.25rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--bg-soft);
+}
+
+.bio-result-card.highlight {
+    background: linear-gradient(135deg, var(--page-accent-light), #fff);
+    border-color: var(--page-accent);
+}
+
+.bio-result-card .result-label {
+    margin-bottom: 0.5rem;
+}
+
+.bio-result-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.bio-result-card-head .result-label {
+    margin-bottom: 0;
+}
+
+.btn-copy {
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--page-accent);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-copy:hover {
+    background: var(--page-accent-light);
+    border-color: var(--page-accent);
+}
+
+.bio-sequence-out {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.65;
+    word-break: break-all;
+    color: var(--ink);
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--page-accent);
+}
+
+.bio-error {
+    margin-top: 1rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    color: #991b1b;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-left: 4px solid #dc2626;
+}
+
+.bio-toolbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.bio-file-input {
+    font-family: inherit;
+    font-size: 0.8125rem;
+    max-width: 220px;
+}
+
+@media (max-width: 960px) {
+    .bio-lab-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .bio-lab-output {
+        min-height: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .bio-toolbar { grid-template-columns: 1fr; }
+}

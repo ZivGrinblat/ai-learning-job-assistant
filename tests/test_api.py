@@ -295,6 +295,20 @@ def test_return_neucleotids_counts():
     assert data["dna_string"] == "atgc"
     assert data["a"] == 1 and data["c"] == 1 and data["g"] == 1 and data["t"] == 1
 
+def test_post_rna_reverse_complement():
+    response = client.post("/bio/rna/reverse-complement", json={"rna_string": "AAUUGGCC"})
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["reverse_complement"] == "ggccaauu"
+    assert data["rna_string"] == "aauuggcc"
+
+
+def test_post_rna_reverse_complement_returns_422_for_invalid_letters():
+    response = client.post("/bio/rna/reverse-complement", json={"rna_string": "AAD"})
+
+    assert response.status_code == 422
+
 
 def test_patch_note_updates_fields(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"

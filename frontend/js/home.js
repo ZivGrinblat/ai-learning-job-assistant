@@ -31,7 +31,9 @@ function renderProfile(profile) {
     document.title = `${profile.name} · Portfolio`;
     document.getElementById("headerRole").textContent = profile.role || "Portfolio";
     document.getElementById("profileName").textContent = profile.name;
-    document.getElementById("profileTagline").textContent = profile.tagline;
+    document.getElementById("profileHeadline").textContent =
+        profile.headline || profile.tagline || "";
+    document.getElementById("profilePitch").textContent = profile.pitch || "";
     document.getElementById("profileRole").textContent = profile.role;
 
     setupSocialLink(document.getElementById("linkedinLink"), profile.linkedin);
@@ -57,9 +59,11 @@ function renderProfile(profile) {
         .map((target) => `<li class="target-role">${escapeHtml(target)}</li>`)
         .join("");
 
-    const heroTargets = document.getElementById("heroTargetRoles");
+    const heroTargets = document.getElementById("heroTargets");
     if (heroTargets && targets.length) {
-        heroTargets.textContent = targets.join(" · ");
+        heroTargets.innerHTML = targets
+            .map((target) => `<li class="target-role">${escapeHtml(target)}</li>`)
+            .join("");
     }
 
     document.getElementById("experienceList").innerHTML = (profile.experience || [])
@@ -100,26 +104,36 @@ function renderProfile(profile) {
 
     document.getElementById("projectsGrid").innerHTML = profile.projects
         .map((project) => `
-            <a class="project-card" href="${escapeHtml(project.href)}">
-                ${project.badge ? `<span class="project-badge">${escapeHtml(project.badge)}</span>` : ""}
-                <h4>${escapeHtml(project.title)}</h4>
-                <p>${escapeHtml(project.description)}</p>
-                <span class="project-cta">Open project →</span>
+            <a class="featured-project" href="${escapeHtml(project.href)}">
+                <div class="featured-project-body">
+                    ${project.badge ? `<span class="project-badge">${escapeHtml(project.badge)}</span>` : ""}
+                    <h4>${escapeHtml(project.title)}</h4>
+                    <p>${escapeHtml(project.description)}</p>
+                </div>
+                <span class="featured-project-cta">Open →</span>
             </a>
         `)
         .join("");
 }
 
 async function loadProfile() {
+    const headline = document.getElementById("profileHeadline");
+
+    if (window.location.protocol === "file:") {
+        headline.textContent =
+            "Open via the server (uvicorn app.main:app), not as a local file.";
+        return;
+    }
+
     try {
-        const res = await fetch("data/profile.json");
+        const res = await fetch("/data/profile.json");
         if (!res.ok) {
-            throw new Error("Could not load profile");
+            throw new Error(`Profile fetch failed (${res.status})`);
         }
         renderProfile(await res.json());
-    } catch {
-        document.getElementById("profileTagline").textContent =
-            "Could not load profile data.";
+    } catch (err) {
+        console.error("Profile load failed:", err);
+        headline.textContent = "Could not load profile data.";
     }
 }
 

@@ -1,5 +1,5 @@
 """
-Pure DNA string logic — no HTTP, no database.
+Pure DNA and RNA strings logic — no HTTP, no database.
 
 Invalid input raises ValueError; routes catch and return 422.
 All functions return dicts that match bio schema fields.
@@ -16,6 +16,16 @@ def validate_dna_string(dna_string: str) -> None:
         if letter not in accepted_letters:
             raise ValueError("Your dna string is not valid")
 
+def validate_rna_string(rna_string: str) -> None:
+    """Raise ValueError if empty or contains non-AGCU letters"""
+    if len(rna_string) == 0:
+        raise ValueError("RNA string cannot be shorter than 1")
+    lower_cased_rna_string = rna_string.lower()
+    accepted_letters = ["a", "g", "c", "u"]
+    for letter in lower_cased_rna_string:
+        if letter not in accepted_letters:
+            raise ValueError("Your rna string is not valid")
+        
 
 def calculate_gc_content(dna_string: str) -> dict:
     validate_dna_string(dna_string)
@@ -63,6 +73,7 @@ def return_reverse_complement_dna_string(dna_string: str) -> dict:
     }
 
 
+
 def return_neucleotids_counts(dna_string: str) -> dict:
     validate_dna_string(dna_string)
 
@@ -89,3 +100,20 @@ def return_neucleotids_counts(dna_string: str) -> dict:
         "t": t_count,
         "g": g_count,
     }
+
+def return_reverse_complement_rna_string(rna_string: str) -> dict:
+    validate_rna_string(rna_string)
+    lower_cased_rna_string = rna_string.lower()
+    complement_rna_string = ""
+    for letter in lower_cased_rna_string:
+        if letter == 'a':
+            complement_rna_string += 'u'
+        elif letter == 'u':
+            complement_rna_string += 'a'
+        elif letter == 'g':
+            complement_rna_string += 'c'
+        else:
+            complement_rna_string += 'g'
+            
+    reversed_complement_rna_string = complement_rna_string[::-1]
+    return {"rna_string": lower_cased_rna_string,  "reverse_complement": reversed_complement_rna_string}

@@ -1,19 +1,20 @@
 {
   "name": "Ziv Grinblat",
-  "tagline": "Security engineer at eToro, building backend systems, LLM-integrated applications, and tooling for life-sciences data.",
+  "headline": "All-in on med-tech — backend systems, applied AI, and bioinformatics.",
+  "pitch": "Security engineer at eToro by day. After hours: this platform, open source, always shipping — built to show what I know, not just list it.",
   "role": "Security Engineer · eToro",
   "email": "",
   "resumeUrl": "/assets/resume.pdf",
   "github": "https://github.com/ZivGrinblat",
   "linkedin": "https://www.linkedin.com/in/ziv-grinblat-69429a257/",
   "lookingFor": {
-    "title": "Career focus",
+    "title": "Open to",
     "targets": [
       "Research engineering",
       "Applied AI",
-      "Healthcare & biology"
+      "Med-tech & biology"
     ],
-    "body": "Roles where software supports research and clinical workflows—platforms, data services, or applied AI in biology and healthcare. Background in security within regulated environments; independent work focuses on API design, structured data, and production deployment."
+    "body": "Roles where software supports research and clinical workflows — platforms, data services, or applied AI in biology and med-tech. Background in security within regulated environments; independent work focuses on API design, structured data, and production deployment."
   },
   "experience": [
     {
@@ -52,15 +53,21 @@
   "projects": [
     {
       "title": "Book Notes",
-      "description": "Structured reading notes with search and AI-assisted cross-referencing.",
+      "description": "Structured reading notes with search and AI-assisted cross-referencing across your library.",
       "href": "/notes.html",
-      "badge": "Application"
+      "badge": "Live app"
     },
     {
-      "title": "Genome Analyzer",
-      "description": "Sequence analysis — GC content, complement, nucleotide composition.",
+      "title": "DNA Lab",
+      "description": "GC content, nucleotide composition, reverse complement — full sequence analysis on DNA.",
       "href": "/dna.html",
       "badge": "Bioinformatics"
+    },
+    {
+      "title": "RNA Lab",
+      "description": "RNA reverse complement with A↔U pairing — the endpoint you built, live in the browser.",
+      "href": "/rna.html",
+      "badge": "New"
     }
   ]
 }

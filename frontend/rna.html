@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RNA Lab · Ziv Grinblat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site.css?v=6">
+    <link rel="stylesheet" href="css/bio-lab.css?v=1">
+    <link rel="stylesheet" href="css/rna.css?v=1">
+</head>
+<body class="page-rna">
+    <header class="site-header">
+        <div class="shell site-header-row">
+            <a href="/" class="site-brand">
+                <span class="brand-mark" aria-hidden="true">ZG</span>
+                <span class="site-brand-name">Ziv Grinblat</span>
+            </a>
+            <div class="site-header-end">
+                <span class="site-page-title">RNA Lab</span>
+                <div class="status-pill">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Connecting…</span>
+                </div>
+            </div>
+        </div>
+        <nav class="site-nav shell" aria-label="Main">
+            <a href="/" class="site-nav-link">Overview</a>
+            <a href="/notes.html" class="site-nav-link">Notes</a>
+            <a href="/dna.html" class="site-nav-link">DNA</a>
+            <a href="/rna.html" class="site-nav-link active">RNA</a>
+        </nav>
+    </header>
+
+    <section class="page-band">
+        <div class="shell">
+            <p class="page-band-tag">Bioinformatics · RNA</p>
+            <h1 class="page-band-title">Reverse complement for RNA</h1>
+            <p class="page-band-sub">Paste an RNA sequence (A, U, G, C) and get its reverse complement — built on the same FastAPI endpoint you tested. Uracil pairs with adenine, not thymine.</p>
+        </div>
+    </section>
+
+    <main class="bio-lab-main shell">
+        <nav class="lab-crosslinks" aria-label="Lab tools">
+            <a href="/dna.html" class="lab-pill">
+                <span class="lab-pill-code">A T G C</span>
+                DNA Lab
+            </a>
+            <a href="/rna.html" class="lab-pill active" aria-current="page">
+                <span class="lab-pill-code">A U G C</span>
+                RNA Lab
+            </a>
+        </nav>
+
+        <div class="bio-lab-grid">
+            <section class="bio-lab-panel bio-lab-input" aria-labelledby="rnaInputHeading">
+                <div class="bio-lab-panel-head">
+                    <h2 id="rnaInputHeading">Input sequence</h2>
+                    <p>Valid letters: A, U, G, C — up to 1,000 characters.</p>
+                </div>
+                <div class="bio-lab-panel-body">
+                    <div class="alphabet-strip" aria-hidden="true">
+                        <span class="alphabet-letter">A</span>
+                        <span class="alphabet-letter">U</span>
+                        <span class="alphabet-letter">G</span>
+                        <span class="alphabet-letter">C</span>
+                    </div>
+                    <div class="bio-toolbar">
+                        <div class="form-group grow">
+                            <label for="rnaExampleSelect">Load example</label>
+                            <select id="rnaExampleSelect" class="sort-select">
+                                <option value="">Choose a sequence…</option>
+                                <option value="basic">Basic AU repeat</option>
+                                <option value="mrna">mRNA-style fragment</option>
+                                <option value="trna">tRNA-style fragment</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="rnaInput">RNA sequence</label>
+                        <textarea
+                            id="rnaInput"
+                            class="bio-sequence-input"
+                            placeholder="UACGUACG or paste from clipboard"
+                            maxlength="1000"
+                            spellcheck="false"
+                        ></textarea>
+                        <div class="field-footer">
+                            <button type="button" class="btn-text" id="rnaClearBtn">Clear</button>
+                            <span class="char-count" id="rnaCharCount">0/1000</span>
+                        </div>
+                    </div>
+                    <div class="bio-lab-actions">
+                        <button type="button" class="btn-bio-primary" id="rnaAnalyzeBtn">Compute reverse complement</button>
+                    </div>
+                    <p class="bio-error" id="rnaError" hidden></p>
+                </div>
+            </section>
+
+            <section class="bio-lab-panel bio-lab-output" aria-labelledby="rnaOutputHeading">
+                <div class="bio-lab-panel-head">
+                    <h2 id="rnaOutputHeading">Results</h2>
+                    <p>Input normalized to lowercase. Complement uses A↔U and G↔C.</p>
+                </div>
+                <div class="bio-lab-panel-body">
+                    <div class="bio-empty-state" id="rnaEmpty">
+                        <div>
+                            <div class="bio-empty-icon" aria-hidden="true"></div>
+                            <p>Enter a sequence and run analysis. Results appear here side by side.</p>
+                        </div>
+                    </div>
+                    <div class="bio-results" id="rnaResults" hidden>
+                        <div class="rna-pair-grid">
+                            <div class="bio-result-card">
+                                <p class="result-label">Input (normalized)</p>
+                                <p class="bio-sequence-out" id="rnaInputDisplay"></p>
+                            </div>
+                            <div class="bio-result-card highlight">
+                                <div class="bio-result-card-head">
+                                    <p class="result-label">Reverse complement</p>
+                                    <button type="button" class="btn-copy" id="rnaCopyComplementBtn">Copy</button>
+                                </div>
+                                <p class="bio-sequence-out" id="rnaComplementDisplay"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="site-footer shell">
+        <p>&copy; <span id="footerYear"></span> Ziv Grinblat</p>
+        <nav class="site-footer-nav" aria-label="Footer">
+            <a href="/">Overview</a>
+            <a href="/notes.html">Notes</a>
+            <a href="/dna.html">DNA</a>
+            <a href="/rna.html">RNA</a>
+        </nav>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="js/site.js"></script>
+    <script src="js/rna.js"></script>
+</body>
+</html>

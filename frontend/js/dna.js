@@ -29,6 +29,19 @@ function showToast(message, isError = false) {
     setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
+async function copyTextToClipboard(text) {
+    if (!text) {
+        showToast("Nothing to copy", true);
+        return;
+    }
+    try {
+        await navigator.clipboard.writeText(text);
+        showToast("Copied to clipboard");
+    } catch {
+        showToast("Could not copy", true);
+    }
+}
+
 function updateDnaCharCount() {
     const textarea = document.getElementById("dnaInput");
     const counter = document.getElementById("dnaCharCount");
@@ -55,6 +68,7 @@ function clearDnaInput() {
     document.getElementById("dnaInput").value = "";
     document.getElementById("dnaExampleSelect").value = "";
     document.getElementById("dnaResults").hidden = true;
+    document.getElementById("dnaEmpty").hidden = false;
     document.getElementById("dnaError").hidden = true;
     updateDnaCharCount();
 }
@@ -116,6 +130,7 @@ async function analyzeDna() {
             errorEl.textContent =
                 typeof detail === "string" ? detail : detail?.[0]?.msg || "Invalid DNA sequence";
             errorEl.hidden = false;
+            document.getElementById("dnaEmpty").hidden = false;
             return;
         }
 
@@ -144,6 +159,7 @@ async function analyzeDna() {
             .join("");
 
         results.hidden = false;
+        document.getElementById("dnaEmpty").hidden = true;
     } catch {
         showToast("Could not reach API", true);
     } finally {
@@ -152,6 +168,10 @@ async function analyzeDna() {
     }
 }
 
+document.getElementById("dnaAnalyzeBtn").addEventListener("click", analyzeDna);
+document.getElementById("dnaCopyComplementBtn").addEventListener("click", () => {
+    copyTextToClipboard(document.getElementById("reverseComplement").textContent);
+});
 document.getElementById("dnaInput").addEventListener("input", updateDnaCharCount);
 document.getElementById("dnaExampleSelect").addEventListener("change", loadSelectedExample);
 document.getElementById("dnaClearBtn").addEventListener("click", clearDnaInput);

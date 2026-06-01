@@ -29,3 +29,9 @@ class NeucleotidsCounts(BaseModel):
     t: int
     c: int
     g: int
+
+class RnaRequest(BaseModel):
+    rna_string: str = Field(min_length=1, max_length=1000)
+class ComplementRnaResponse(BaseModel):
+    rna_string: str
+    reverse_complement: str
