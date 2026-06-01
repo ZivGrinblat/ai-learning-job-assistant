@@ -19,7 +19,7 @@
 .construction-card::before {
     content: "UNDER CONSTRUCTION";
     position: absolute;
-    top: 1.1rem;
+    top: 2.15rem;
     right: -2.2rem;
     transform: rotate(32deg);
     font-size: 0.62rem;
@@ -29,6 +29,7 @@
     background: linear-gradient(90deg, #fbbf24, #f59e0b);
     color: #78350f;
     box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+    line-height: 1.2;
 }
 
 .construction-icon {
