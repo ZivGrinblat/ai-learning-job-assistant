@@ -12,8 +12,16 @@ import os
 
 from openai import OpenAI
 
-from app.schemas.agent import CreateNoteFromPromptResponse, RelatedNoteItem, RelatedNotesResponse
+from app.schemas.agent import (
+    CreateNoteFromPromptResponse,
+    RelatedNoteItem,
+    RelatedNotesResponse,
+    ResearchPathwayItem,
+    ResearchPathwaysResponse,
+)
 from app.services.note_store import get_note_by_id, get_notes
+
+STUB_PREVIEW_MESSAGE = "Stub preview..."
 
 SYSTEM_PROMPT = """You are given a source note and a list of candidate notes.
 Each note has id, book, chapter, and note text.
@@ -145,31 +153,53 @@ Rules:
 - If something is unclear, make a reasonable guess and mention it in ai_message
 """
 
+RESEARCH_PATHWAYS_SYSTEM_PROMPT = """
+You are a research mentor.
+
+Given an article, generate practical research pathways the user can execute.
+Each pathway must be concrete, not generic.
+
+Respond with JSON only:
+{
+  "article_summary": "<short summary>",
+  "pathways": [
+    {
+      "title": "<string>",
+      "why_it_matters": "<string>",
+      "difficulty": "easy|medium|hard",
+      "first_step": "<string>",
+      "search_queries": ["<q1>", "<q2>"]
+    }
+  ]
+}
+"""
+
 def _stub_extract_from_prompt(prompt: str) -> CreateNoteFromPromptResponse:
-    
+    """Fallback extractor when OpenAI is not configured or fails."""
     prompt = prompt.strip()
-    
+
     if not prompt:
         return CreateNoteFromPromptResponse(
-            book= "Unknown", 
-            chapter= 1,
-            note= "No content",
-            ai_message= "Stub preview...",
-        )
-    else:
-        note = prompt[:150]
-        return CreateNoteFromPromptResponse(
-            book= "Unknown", 
-            chapter= 1,
-            note= note,
-            ai_message= "Stub preview...",
+            book="Unknown",
+            chapter=1,
+            note="No content",
+            ai_message=STUB_PREVIEW_MESSAGE,
         )
 
+    note = prompt[:150]
+    return CreateNoteFromPromptResponse(
+        book="Unknown",
+        chapter=1,
+        note=note,
+        ai_message=STUB_PREVIEW_MESSAGE,
+    )
+
 def _extract_with_openai(prompt: str, api_key: str) -> CreateNoteFromPromptResponse:
+    """Call OpenAI and normalize response into CreateNoteFromPromptResponse."""
     client = OpenAI(api_key=api_key)
     response = client.chat.completions.create(
         model="gpt-4o-mini",
-        messages = [
+        messages=[
             {"role": "system", "content": EXTRACT_NOTE_SYSTEM_PROMPT},
             {"role": "user", "content": prompt},
         ],
@@ -177,26 +207,124 @@ def _extract_with_openai(prompt: str, api_key: str) -> CreateNoteFromPromptRespo
     )
     raw = response.choices[0].message.content or "{}"
     parsed = json.loads(raw)
-    
-    
+
     return CreateNoteFromPromptResponse(
-        book = str(parsed.get("book", "Unknown"))[:30],
-        chapter = int(parsed.get("chapter", 1)),
-        note = str(parsed.get("note", ""))[:150],
-        ai_message = str(parsed.get("ai_message", "Extracted from your message."))[:200],
+        book=str(parsed.get("book", "Unknown"))[:30],
+        chapter=int(parsed.get("chapter", 1)),
+        note=str(parsed.get("note", ""))[:150],
+        ai_message=str(parsed.get("ai_message", "Extracted from your message."))[:200],
     )
-    
+
+
 def extract_note_from_prompt(prompt: str) -> CreateNoteFromPromptResponse:
+    """Extract note fields from free text via OpenAI or deterministic stub."""
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         return _stub_extract_from_prompt(prompt)
-    else:
-        try:
-            return _extract_with_openai(prompt, api_key)
-        except Exception:
-            return _stub_extract_from_prompt(prompt)
-    
-        
-        
+
+    try:
+        return _extract_with_openai(prompt, api_key)
+    except Exception:
+        # Keep UX resilient: if LLM parsing/network fails, still return a preview object.
+        return _stub_extract_from_prompt(prompt)
 
 
+def _stub_research_pathways(
+    article_text: str,
+    focus_area: str,
+    pathways_count: int,
+) -> ResearchPathwaysResponse:
+    """Deterministic fallback used when OpenAI is unavailable."""
+    summary = (
+        "This article introduces key ideas and tradeoffs. "
+        "Use the pathways below to move from reading into practical investigation."
+    )
+    clipped_snippet = article_text.strip().replace("\n", " ")[:80]
+    pathways: list[ResearchPathwayItem] = []
+    for index in range(pathways_count):
+        level = "easy" if index < 2 else ("medium" if index < 4 else "hard")
+        pathways.append(
+            ResearchPathwayItem(
+                title=f"{focus_area.title()} pathway {index + 1}",
+                why_it_matters=f"Connect article idea #{index + 1} to your own project decisions.",
+                difficulty=level,
+                first_step=f"Extract one claim from the article and verify it with one source. Snippet: {clipped_snippet}",
+                search_queries=[
+                    f"{focus_area} article key concept {index + 1}",
+                    "paper replication checklist",
+                ],
+            )
+        )
+    return ResearchPathwaysResponse(article_summary=summary, pathways=pathways)
+
+
+def _generate_research_pathways_with_openai(
+    article_text: str,
+    focus_area: str,
+    pathways_count: int,
+    api_key: str,
+) -> ResearchPathwaysResponse:
+    """Generate structured research pathways from article text with OpenAI."""
+    client = OpenAI(api_key=api_key)
+    payload = {
+        "focus_area": focus_area,
+        "pathways_count": pathways_count,
+        "article_text": article_text,
+    }
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": RESEARCH_PATHWAYS_SYSTEM_PROMPT},
+            {"role": "user", "content": json.dumps(payload)},
+        ],
+        response_format={"type": "json_object"},
+    )
+    raw = response.choices[0].message.content or "{}"
+    parsed = json.loads(raw)
+
+    summary = str(parsed.get("article_summary", "")).strip()
+    summary = summary[:500] if summary else "No summary provided."
+
+    pathways: list[ResearchPathwayItem] = []
+    for item in parsed.get("pathways", [])[:pathways_count]:
+        queries = item.get("search_queries", [])
+        if not isinstance(queries, list):
+            queries = []
+        normalized_queries = [str(query)[:120] for query in queries if str(query).strip()][:3] or ["article follow-up query"]
+        difficulty = str(item.get("difficulty", "medium")).lower()
+        if difficulty not in {"easy", "medium", "hard"}:
+            difficulty = "medium"
+        pathways.append(
+            ResearchPathwayItem(
+                title=str(item.get("title", "Untitled pathway"))[:120],
+                why_it_matters=str(item.get("why_it_matters", "This can guide your next research decision."))[:280],
+                difficulty=difficulty,
+                first_step=str(item.get("first_step", "Write one concrete validation step and run it."))[:220],
+                search_queries=normalized_queries,
+            )
+        )
+
+    if not pathways:
+        return _stub_research_pathways(article_text, focus_area, pathways_count)
+
+    return ResearchPathwaysResponse(article_summary=summary, pathways=pathways)
+
+
+def generate_research_pathways(
+    article_text: str,
+    focus_area: str,
+    pathways_count: int,
+) -> ResearchPathwaysResponse:
+    """Public entry point for research-pathways endpoint."""
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        return _stub_research_pathways(article_text, focus_area, pathways_count)
+    try:
+        return _generate_research_pathways_with_openai(
+            article_text=article_text,
+            focus_area=focus_area,
+            pathways_count=pathways_count,
+            api_key=api_key,
+        )
+    except Exception:
+        return _stub_research_pathways(article_text, focus_area, pathways_count)

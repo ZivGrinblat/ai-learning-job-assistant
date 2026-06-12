@@ -532,3 +532,75 @@ def test_create_note_from_prompt_when_key_set(monkeypatch):
     assert data["book"] == "Dune"
     assert data["chapter"] == 3
     assert "desert" in data["note"]
+
+
+def test_research_pathways_endpoint_stub_mode(monkeypatch):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    payload = {
+        "article_text": "This paper discusses risk modeling for biological data quality and reproducibility. "
+        "It compares deterministic checks with machine learning based classifiers and highlights tradeoffs."
+        * 2,
+        "focus_area": "bio",
+        "pathways_count": 4,
+    }
+
+    response = client.post("/research/pathways", json=payload)
+    data = response.json()
+
+    assert response.status_code == 200
+    assert isinstance(data["article_summary"], str)
+    assert len(data["pathways"]) == 4
+    assert {"title", "why_it_matters", "difficulty", "first_step", "search_queries"} <= set(data["pathways"][0].keys())
+
+
+def test_research_pathways_endpoint_uses_openai_when_key_set(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+
+    def fake_generate(article_text, focus_area, pathways_count, api_key):
+        assert api_key == "test-key"
+        assert focus_area == "security"
+        assert pathways_count == 3
+        return {
+            "article_summary": "A practical article about securing model pipelines.",
+            "pathways": [
+                {
+                    "title": "Threat model the pipeline",
+                    "why_it_matters": "Security starts with explicit assumptions and attack surfaces.",
+                    "difficulty": "medium",
+                    "first_step": "List assets, actors, and trust boundaries for one concrete pipeline.",
+                    "search_queries": ["ml pipeline threat model", "data poisoning controls"],
+                },
+                {
+                    "title": "Design abuse-case tests",
+                    "why_it_matters": "Abuse-case testing catches gaps before deployment.",
+                    "difficulty": "easy",
+                    "first_step": "Write three adversarial input cases and expected outcomes.",
+                    "search_queries": ["abuse case testing security"],
+                },
+                {
+                    "title": "Create run integrity policy",
+                    "why_it_matters": "Tamper-evident logs protect result trustworthiness.",
+                    "difficulty": "hard",
+                    "first_step": "Define immutable fields and hash strategy for each run record.",
+                    "search_queries": ["tamper evident logging design"],
+                },
+            ],
+        }
+
+    monkeypatch.setattr(
+        "app.services.note_agent._generate_research_pathways_with_openai",
+        fake_generate,
+    )
+
+    payload = {
+        "article_text": "This article explains secure model operations and pipeline hardening in production systems." * 3,
+        "focus_area": "security",
+        "pathways_count": 3,
+    }
+    response = client.post("/research/pathways", json=payload)
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["article_summary"].startswith("A practical article")
+    assert len(data["pathways"]) == 3
+    assert data["pathways"][0]["title"] == "Threat model the pipeline"

@@ -7,7 +7,13 @@ No SQL, no OpenAI calls, no business rules beyond HTTP concerns (404, 422).
 
 from fastapi import APIRouter, HTTPException, Request
 
-from app.schemas.agent import CreateNoteFromPromptRequest, CreateNoteFromPromptResponse, RelatedNotesResponse
+from app.schemas.agent import (
+    CreateNoteFromPromptRequest,
+    CreateNoteFromPromptResponse,
+    RelatedNotesResponse,
+    ResearchPathwaysRequest,
+    ResearchPathwaysResponse,
+)
 
 from app.schemas.bio import (
     ComplementDnaResponse,
@@ -48,7 +54,11 @@ from app.services.bioinformatics import (
     find_restriction_sites,
 )
 from app.services.booksearch import find_similar_books
-from app.services.note_agent import extract_note_from_prompt, find_related_notes
+from app.services.note_agent import (
+    extract_note_from_prompt,
+    find_related_notes,
+    generate_research_pathways,
+)
 from app.services.note_store import (
     count_notes,
     count_notes_for_one_book,
@@ -289,3 +299,13 @@ def related_notes_endpoint(note_id: int) -> RelatedNotesResponse:
 def create_note_from_prompt_endpoint(payload: CreateNoteFromPromptRequest) -> CreateNoteFromPromptResponse:
     """Extract draft note fields from free-form user prompt text."""
     return extract_note_from_prompt(payload.prompt_input)
+
+
+@router.post("/research/pathways", response_model=ResearchPathwaysResponse)
+def research_pathways_endpoint(payload: ResearchPathwaysRequest) -> ResearchPathwaysResponse:
+    """Generate actionable research pathways from article text."""
+    return generate_research_pathways(
+        article_text=payload.article_text,
+        focus_area=payload.focus_area,
+        pathways_count=payload.pathways_count,
+    )

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Agent · Ziv Grinblat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site.css?v=7">
+    <link rel="stylesheet" href="css/bio-lab.css?v=2">
+    <link rel="stylesheet" href="css/research.css?v=1">
+</head>
+<body class="page-notes">
+    <header class="site-header">
+        <div class="shell site-header-row">
+            <a href="/" class="site-brand">
+                <span class="brand-mark" aria-hidden="true">ZG</span>
+                <span class="site-brand-name">Ziv Grinblat</span>
+            </a>
+            <div class="site-header-end">
+                <span class="site-page-title">Research Agent</span>
+                <div class="status-pill">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Connecting…</span>
+                </div>
+            </div>
+        </div>
+        <nav class="site-nav shell" aria-label="Main">
+            <a href="/" class="site-nav-link">Overview</a>
+            <a href="/notes.html" class="site-nav-link">Notes</a>
+            <a href="/dna.html" class="site-nav-link">DNA</a>
+            <a href="/rna.html" class="site-nav-link">RNA</a>
+            <a href="/restriction.html" class="site-nav-link">Restriction</a>
+            <a href="/research.html" class="site-nav-link active">Research</a>
+            <a href="/roadmap.html" class="site-nav-link">Roadmap</a>
+        </nav>
+    </header>
+
+    <section class="page-band">
+        <div class="shell">
+            <p class="page-band-tag">AI Agent · Research Pathways</p>
+            <h1 class="page-band-title">Turn one article into a structured research plan</h1>
+            <p class="page-band-sub">Paste an article, choose your focus, and get actionable pathways with difficulty, first steps, and high-quality follow-up queries.</p>
+        </div>
+    </section>
+
+    <main class="bio-lab-main shell">
+        <div class="research-grid">
+            <section class="bio-lab-panel bio-lab-input" aria-labelledby="researchInputHeading">
+                <div class="bio-lab-panel-head">
+                    <h2 id="researchInputHeading">Input article context</h2>
+                    <p>The more specific the article text, the better the pathways. Aim for at least 300-500 words.</p>
+                </div>
+                <div class="bio-lab-panel-body">
+                    <div class="research-row">
+                        <div class="form-group grow">
+                            <label for="researchTitle">Article title (optional)</label>
+                            <input id="researchTitle" type="text" placeholder="e.g. Secure design patterns for AI pipelines" maxlength="120" />
+                        </div>
+                        <div class="form-group grow">
+                            <label for="researchSourceUrl">Source URL (optional)</label>
+                            <input id="researchSourceUrl" type="url" placeholder="https://..." />
+                        </div>
+                    </div>
+
+                    <div class="research-row">
+                        <div class="form-group">
+                            <label for="researchFocus">Focus area</label>
+                            <select id="researchFocus" class="sort-select">
+                                <option value="general">General</option>
+                                <option value="bio">Bio</option>
+                                <option value="security">Security</option>
+                                <option value="ai">AI</option>
+                                <option value="software">Software</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="researchPathCount">Pathway count</label>
+                            <select id="researchPathCount" class="sort-select">
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5" selected>5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
+                        </div>
+                        <div class="form-group grow">
+                            <label for="researchExampleSelect">Load sample article</label>
+                            <select id="researchExampleSelect" class="sort-select">
+                                <option value="">Choose a sample...</option>
+                                <option value="security">Security pipeline article</option>
+                                <option value="bio">Bioinformatics method article</option>
+                                <option value="ai">AI evaluation article</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="researchArticleText">Article text</label>
+                        <textarea
+                            id="researchArticleText"
+                            class="bio-sequence-input research-textarea"
+                            placeholder="Paste article text here..."
+                            maxlength="12000"
+                            spellcheck="false"
+                        ></textarea>
+                        <div class="field-footer">
+                            <div class="research-quality" id="researchQualityBadge">Input too short</div>
+                            <span class="char-count" id="researchCharCount">0/12000</span>
+                        </div>
+                    </div>
+
+                    <div class="research-actions">
+                        <button type="button" class="btn-bio-primary" id="generatePathwaysBtn">Generate pathways</button>
+                        <button type="button" class="btn-text" id="clearResearchBtn">Reset</button>
+                    </div>
+
+                    <p class="bio-error" id="researchError" hidden></p>
+                </div>
+            </section>
+
+            <section class="bio-lab-panel bio-lab-output" aria-labelledby="researchOutputHeading">
+                <div class="bio-lab-panel-head">
+                    <h2 id="researchOutputHeading">Agent output</h2>
+                    <p>Review pathway quality, filter by difficulty, then export and execute.</p>
+                </div>
+                <div class="bio-lab-panel-body">
+                    <div class="bio-empty-state" id="researchEmpty">
+                        <div>
+                            <div class="bio-empty-icon" aria-hidden="true"></div>
+                            <p>Generate pathways to see summary, roadmap cards, and export options.</p>
+                        </div>
+                    </div>
+
+                    <div class="bio-results" id="researchResults" hidden>
+                        <div class="research-summary-card">
+                            <p class="result-label">Article summary</p>
+                            <p id="researchSummaryText"></p>
+                        </div>
+
+                        <div class="research-output-toolbar">
+                            <div class="form-group">
+                                <label for="difficultyFilter">Difficulty filter</label>
+                                <select id="difficultyFilter" class="sort-select">
+                                    <option value="all">All</option>
+                                    <option value="easy">Easy</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="hard">Hard</option>
+                                </select>
+                            </div>
+                            <div class="research-toolbar-actions">
+                                <button type="button" class="btn-text" id="copyResearchReportBtn">Copy report</button>
+                                <button type="button" class="btn-text" id="downloadResearchMarkdownBtn">Download .md</button>
+                                <button type="button" class="btn-text" id="downloadResearchJsonBtn">Download .json</button>
+                            </div>
+                        </div>
+
+                        <div id="researchPathwaysList" class="research-pathways-list"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="site-footer shell">
+        <p>&copy; <span id="footerYear"></span> Ziv Grinblat</p>
+        <nav class="site-footer-nav" aria-label="Footer">
+            <a href="/">Overview</a>
+            <a href="/roadmap.html">Roadmap</a>
+            <a href="/notes.html">Notes</a>
+            <a href="/dna.html">DNA</a>
+            <a href="/rna.html">RNA</a>
+            <a href="/restriction.html">Restriction</a>
+            <a href="/research.html">Research</a>
+        </nav>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="js/site.js?v=2"></script>
+    <script src="js/research.js?v=1"></script>
+</body>
+</html>
