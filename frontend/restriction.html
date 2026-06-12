@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restriction Finder · Ziv Grinblat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/site.css?v=7">
+    <link rel="stylesheet" href="css/bio-lab.css?v=2">
+    <link rel="stylesheet" href="css/restriction.css?v=2">
+</head>
+<body class="page-genome">
+    <header class="site-header">
+        <div class="shell site-header-row">
+            <a href="/" class="site-brand">
+                <span class="brand-mark" aria-hidden="true">ZG</span>
+                <span class="site-brand-name">Ziv Grinblat</span>
+            </a>
+            <div class="site-header-end">
+                <span class="site-page-title">Restriction Finder</span>
+                <div class="status-pill">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Connecting…</span>
+                </div>
+            </div>
+        </div>
+        <nav class="site-nav shell" aria-label="Main">
+            <a href="/" class="site-nav-link">Overview</a>
+            <a href="/notes.html" class="site-nav-link">Notes</a>
+            <a href="/dna.html" class="site-nav-link">DNA</a>
+            <a href="/rna.html" class="site-nav-link">RNA</a>
+            <a href="/restriction.html" class="site-nav-link active">Restriction</a>
+            <a href="/roadmap.html" class="site-nav-link">Roadmap</a>
+        </nav>
+    </header>
+
+    <section class="page-band">
+        <div class="shell">
+            <p class="page-band-tag">Bioinformatics · Restriction Enzymes</p>
+            <h1 class="page-band-title">Restriction-site finder</h1>
+            <p class="page-band-sub">Scan a DNA sequence against a large enzyme catalog sourced online. Filter enzymes, run the scan, and get clear cut-position tables.</p>
+        </div>
+    </section>
+
+    <main class="bio-lab-main shell">
+        <div class="lab-nav-stack">
+            <nav class="lab-crosslinks" aria-label="Lab tools">
+                <a href="/dna.html" class="lab-pill">
+                    <span class="lab-pill-code">A T G C</span>
+                    DNA Lab
+                </a>
+                <a href="/rna.html" class="lab-pill">
+                    <span class="lab-pill-code">A U G C</span>
+                    RNA Lab
+                </a>
+                <a href="/restriction.html" class="lab-pill active" aria-current="page">
+                    <span class="lab-pill-code">RE</span>
+                    Restriction Finder
+                </a>
+            </nav>
+            <nav class="lab-crosslinks" id="upcomingPills" data-track="bioinformatics" aria-label="Coming next"></nav>
+        </div>
+
+        <div class="bio-lab-grid restriction-grid">
+            <section class="bio-lab-panel bio-lab-input" aria-labelledby="restrictionInputHeading">
+                <div class="bio-lab-panel-head">
+                    <h2 id="restrictionInputHeading">Input and enzyme selection</h2>
+                    <p>Paste DNA (A/T/G/C), then choose enzymes. Leave selection empty to scan all available enzymes.</p>
+                </div>
+                <div class="bio-lab-panel-body">
+                    <p class="restriction-meta" id="restrictionSourceMeta">Loading enzyme catalog…</p>
+                    <div class="form-group">
+                        <label for="restrictionInput">DNA sequence</label>
+                        <textarea
+                            id="restrictionInput"
+                            class="bio-sequence-input"
+                            placeholder="ATGC... or FASTA (header lines starting with > are ignored)"
+                            maxlength="1000"
+                            spellcheck="false"
+                        ></textarea>
+                        <div class="field-footer">
+                            <button type="button" class="btn-text" id="restrictionClearBtn">Clear</button>
+                            <span class="char-count" id="restrictionCharCount">0/1000</span>
+                        </div>
+                    </div>
+
+                    <div class="restriction-toolbar">
+                        <div class="form-group grow">
+                            <label for="enzymeSearchInput">Search enzymes</label>
+                            <input id="enzymeSearchInput" type="text" placeholder="EcoRI, HindIII, BamHI..." />
+                        </div>
+                        <div class="restriction-toolbar-actions">
+                            <button type="button" class="btn-text" id="enzymeSelectAllBtn">Select all</button>
+                            <button type="button" class="btn-text" id="enzymeClearBtn">Clear selection</button>
+                        </div>
+                    </div>
+                    <div class="restriction-toolbar restriction-toolbar-presets">
+                        <div class="restriction-toolbar-actions">
+                            <button type="button" class="btn-text" id="presetCommonBtn">Common cloning set</button>
+                            <button type="button" class="btn-text" id="presetSixCuttersBtn">Only 6-cutters</button>
+                            <button type="button" class="btn-text" id="presetRareCuttersBtn">Rare cutters (7+)</button>
+                        </div>
+                    </div>
+
+                    <div class="enzyme-list-wrap">
+                        <p class="result-label">Enzymes shown: <span id="enzymeCount">0</span> · selected: <span id="selectedEnzymeCount">0</span></p>
+                        <div class="enzyme-list" id="enzymeList"></div>
+                    </div>
+
+                    <div class="bio-lab-actions">
+                        <button type="button" class="btn-bio-primary" id="restrictionAnalyzeBtn">Find restriction sites</button>
+                    </div>
+                    <p class="bio-error" id="restrictionError" hidden></p>
+                </div>
+            </section>
+
+            <section class="bio-lab-panel bio-lab-output" aria-labelledby="restrictionOutputHeading">
+                <div class="bio-lab-panel-head">
+                    <h2 id="restrictionOutputHeading">Match results</h2>
+                    <p>Positions are 0-based indexes in the normalized DNA string.</p>
+                </div>
+                <div class="bio-lab-panel-body">
+                    <div class="bio-empty-state" id="restrictionEmpty">
+                        <div>
+                            <div class="bio-empty-icon" aria-hidden="true"></div>
+                            <p>Run a scan to see enzyme-by-enzyme match positions and cut counts.</p>
+                        </div>
+                    </div>
+                    <div class="bio-results" id="restrictionResults" hidden>
+                        <div class="restriction-summary" id="restrictionSummary"></div>
+                        <div class="bio-result-card">
+                            <div class="restriction-results-head">
+                                <p class="result-label">Matches</p>
+                                <label class="restriction-toggle">
+                                    <input type="checkbox" id="hitsOnlyToggle" />
+                                    Show only enzymes with hits
+                                </label>
+                            </div>
+                            <div id="restrictionMatchesTable"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="site-footer shell">
+        <p>&copy; <span id="footerYear"></span> Ziv Grinblat</p>
+        <nav class="site-footer-nav" aria-label="Footer">
+            <a href="/">Overview</a>
+            <a href="/roadmap.html">Roadmap</a>
+            <a href="/notes.html">Notes</a>
+            <a href="/dna.html">DNA</a>
+            <a href="/rna.html">RNA</a>
+            <a href="/restriction.html">Restriction</a>
+        </nav>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="js/site.js?v=2"></script>
+    <script src="js/roadmap-shared.js?v=1"></script>
+    <script src="js/restriction.js?v=2"></script>
+    <script>Roadmap.initUpcomingPills();</script>
+</body>
+</html>

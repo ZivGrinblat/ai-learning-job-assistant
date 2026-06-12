@@ -310,6 +310,31 @@ def test_post_rna_reverse_complement_returns_422_for_invalid_letters():
     assert response.status_code == 422
 
 
+def test_get_restriction_enzymes_returns_catalog():
+    response = client.get("/bio/dna/restriction-enzymes")
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["count"] > 0
+    assert isinstance(data["enzymes"], list)
+    assert {"name", "pattern"} <= set(data["enzymes"][0].keys())
+
+
+def test_post_restriction_sites_returns_positions():
+    response = client.post(
+        "/bio/dna/restriction-sites",
+        json={
+            "dna_string": "AAGAATTCTT",
+            "selected_enzymes": ["EcoRI"],
+        },
+    )
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["dna_string"] == "aagaattctt"
+    assert data["sites"]["EcoRI"] == [2]
+
+
 def test_patch_note_updates_fields(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
     monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))

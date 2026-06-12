@@ -2,9 +2,10 @@
  * Under-construction pages — loads copy from /data/roadmap.json by ?tool= key.
  */
 const CONSTRUCTION_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>`;
+const DEFAULT_TOOL_KEY = "tm";
 
 function getToolKey() {
-    return new URLSearchParams(window.location.search).get("tool") || "restriction";
+    return new URLSearchParams(window.location.search).get("tool") || DEFAULT_TOOL_KEY;
 }
 
 function renderRoadmapLinks(roadmap, currentKey) {
@@ -46,7 +47,7 @@ async function loadConstructionPage() {
         }
 
         const roadmap = await res.json();
-        const item = roadmap.tools?.[toolKey] || roadmap.tools?.restriction;
+        const item = roadmap.tools?.[toolKey] || roadmap.tools?.[DEFAULT_TOOL_KEY];
 
         if (item.pageClass) {
             document.body.className = item.pageClass;
