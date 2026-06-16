@@ -136,7 +136,7 @@ def find_related_notes(source_note_id: int) -> RelatedNotesResponse | None:
         source_note_id=source_note_id,
         related=related,
     )
-    
+
 EXTRACT_NOTE_SYSTEM_PROMPT = """
 You are given a user message about a reading note.
 The message may contain a book name, chapter number, and note content.

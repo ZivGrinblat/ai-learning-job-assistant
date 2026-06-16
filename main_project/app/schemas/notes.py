@@ -9,21 +9,24 @@ Field limits here match UI constraints (e.g. note_text max 150).
 
 from pydantic import BaseModel, Field
 
+MAX_BOOK_NAME_LENGTH = 30
+MAX_NOTE_TEXT_LENGTH = 150
 
-class NoteRequest(BaseModel):
+
+class NotePayloadBase(BaseModel):
+    """Shared editable note fields used by create and update operations."""
+
+    book_name: str = Field(min_length=1, max_length=MAX_BOOK_NAME_LENGTH)
+    chapter_number: int = Field(gt=0)
+    note_text: str = Field(min_length=1, max_length=MAX_NOTE_TEXT_LENGTH)
+
+
+class NoteRequest(NotePayloadBase):
     """POST /notes body — no id; server assigns that."""
 
-    book_name: str = Field(min_length=1, max_length=30)
-    chapter_number: int = Field(gt=0)
-    note_text: str = Field(min_length=1, max_length=150)
 
-
-class NoteUpdateRequest(BaseModel):
+class NoteUpdateRequest(NotePayloadBase):
     """PATCH /notes/{id} — full replacement of editable fields."""
-
-    book_name: str = Field(min_length=1, max_length=30)
-    chapter_number: int = Field(gt=0)
-    note_text: str = Field(min_length=1, max_length=150)
 
 
 class ReorderNotesRequest(BaseModel):
@@ -50,12 +53,14 @@ class NoteItem(BaseModel):
 
 
 class NoteCountResponse(BaseModel):
+    """Total notes across all books."""
     count: int
 
 
 class CountForOneBook(BaseModel):
+    """Notes count for a single book title."""
     count: int = Field(gt=0)
-    book: str = Field(min_length=1, max_length=30)
+    book: str = Field(min_length=1, max_length=MAX_BOOK_NAME_LENGTH)
 
 
 class BookSummary(BaseModel):

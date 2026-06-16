@@ -29,6 +29,12 @@ SORT_CLAUSES = {
 }
 
 
+def _handle_db_error(error: sqlite3.Error, fallback):
+    """Log a sqlite error and return a caller-provided fallback value."""
+    print(f"Database error: {error}")
+    return fallback
+
+
 def _row_to_note(row) -> dict:
     """Convert sqlite tuple row to the dict shape NoteItem expects."""
     return {
@@ -61,64 +67,61 @@ def _ensure_schema(connection: sqlite3.Connection) -> None:
 def init_db() -> None:
     """Create data dir, table, and run migrations — called on app startup."""
     os.makedirs("data", exist_ok=True)
-    connection = sqlite3.connect(DB_PATH)
-    connection.execute(CREATE_TABLE)
-    _ensure_schema(connection)
-    connection.commit()
-    connection.close()
+    with sqlite3.connect(DB_PATH) as connection:
+        connection.execute(CREATE_TABLE)
+        _ensure_schema(connection)
+        connection.commit()
 
 
 def save_note(book: str, chapter: int, note: str) -> int:
     """Insert note at end of global sort_order; return new row id."""
-    connection = sqlite3.connect(DB_PATH)
-    _ensure_schema(connection)
-    next_order = connection.execute(
-        "SELECT COALESCE(MAX(sort_order), -1) + 1 FROM notes"
-    ).fetchone()[0]
-    cursor = connection.execute(
-        "INSERT INTO notes (book, chapter, note, sort_order) VALUES (?, ?, ?, ?)",
-        (book, chapter, note, next_order),
-    )
-    new_id = cursor.lastrowid
+    with sqlite3.connect(DB_PATH) as connection:
+        _ensure_schema(connection)
+        next_order = connection.execute(
+            "SELECT COALESCE(MAX(sort_order), -1) + 1 FROM notes"
+        ).fetchone()[0]
+        cursor = connection.execute(
+            "INSERT INTO notes (book, chapter, note, sort_order) VALUES (?, ?, ?, ?)",
+            (book, chapter, note, next_order),
+        )
+        new_id = cursor.lastrowid
+        connection.commit()
 
-    connection.commit()
-    connection.close()
-    return new_id
+    return int(new_id)
 
 
 def delete_note(note_id: int) -> bool:
     """Return True if a row was deleted."""
-    connection = sqlite3.connect(DB_PATH)
-    cursor = connection.execute("DELETE FROM notes WHERE id = ?", (note_id,))
-    deleted = cursor.rowcount > 0
-    connection.commit()
-    connection.close()
+    with sqlite3.connect(DB_PATH) as connection:
+        cursor = connection.execute("DELETE FROM notes WHERE id = ?", (note_id,))
+        deleted = cursor.rowcount > 0
+        connection.commit()
+
     return deleted
 
 
 def update_note(note_id: int, book: str, chapter: int, note: str) -> bool:
     """Return True if note_id existed."""
-    connection = sqlite3.connect(DB_PATH)
-    cursor = connection.execute(
-        "UPDATE notes SET book = ?, chapter = ?, note = ? WHERE id = ?",
-        (book, chapter, note, note_id),
-    )
-    updated = cursor.rowcount > 0
-    connection.commit()
-    connection.close()
+    with sqlite3.connect(DB_PATH) as connection:
+        cursor = connection.execute(
+            "UPDATE notes SET book = ?, chapter = ?, note = ? WHERE id = ?",
+            (book, chapter, note, note_id),
+        )
+        updated = cursor.rowcount > 0
+        connection.commit()
+
     return updated
 
 
 def reorder_notes(note_ids: list[int]) -> None:
     """Set sort_order from list index — used after drag-and-drop in UI."""
-    connection = sqlite3.connect(DB_PATH)
-    for index, note_id in enumerate(note_ids):
-        connection.execute(
-            "UPDATE notes SET sort_order = ? WHERE id = ?",
-            (index, note_id),
-        )
-    connection.commit()
-    connection.close()
+    with sqlite3.connect(DB_PATH) as connection:
+        for index, note_id in enumerate(note_ids):
+            connection.execute(
+                "UPDATE notes SET sort_order = ? WHERE id = ?",
+                (index, note_id),
+            )
+        connection.commit()
 
 
 def get_notes(
@@ -148,8 +151,7 @@ def get_notes(
                 params,
             ).fetchall()
     except sqlite3.Error as error:
-        print(f"Database error: {error}")
-        return []
+        return _handle_db_error(error, [])
 
     return [_row_to_note(row) for row in rows]
 
@@ -184,8 +186,7 @@ def get_note_by_id(note_id: int) -> dict | None:
             ).fetchone()
 
     except sqlite3.Error as error:
-        print(f"Database error: {error}")
-        return None
+        return _handle_db_error(error, None)
 
     if row is None:
         return None
@@ -209,6 +210,7 @@ def count_notes() -> int | None:
 
 
 def count_notes_for_one_book(book_name: str) -> int | None:
+    """Count notes for a specific book title."""
     try:
         with sqlite3.connect(DB_PATH) as connection:
             notes_count = connection.execute(
@@ -216,17 +218,14 @@ def count_notes_for_one_book(book_name: str) -> int | None:
                 (book_name,),
             ).fetchone()
     except sqlite3.Error as error:
-        print(f"Database error: {error}")
-        return None
+        return _handle_db_error(error, None)
     return notes_count[0]
 
 
 def get_books() -> list[dict]:
     """Library sidebar data: GROUP BY book with counts."""
-    connection = sqlite3.connect(DB_PATH)
-    rows = connection.execute(
-        "SELECT book, COUNT(*) FROM notes GROUP BY book"
-    ).fetchall()
-    connection.close()
-
+    with sqlite3.connect(DB_PATH) as connection:
+        rows = connection.execute(
+            "SELECT book, COUNT(*) FROM notes GROUP BY book"
+        ).fetchall()
     return [{"book": row[0], "note_count": row[1]} for row in rows]

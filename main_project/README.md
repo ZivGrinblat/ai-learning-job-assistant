@@ -44,6 +44,20 @@ Run tests:
 pytest
 ```
 
+Continuous local checks:
+
+```bash
+pip install -r requirements-dev.txt
+pre-commit install
+./dev-watch.sh
+```
+
+One-shot full check:
+
+```bash
+./dev-check.sh
+```
+
 ---
 
 ## Features

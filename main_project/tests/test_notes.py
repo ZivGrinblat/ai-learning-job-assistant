@@ -15,34 +15,34 @@ from app.services.note_agent import extract_note_from_prompt
 def test_delete_note_returns_true_for_existing_note(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
     monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
-    
+
     init_db()
     note_id = save_note("My Book", 1, "My note")
-    
+
     result = delete_note(note_id)
     assert result is True
-    
+
 def test_delete_note_returns_false_for_nonexistent_note(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
     monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
-    
+
     init_db()
 
     result = delete_note(999)
 
-    assert result is False 
-    
+    assert result is False
+
 def test_get_all_notes_returns_saved_notes(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
     monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
-    
+
     init_db()
     note_id = save_note("My Book", 1, "My note")
     note_id = save_note("My Book", 2, "My note 2")
     list_of_notes = get_all_notes()
 
     assert len(list_of_notes) == 2
-    
+
 def test_save_note_stores_data(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
     monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
@@ -55,7 +55,7 @@ def test_save_note_stores_data(tmp_path, monkeypatch):
     conn.close()
     assert len(rows) == 1
     assert note_id == 1
-    
+
 
 def test_save_note_returns_positive_id(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
@@ -71,25 +71,25 @@ def test_save_note_returns_positive_id(tmp_path, monkeypatch):
 def test_count_notes_returns_correct_number(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
     monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
-    
-    
+
+
     init_db()
-    
+
     save_note("Book A", 1, "note 1")
     save_note("Book B", 2, "note 2")
-    
+
     count = count_notes()
-    
+
     assert count == 2
-    
+
 def test_count_notes_returns_zero_when_empty(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
     monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
-    
-    
-    init_db()   
+
+
+    init_db()
     count = count_notes()
-    
+
     assert count == 0
 
 
@@ -138,15 +138,13 @@ def test_reorder_notes_updates_sort_order(tmp_path, monkeypatch):
 
     notes = get_notes(sort="custom")
     assert [note["id"] for note in notes] == [second, first]
-    
-    
+
+
 def test_extract_note_from_prompt(monkeypatch):
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    
+
     result = extract_note_from_prompt("Dune chapter 3 - desert teaches")
-    
+
     assert result.book == "Unknown"
     assert "desert" in result.note.lower()
     assert "Stub" in result.ai_message
-    
-    

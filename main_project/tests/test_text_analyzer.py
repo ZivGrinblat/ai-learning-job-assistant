@@ -1,6 +1,6 @@
 from app.services.text_analyzer import (
-    count_words, 
-    count_characters, 
+    count_words,
+    count_characters,
     count_lines,
     analyze_text,
     clean_text,
@@ -82,8 +82,8 @@ def test_count_words_ignores_multiple_spaces_between_words():
 
     # Assert
     assert result == 2
-    
-    
+
+
 def test_count_characters_counts_simple_word():
     text = "hello"
 
@@ -118,16 +118,16 @@ def test_count_characters_returns_zero_for_empty_string():
     result = count_characters(text)
 
     assert result == 0
-    
-    
+
+
 def test_count_lines_returns_ten_for_ten_lines_in_string():
-    
+
     text = "I\nLove\nYou\nMy\nMother\nAnd\nMy\nFather\nSo\nMuch!"
-    
+
     result = count_lines(text)
-    
+
     assert result == 10
-    
+
 def test_count_lines_returns_zero_for_empty_string():
     # Arrange
     text = ""
@@ -137,7 +137,7 @@ def test_count_lines_returns_zero_for_empty_string():
 
     # Assert
     assert result == 0
-    
+
 def test_count_lines_returns_zero_for_whitespace_only_string():
     # Arrange
     text = "     "
@@ -147,7 +147,7 @@ def test_count_lines_returns_zero_for_whitespace_only_string():
 
     # Assert
     assert result == 0
-    
+
 def test_count_lines_counts_single_line():
     # Arrange
     text = "hello"
@@ -167,7 +167,7 @@ def test_count_lines_does_not_count_trailing_newline_as_extra_line():
 
     # Assert
     assert result == 1
-    
+
 def test_count_lines_counts_empty_line_between_content_lines():
     # Arrange
     text = "hello\n\nworld"
@@ -592,36 +592,34 @@ def test_analyze_text_matches_counts_on_cleaned_text():
         "line_count": count_lines(cleaned_text),
         "is_empty": False,
     }
-    
+
 def test_clean_text_leading_and_trailing_spaces():
     # Arrange
     text = "  hello world   "
-    
+
     result = clean_text(text)
-    
+
     assert result == "hello world"
-    
+
 
 def test_clean_text_gets_only_spaces_returns_empty_string():
     text = "      "
-    
+
     result = clean_text(text)
-    
-    assert result == "" 
-    
-    
+
+    assert result == ""
+
+
 def test_clean_text_multiple_lines_returns_one_line():
     text = "hello\nziv\n   ziv   "
-    
+
     result = clean_text(text)
-    
+
     assert result == "hello ziv ziv"
-    
+
 def test_clean_text_replaces_multiple_spaces_with_single_space():
     text = "   hello     world   "
 
     result = clean_text(text)
 
     assert result == "hello world"
-    
-    

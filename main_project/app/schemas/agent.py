@@ -68,4 +68,3 @@ class CreateNoteFromPromptResponse(BaseModel):
     chapter: int = Field(gt=0)
     note: str = Field(min_length=1, max_length=MAX_NOTE_LENGTH)
     ai_message: str = Field(min_length=1, max_length=MAX_REASON_LENGTH)
-

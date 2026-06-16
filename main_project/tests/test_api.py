@@ -105,14 +105,14 @@ def test_health_check_does_not_write_audit_log(tmp_path, monkeypatch):
 def test_get_notes_count_returns_zero_when_empty(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
     monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
-    
+
     init_db()
-    
+
     response = client.get("/notes/count")
-    
+
     assert response.status_code == 200
     assert response.json() == {"count": 0}
-  
+
 
 
 def test_get_notes_count_returns_three_after_posts(tmp_path, monkeypatch):
@@ -121,27 +121,27 @@ def test_get_notes_count_returns_three_after_posts(tmp_path, monkeypatch):
 
 
     init_db()
-    
+
     client.post(
-        "/notes", 
-        json={"book_name": "Book C", 
-              "chapter_number": 1, 
+        "/notes",
+        json={"book_name": "Book C",
+              "chapter_number": 1,
               "note_text": "bla bla bla"
                   },)
 
     client.post(
         "/notes",
-        json={"book_name": "Book A", 
-              "chapter_number": 1, 
+        json={"book_name": "Book A",
+              "chapter_number": 1,
               "note_text": "note 1"
                   },)
     client.post(
         "/notes",
-        json={"book_name": "Book B", 
-              "chapter_number": 2, 
+        json={"book_name": "Book B",
+              "chapter_number": 2,
               "note_text": "note 2"
               },)
-    
+
     response = client.get("/notes/count")
     assert response.status_code == 200
     assert response.json() == {"count": 3}
@@ -152,53 +152,53 @@ def test_get_notes_count_returns_several_notes_after_posts(tmp_path, monkeypatch
     monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
 
     init_db()
-    
-    client.post("/notes", json={"book_name": "Book A", 
-                                "chapter_number": 1, 
+
+    client.post("/notes", json={"book_name": "Book A",
+                                "chapter_number": 1,
                                 "note_text": "bla bla bla"
-                                }) 
-     
-    client.post("/notes", json={"book_name": "Book B", 
-                                "chapter_number": 2, 
+                                })
+
+    client.post("/notes", json={"book_name": "Book B",
+                                "chapter_number": 2,
                                 "note_text": "bla bla bla"
-                                }) 
-    client.post("/notes", json={"book_name": "Book C", 
-                                "chapter_number": 5, 
+                                })
+    client.post("/notes", json={"book_name": "Book C",
+                                "chapter_number": 5,
                                 "note_text": "bla bla bla"
-                                }) 
-    client.post("/notes", json={"book_name": "Book D", 
-                                "chapter_number": 3, 
+                                })
+    client.post("/notes", json={"book_name": "Book D",
+                                "chapter_number": 3,
                                 "note_text": "bla bla bla"
-                                }) 
-    
-    
+                                })
+
+
     response = client.get("/notes/count")
     assert response.status_code == 200
     assert response.json() == {"count": 4}
-    
-    
+
+
 def test_get_notes_filters_by_book(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
     monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
-    
-    
+
+
     init_db()
-    
-    client.post("/notes", json={"book_name": "Book A", 
-                                "chapter_number": 1, 
-                                "note_text": "bla bla bla"
-                                }) 
-     
-    client.post("/notes", json={"book_name": "Book B", 
-                                "chapter_number": 2, 
+
+    client.post("/notes", json={"book_name": "Book A",
+                                "chapter_number": 1,
                                 "note_text": "bla bla bla"
                                 })
-    
-    
+
+    client.post("/notes", json={"book_name": "Book B",
+                                "chapter_number": 2,
+                                "note_text": "bla bla bla"
+                                })
+
+
     response = client.get("/notes?book=Book A")
-    
+
     data = response.json()
-    
+
     assert response.status_code == 200
     assert len(data) == 1
     assert data[0]["book"] == "Book A"
@@ -209,28 +209,28 @@ def test_get_notes_filters_by_book(tmp_path, monkeypatch):
 def test_count_for_one_book(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
     monkeypatch.setattr("app.services.note_store.DB_PATH", str(db_path))
-    
+
     init_db()
-    
-    client.post("/notes", json={"book_name": "Book A", 
-                                "chapter_number": 1, 
-                                "note_text": "bla bla bla"
-                                }) 
-     
-    client.post("/notes", json={"book_name": "Book A", 
-                                "chapter_number": 2, 
+
+    client.post("/notes", json={"book_name": "Book A",
+                                "chapter_number": 1,
                                 "note_text": "bla bla bla"
                                 })
-    
-    client.post("/notes", json={"book_name": "Book B", 
-                                "chapter_number": 2, 
+
+    client.post("/notes", json={"book_name": "Book A",
+                                "chapter_number": 2,
                                 "note_text": "bla bla bla"
                                 })
-    
+
+    client.post("/notes", json={"book_name": "Book B",
+                                "chapter_number": 2,
+                                "note_text": "bla bla bla"
+                                })
+
     response = client.get("/notes/book-count?book=Book A")
-    
+
     data = response.json()
-    
+
     assert response.status_code == 200
     assert data["count"] == 2
     assert data["book"] == "Book A"
@@ -263,34 +263,34 @@ def test_get_books_returns_library_summary(tmp_path, monkeypatch):
     by_name = {item["book"]: item["note_count"] for item in data}
     assert by_name["Book A"] == 2
     assert by_name["Book B"] == 1
-    
-    
+
+
 def test_post_gc_content():
-    
+
     response = client.post("/bio/gc-content", json={"dna_string": "ATGC"})
-    
+
     data = response.json()
-    
+
     assert response.status_code == 200
     assert data['length'] == 4
     assert data['gc_count'] == 2
     assert data['gc_percent'] == 50.0
-    
+
 def test_post_gc_reverse_complement():
-    
+
     response = client.post("/bio/reverse-complement", json={"dna_string": "ATGC"})
-    
+
     data = response.json()
-    
+
     assert response.status_code == 200
     assert data["reverse_complement"] == "gcat"
     assert data['dna_string'] == "atgc"
-    
+
 def test_return_neucleotids_counts():
     response = client.post("/bio/nucleotide-counts", json={"dna_string": "ATGC"})
-    
+
     data = response.json()
-    
+
     assert response.status_code == 200
     assert data["dna_string"] == "atgc"
     assert data["a"] == 1 and data["c"] == 1 and data["g"] == 1 and data["t"] == 1
@@ -414,12 +414,12 @@ def test_get_related_notes_by_id(tmp_path, monkeypatch):
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
 
     init_db()
-    
+
     first_id = client.post("/notes", json={"book_name": "Book A", "chapter_number": 1, "note_text": "one"}).json()["id"]
     second_id = client.post("/notes", json={"book_name": "Book A", "chapter_number": 2, "note_text": "two"}).json()["id"]
     result = client.post(f"/notes/{second_id}/related")
     data = result.json()
-    
+
 
     assert result.status_code == 200
     assert data["source_note_id"] == second_id
@@ -491,7 +491,7 @@ def test_book_stats_endpoint(tmp_path, monkeypatch):
     assert response.status_code == 200
     assert data["note_count"] == 2
     assert data["chapter_count"] == 2
-    
+
 def test_create_note_from_prompt_endpoint(monkeypatch):
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     response = client.post(
@@ -521,7 +521,7 @@ def test_create_note_from_prompt_when_key_set(monkeypatch):
         "app.services.note_agent._extract_with_openai",
         fake_extract,
     )
-    
+
     response = client.post(
     "/notes/from-prompt",
     json={"prompt_input": "Dune chapter 3 - desert teaches"},
